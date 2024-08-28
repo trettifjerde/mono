@@ -1,0 +1,12 @@
+@use './variables' as *;
+
+.btn-light {
+    background-color: $brass;
+    border-color: transparent;
+    color: $dark-blue;
+    
+    @include hover {
+        background-color: $light-blue;
+        color: $brass;
+    }
+}

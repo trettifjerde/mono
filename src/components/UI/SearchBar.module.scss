@@ -1,0 +1,24 @@
+@use '../../styles/variables' as *;
+
+.bar {
+    position: relative;
+
+    input {
+        padding-right: calc($el-padding + $btn-std);
+
+        &:focus + button {
+            opacity: 1;
+            visibility: visible;
+        }
+    }
+
+    button {
+        opacity: 0;
+        visibility: hidden;
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        aspect-ratio: 1/1;
+    }
+}

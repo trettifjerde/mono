@@ -1,0 +1,20 @@
+@use '../../../styles/variables' as *;
+
+
+.base {
+    aspect-ratio: 1/1;
+    background-color: $blue;
+    border-radius: $border-radius;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    padding: 1rem;
+    transition: background-color $trans-dur $trans-fn;
+
+    @include hover {
+        background-color: $light-blue;
+    }
+}

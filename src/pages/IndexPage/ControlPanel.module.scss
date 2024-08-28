@@ -1,0 +1,30 @@
+@use '../../styles/variables' as *;
+
+.cont {
+    --col-n: 1;
+
+    display: grid;
+    grid-template-columns: repeat(var(--col-n), 1fr);
+    gap: $gap;
+    padding: 3rem;
+    border-radius: 0 0 $border-radius $border-radius;
+    border: $border-width solid $brass-trans;
+    background-color: $light-blue;
+
+    & label {
+        font-weight: 500;
+    }
+
+    @media (min-width: 48rem) {
+        --col-n: 2;
+    }
+
+    @media (min-width: 64rem) {
+        --col-n: 3;
+    }
+
+}
+
+.search {
+    grid-column: 1 / -1;
+}

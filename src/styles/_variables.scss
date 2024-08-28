@@ -1,0 +1,50 @@
+$main-font: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+$icon-font: 'icomoon';
+$check-icon: "\e908";
+
+$light: #F5F5F5;
+$black: #222222;
+$dark: #2D3250;
+$dark-blue: #424769;
+$blue: #4f557a;
+$light-blue: #7077A1;
+$brass: #F6B17A;
+$brass-trans: rgba(246, 178, 122, 0.75);
+
+$line-hight: 1.5;
+$input-line-height: 1.25;
+
+$border-width: 1px;
+$outline-width: 2px;
+$border-radius: 4px;
+$gap: 1rem;
+$el-padding: .5rem;
+$input-padding: .5rem;
+$btn-std: calc(1rem * $input-line-height + 2 * $border-width + 2 * $input-padding);
+$max-width: 70rem;
+
+$breakpoint-m: 48rem;
+$breakpoint-l: 64rem;
+
+$trans-dur: .2s;
+$trans-fn: ease-in-out;
+
+@mixin hover {
+    @media (hover: hover) {
+        &:hover {
+            @content;
+        }
+    }
+}
+
+@mixin screen-medium {
+    @media (min-width: $breakpoint-m) {
+        @content;
+    }
+}
+
+@mixin screen-large {
+    @media (min-width: $breakpoint-l) {
+        @content;
+    }
+}

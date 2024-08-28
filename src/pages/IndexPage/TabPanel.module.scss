@@ -1,0 +1,33 @@
+@use '../../styles/variables' as *;
+
+.panel {
+    display: flex;
+    margin-top: 3rem;
+
+    a {
+        flex-grow: 1;
+        padding: $input-padding;
+        background-color: $dark;
+        border: $border-width solid transparent;
+        border-radius: $border-radius $border-radius 0 0;
+        text-align: center;
+        transition-duration: $trans-dur;
+        transition-timing-function: $trans-fn;
+        transition-property: color, background-color;
+
+        &.active {
+            color: $light;
+            background-color: $light-blue;
+            border-color: $brass-trans;
+            border-bottom-color: transparent;
+            margin-bottom: -1 * $border-width;
+        }
+
+        @include hover {
+            &:not(.active) {
+                color: $brass;
+            }
+        }
+    }
+
+}
