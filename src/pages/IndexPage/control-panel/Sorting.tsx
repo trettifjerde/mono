@@ -1,10 +1,21 @@
-import { IndexPageTab } from '../../../utils/types';
+import { memo } from 'react';
+import { authorSortingConfig, bookSortingConfig } from '../../../services/dummySortingOptions';
+import { DropdownOption, IndexPageTab } from '../../../utils/types';
+import Select from '../../../components/UI/Select';
 
-export default function Sorting({tab}: {tab: IndexPageTab}) {
-    console.log('Sorting, tab now:', tab);
-    
+const selectOption = (opt: DropdownOption | null) => console.log(opt);
+
+const Sorting = ({tab}: {tab: IndexPageTab}) => {
+
     return (<div>
-        <label>Sort by</label>
-        <input type="text" readOnly placeholder="Select type" />
+        <Select 
+            id="sorting"
+            label="Sort by"
+            placeholder="Select type" 
+            optionsConfig={tab === IndexPageTab.authors ? authorSortingConfig : bookSortingConfig}
+            selectOption={selectOption} 
+        />
     </div>)
 }
+
+export default memo(Sorting);

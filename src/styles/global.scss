@@ -10,8 +10,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-color: $dark-blue;
-  color: $light;
+  background-color: $dark1;
+  color: $light4;
 }
 
 * {
@@ -30,10 +30,10 @@ button {
   outline: $outline-width solid transparent;
   line-height: $input-line-height;
   padding: $input-padding;
-  border: $border-width solid $brass-trans;
+  border: $border-width solid transparent;
   border-radius: $border-radius;
-  background-color: $dark-blue;
-  color: $light;
+  background-color: $dark3;
+  color: $light4;
   font-family: $main-font;
   font-size: 1rem;
   transition-duration: $trans-dur;
@@ -41,19 +41,23 @@ button {
   transition-property: color, background-color, opacity, visibility, border-color, outline-color;
 
   &:focus {
-    outline-color: $brass;
+    outline-color: $light1;
   }
 }
 
 input {
   width: 100%;
 
+  &:focus {
+    background-color: $dark2;
+  }
+
   &::placeholder {
-    color: $light-blue;
+    color: $dark6;
   }
 
   @include hover {
-    background-color: $blue;
+    background-color: $dark2;
   }
 }
 
@@ -65,8 +69,8 @@ input[type=checkbox] {
   width: fit-content;
   aspect-ratio: 1/1;
   padding: .25rem;
-  color: $brass;
   cursor: pointer;
+  color: $light3;
 
   &::after {
     content: $check-icon;

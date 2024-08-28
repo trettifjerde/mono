@@ -7,25 +7,25 @@
     a {
         flex-grow: 1;
         padding: $input-padding;
-        background-color: $dark;
-        border: $border-width solid transparent;
+        background-color: $dark4;
         border-radius: $border-radius $border-radius 0 0;
+        border: $border-width solid transparent;
         text-align: center;
         transition-duration: $trans-dur;
         transition-timing-function: $trans-fn;
         transition-property: color, background-color;
 
         &.active {
-            color: $light;
-            background-color: $light-blue;
-            border-color: $brass-trans;
+            background-color: $dark6;
+            border: $border-width solid $light1-trans;
             border-bottom-color: transparent;
             margin-bottom: -1 * $border-width;
         }
 
         @include hover {
             &:not(.active) {
-                color: $brass;
+                background-color: $dark5;
+                color: $light1;
             }
         }
     }

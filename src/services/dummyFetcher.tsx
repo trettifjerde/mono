@@ -20,14 +20,16 @@ const BOOKS : BookPreviewType[] = [
         numberInStock: 3,
         price: 2.99,
         imgSrc: '',
-        id: '1'
+        id: '1',
+        authorId: '1'
     },
     {
         name: 'How to woof',
         numberInStock: 0,
         price: 3.99,
         imgSrc: '',
-        id: '2'
+        id: '2',
+        authorId: '1'
     }
 ];
 const AUTHORS : AuthorPreviewType[] = [

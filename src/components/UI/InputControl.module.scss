@@ -6,7 +6,12 @@
     input {
         padding-right: calc($el-padding + $btn-std);
 
-        &:focus + button {
+        &:read-only {
+            cursor: pointer;
+        }
+
+        &:focus+button,
+        &:not(:placeholder-shown)+button {
             opacity: 1;
             visibility: visible;
         }
@@ -20,5 +25,11 @@
         right: 0;
         height: 100%;
         aspect-ratio: 1/1;
+        background-color: $light1;
+        color: $dark3;
+
+        @include hover {
+            color: $light4;
+        }
     }
 }

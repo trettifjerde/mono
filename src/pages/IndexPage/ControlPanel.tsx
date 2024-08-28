@@ -1,13 +1,16 @@
-import { ChangeEvent } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { IndexLoaderData, IndexPageTab } from '../../utils/types';
-import SearchBar from '../../components/UI/SearchBar';
+import InputControl from '../../components/UI/InputControl';
 import Sorting from './control-panel/Sorting';
 import BookFiltering from './control-panel/BookFiltering';
 import styles from './ControlPanel.module.scss';
 
-function dummyOnChange(e: ChangeEvent<HTMLInputElement>) {
-    console.log(e.target.value);
+function dummyOnChange(value: string) {
+    console.log(value);
+}
+
+function dummyOnCancel() {
+    console.log('Filter string cleared');
 }
 
 export default function ControlPanel() {
@@ -15,11 +18,15 @@ export default function ControlPanel() {
 
     return (
         <div className={styles.cont}>
-            <SearchBar 
-                placeholder={`Start typing ${tab === IndexPageTab.authors ? 'name' : 'title'}...`} 
-                className={styles.search}
-                onChange={dummyOnChange}
-            />
+            <div className={styles.search}>
+                <label htmlFor="itemSearchBar">Search {tab === IndexPageTab.authors ? 'authors' : 'books'}</label>
+                <InputControl 
+                    id="itemSearchBar"
+                    placeholder={`Start typing ${tab === IndexPageTab.authors ? 'name' : 'title'}...`} 
+                    onChange={dummyOnChange}
+                    onCancel={dummyOnCancel}
+                />
+            </div>
 
             <Sorting tab={tab} />
             
