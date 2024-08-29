@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './preview.module.scss';
+import styles from './PreviewWrapper.module.scss';
 
 export default function Preview({url, children, className=''}: {
     url?: string,

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
-import { PATHNAMES } from '../../utils/consts';
-import styles from './TabPanel.module.scss';
+import { PATHNAMES } from '../../../utils/consts';
+import styles from './index.module.scss';
 
 export default function TabPanel() {
     return (

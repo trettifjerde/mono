@@ -1,9 +1,9 @@
 import { useLoaderData } from 'react-router-dom';
-import { IndexLoaderData, IndexPageTab } from '../../utils/types';
-import InputControl from '../../components/UI/InputControl';
-import Sorting from './control-panel/Sorting';
-import BookFiltering from './control-panel/BookFiltering';
-import styles from './ControlPanel.module.scss';
+import { IndexLoaderData, IndexPageTab } from '../../../utils/types';
+import InputControl from '../../../components/UI/InputControl';
+import Sorting from './Sorting';
+import BookFiltering from './BookFiltering';
+import styles from './index.module.scss';
 
 function dummyOnChange(value: string) {
     console.log(value);

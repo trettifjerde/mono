@@ -1,5 +1,5 @@
-import Preview from './Preview';
-import styles from './skeleton.module.scss';
+import PreviewWrapper from './PreviewWrapper';
+import styles from './SkeletonPreviews.module.scss';
 
 export default function SkeletonPreviews() {
     return (<>
@@ -11,5 +11,5 @@ export default function SkeletonPreviews() {
 }
 
 function SkeletonPreview() {
-    return <Preview className={styles.item} />
+    return <PreviewWrapper className={styles.item} />
 }

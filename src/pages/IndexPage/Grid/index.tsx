@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { Await, useLoaderData } from "react-router-dom"
-import { AuthorPreviewType, BookPreviewType, IndexLoaderData, IndexPageTab } from "../../utils/types";
-import AuthorPreview from "./previews/AuthorPreview";
-import BookPreview from "./previews/BookPreview";
-import SkeletonPreviews from "./previews/SkeletonPreviews";
-import styles from './Grid.module.scss';
+import { AuthorPreviewType, BookPreviewType, IndexLoaderData, IndexPageTab } from "../../../utils/types";
+import AuthorPreview from "./AuthorPreview";
+import BookPreview from "./BookPreview";
+import SkeletonPreviews from "./SkeletonPreviews";
+import styles from './index.module.scss';
 
 export default function Grid() {
     const {tab, items} = useLoaderData() as IndexLoaderData;
