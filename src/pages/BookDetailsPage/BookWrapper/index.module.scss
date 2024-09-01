@@ -1,0 +1,87 @@
+@use '../../../styles/variables' as *;
+
+$hg-height: 15rem;
+$main-height: 10rem;
+
+.book {
+    --inline-indent: #{$gap};
+    --block-indent: #{2 * $gap};
+
+    min-height: 100%;
+    display: grid;
+    grid-template-areas:    'h'
+                            'img'
+                            'desc';
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax($hg-height, auto) auto minmax($main-height, 1fr);
+    gap: var(--inline-indent);
+    align-content: flex-start;
+    background-color: $dark3;
+    padding-bottom: var(--inline-indent);
+
+    &, 
+    img,
+    hgroup,
+    main {
+        border-radius: $border-radius;
+    }
+
+    figure,
+    main {
+        margin-inline: var(--inline-indent);
+    }
+
+    header {
+        grid-area: h;
+        background-color: $dark4;
+        padding: var(--inline-indent);
+    }
+
+    figure {
+        grid-area: img;
+        line-height: 0;
+
+        img {
+            max-width: 100%;
+        }
+    }
+
+    main {
+        grid-area: desc;
+        background-color: $dark5;
+        padding: var(--inline-indent);
+
+        p {
+            animation: var(--fade-in) $trans-dur $trans-fn;
+        }
+    }
+
+    @include screen-medium {
+        --block-indent: #{2.5 * $gap};
+        --inline-indent: #{2 * $gap};
+
+        grid-template-areas:    'h h'
+                                'img desc';
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: minmax($hg-height, auto) 1fr;
+
+        figure {
+            margin-right: 0;
+        }
+        main {
+            margin-left: 0;
+        }
+    }
+
+    @include screen-large {
+        grid-template-areas:    'img h'
+                                'desc desc';
+        grid-template-columns: 1fr 2fr;
+        padding: var(--inline-indent);
+
+        figure,
+        main {
+            margin: 0;
+        }
+    }
+}

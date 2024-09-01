@@ -1,0 +1,31 @@
+{
+  "authors": {
+    "id1": {
+      "bookN": 2,
+      "name": "Sir Pouncealot"
+    }
+  },
+  "bios": {
+    "id1": "He is both a thinker and an doer"
+  },
+  "books": {
+    "id1": {
+      "authorId": "id1",
+      "authorName": "Sir Pouncealot",
+      "numberInStock": 3,
+      "price": 2.99,
+      "title": "How to meow"
+    },
+    "id2": {
+      "authorId": "id1",
+      "authorName": "Sir Pouncealot",
+      "numberInStock": 0,
+      "price": 3.99,
+      "title": "How to woof"
+    }
+  },
+  "descriptions": {
+    "id1": "A full guide",
+    "id2": "Be the master of woof"
+  }
+}

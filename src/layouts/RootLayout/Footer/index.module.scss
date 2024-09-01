@@ -1,0 +1,16 @@
+@use '../../../styles/variables' as *;
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $dark5;
+    font-size: .75rem;
+    padding: (2 * $main-inline-padding) $main-inline-padding;
+
+    a {
+        color: $dark6;
+        text-decoration: underline dotted $dark6;
+        text-underline-offset: 3px;
+    }
+}

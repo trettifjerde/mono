@@ -1,6 +1,8 @@
 @use './variables' as *;
 
 :root {
+  --fade-in: fade-in;
+
   line-height: $line-hight;
 
   font-weight: 400;
@@ -10,7 +12,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  background-color: $dark1;
+  background-color: $dark2;
   color: $light4;
 }
 
@@ -20,9 +22,19 @@
   box-sizing: border-box;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 500;
+  line-height: 1.25;
+}
+
 a {
   color: inherit;
   text-decoration: none;
+  transition: color $trans-dur $trans-fn;
 }
 
 input,
@@ -92,9 +104,29 @@ label {
   cursor: pointer;
 }
 
-#root {
+.shimmer {
   position: relative;
-  max-width: $max-width;
-  margin-inline: auto;
-  padding-inline: $gap;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(90deg, transparent 33%, $light1-trans 50%, transparent 67%);
+    background-size: 300% 100%;
+    animation: shimmer 1s ease-in-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position-x: 100%;
+  }
+  to {
+    background-position-x: 0%;
+  }
+}
+
+@keyframes fade-in {
+  from {opacity: 0%;}
+  to {opacity: 100%;}
 }

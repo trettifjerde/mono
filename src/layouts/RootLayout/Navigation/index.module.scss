@@ -1,0 +1,13 @@
+@use '../../../styles/variables' as *;
+
+.nav {    
+    ul {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $gap;
+        max-width: $max-width * 1.125;
+        margin-inline: auto;
+    }
+}

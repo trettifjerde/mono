@@ -1,5 +1,13 @@
-export const PATHNAMES = {
-    index: '/',
-    authors: '/authors',
-    books: '/books'
+export enum Pathnames {
+    index = "",
+    authors = "authors",
+    books = "books",
+    new = "new",
+    bookId = "bookId",
+    authorId = "authorId"
+};
+
+export enum IndexPageTabs { 
+    books, 
+    authors 
 };

@@ -18,9 +18,10 @@ $dark6: #6B728E;
 // $light3: #d7d4ee;
 $light1: #B1B2FF;
 $light2: #AAC4FF;
-$light3: #D2DAFF;
+// $light3: #D2DAFF;
+$light3: #9ba4cd;
 $light4: #EEF1FF;
-$light1-trans: rgba(177, 178, 255, 0.5);
+$light1-trans: rgba(177, 178, 255, 0.25);
 
 $line-hight: 1.5;
 $input-line-height: 1.25;
@@ -28,14 +29,21 @@ $input-line-height: 1.25;
 $border-width: 2px;
 $outline-width: 2px;
 $border-radius: 4px;
+
 $gap: 1rem;
 $el-padding: .5rem;
 $input-padding: .5rem;
+$main-inline-padding: 1rem;
+
+$p-margin: .75rem;
+
 $btn-std: calc(1rem * $input-line-height + 2 * $border-width + 2 * $input-padding);
+
 $max-width: 70rem;
 
-$breakpoint-m: 48rem;
+$breakpoint-m: 40rem;
 $breakpoint-l: 64rem;
+$breakpoint-xl: 80rem;
 
 $trans-dur: .2s;
 $trans-fn: ease-in-out;
@@ -48,6 +56,12 @@ $trans-fn: ease-in-out;
     }
 }
 
+@mixin min-width($breakpoint) {
+    @media (min-width: $breakpoint) {
+        @content;
+    }
+}
+
 @mixin screen-medium {
     @media (min-width: $breakpoint-m) {
         @content;
@@ -56,6 +70,12 @@ $trans-fn: ease-in-out;
 
 @mixin screen-large {
     @media (min-width: $breakpoint-l) {
+        @content;
+    }
+}
+
+@mixin screen-extra-large {
+    @media (min-width: $breakpoint-xl) {
         @content;
     }
 }
