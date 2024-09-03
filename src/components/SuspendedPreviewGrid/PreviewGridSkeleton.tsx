@@ -1,8 +1,11 @@
 import PreviewGrid from '../PreviewGrid';
 import PreviewItem from '../PreviewGrid/PreviewItem';
 
-export default function Skeleton() {
+export default function PreviewGridSkeleton() {
     return (<PreviewGrid skeleton>
-        <PreviewItem  />
+        <PreviewItem />
+        <PreviewItem />
+        <PreviewItem />
+        <PreviewItem />
     </PreviewGrid>)
 }

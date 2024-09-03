@@ -1,26 +1,16 @@
 @use '../../styles/variables' as *;
 
 $item-grid-dimens: 16rem;
-$grid-gap: 2 * $gap;
 $scrollbar-extra: 1rem;
 
-@mixin col-breakpoint($col-n) {
-    @include min-width($scrollbar-extra + $col-n * $item-grid-dimens + ($col-n - 1) * $grid-gap + 2 * $main-inline-padding) {
-        --col-n: #{$col-n};
-    }
-}
 
 .grid {
     --col-n: 1;
     display: grid;
-    grid-template-columns: repeat(var(--col-n), minmax(auto, $item-grid-dimens));
-    justify-content: space-evenly;
-    gap: $grid-gap;
-    margin-block: $grid-gap;
-
-    @include col-breakpoint(2);
-    @include col-breakpoint(3);
-    @include col-breakpoint(4);
+    grid-template-columns: repeat(auto-fill, $item-grid-dimens);
+    grid-auto-rows: $item-grid-dimens;
+    justify-content: center;
+    gap: $double-gap;
 }
 
 .empty {
@@ -36,7 +26,6 @@ $scrollbar-extra: 1rem;
 
 .skeleton {
     @extend .grid;
-
     max-height: $item-grid-dimens;
     overflow: hidden;
 }

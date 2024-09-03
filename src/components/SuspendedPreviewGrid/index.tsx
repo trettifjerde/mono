@@ -1,6 +1,6 @@
 import SuspendedView from "../SuspendedView";
-import Skeleton from "./Skeleton";
-import Reloader from "./Reloader";
+import PreviewGridSkeleton from "./PreviewGridSkeleton";
+import PreviewGridReloader from "./PreviewGridReloader";
 
 export default function SuspendedPreviewGrid<T>({promise, Grid}: {
     promise: Promise<T>,
@@ -9,8 +9,8 @@ export default function SuspendedPreviewGrid<T>({promise, Grid}: {
 
     return <SuspendedView 
         promise={promise}
-        Fallback={Skeleton}
+        ErrorBoundary={PreviewGridReloader}
         Component={Grid}
-        ErrorBoundary={Reloader}
+        Fallback={PreviewGridSkeleton}
     />
 }

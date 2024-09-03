@@ -31,6 +31,7 @@ $outline-width: 2px;
 $border-radius: 4px;
 
 $gap: 1rem;
+$double-gap: 2 * $gap;
 $el-padding: .5rem;
 $input-padding: .5rem;
 $main-inline-padding: 1rem;
@@ -39,7 +40,7 @@ $p-margin: .75rem;
 
 $btn-std: calc(1rem * $input-line-height + 2 * $border-width + 2 * $input-padding);
 
-$max-width: 70rem;
+$max-width: 75rem;
 
 $breakpoint-m: 40rem;
 $breakpoint-l: 64rem;

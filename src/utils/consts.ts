@@ -6,8 +6,3 @@ export enum Pathnames {
     bookId = "bookId",
     authorId = "authorId"
 };
-
-export enum IndexPageTabs { 
-    books, 
-    authors 
-};

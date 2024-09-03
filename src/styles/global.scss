@@ -113,7 +113,16 @@ label {
     inset: 0;
     background-image: linear-gradient(90deg, transparent 33%, $light1-trans 50%, transparent 67%);
     background-size: 300% 100%;
+    border-radius: inherit;
     animation: shimmer 1s ease-in-out infinite;
+  }
+}
+
+.link {
+    color: $light1;
+
+  @include hover {
+      color: $light2;
   }
 }
 

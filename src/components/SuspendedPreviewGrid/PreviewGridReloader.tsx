@@ -1,6 +1,6 @@
 import { useAsyncError, useRevalidator } from "react-router-dom";
 import PreviewGrid from "../PreviewGrid";
-import SkeletonPreviews from "./Skeleton";
+import SkeletonPreviews from "./PreviewGridSkeleton";
 
 export default function Reloader() {
 
