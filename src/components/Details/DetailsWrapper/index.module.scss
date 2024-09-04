@@ -1,4 +1,4 @@
-@use '../../styles/variables' as *;
+@use '../../../styles/variables' as *;
 
 $manage-btn-dimens: 4rem;
 
@@ -20,6 +20,7 @@ $manage-btn-dimens: 4rem;
 
 .base {
     --inline-indent: #{$gap};
+    --manage-btn-dimens: #{$manage-btn-dimens};
 
     @extend %border;
 
@@ -27,7 +28,6 @@ $manage-btn-dimens: 4rem;
     align-content: flex-start;
     background-color: $dark3;
     padding-bottom: var(--inline-indent);
-    row-gap: var(--inline-indent);
     overflow: hidden;
 
     h1 {
@@ -40,30 +40,33 @@ $manage-btn-dimens: 4rem;
         @extend %border;
 
         grid-area: h;
-        background-color: $dark4;
         display: flex;
-        flex-flow: row wrap;
+        flex-direction: column;
+        justify-content: center;
+        background-color: $dark4;
         
         hgroup {
             @extend %fade-in;
-            flex-grow: 1;
-            flex-basis: 80%;
             padding: var(--inline-indent);
         }
-        
-        menu {
-            @extend %fade-in;
-            flex-grow: 1;
-            flex-basis: $manage-btn-dimens;
-            list-style-type: none;
-            display: flex;
-            flex-flow: row wrap;
-            align-content: space-between;
-            justify-content: space-between;
+    }
 
-            li {
-                width: $manage-btn-dimens;
-                height: $manage-btn-dimens;
+    menu {
+        grid-area: btns;
+        
+        list-style-type: none;
+        display: grid;
+        grid-auto-columns: minmax($manage-btn-dimens, auto);
+        grid-auto-rows: minmax($manage-btn-dimens, auto);
+        justify-content: space-between;
+        background-color: $dark4;
+
+        li {
+            aspect-ratio: 1/1;
+
+            &>* {
+                @extend %fade-in;
+                width: 100%;
             }
         }
     }

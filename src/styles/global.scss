@@ -2,6 +2,7 @@
 
 :root {
   --fade-in: fade-in;
+  --slide-down: slide-down;
 
   line-height: $line-hight;
 
@@ -97,6 +98,11 @@ label {
   cursor: pointer;
 }
 
+label {
+  line-height: 2;
+  font-weight: 400;
+}
+
 .shimmer {
   position: relative;
 
@@ -104,7 +110,7 @@ label {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: linear-gradient(90deg, transparent 33%, $light1-trans 50%, transparent 67%);
+    background-image: linear-gradient(90deg, transparent 33%, $light-trans 50%, transparent 67%);
     background-size: 300% 100%;
     border-radius: inherit;
     animation: shimmer 1s ease-in-out infinite;
@@ -135,6 +141,15 @@ label {
 @keyframes fade-in {
   from {opacity: 0%;}
   to {opacity: 100%;}
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-25%);
+  }
+  to {
+    transform: translate(0%);
+  }
 }
 
 %input-btn-clear {

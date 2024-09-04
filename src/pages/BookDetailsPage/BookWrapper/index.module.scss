@@ -3,11 +3,13 @@
 $main-height: 10rem;
 
 .book {
-    grid-template-areas:    'h h'
-                            'img info'
+    grid-template-areas:    'h btns'
+                            'img img'
+                            'info info'
                             'desc desc';
-    grid-auto-columns: 1fr 1fr;
-    grid-auto-rows: auto auto minmax($main-height, auto) minmax($main-height, auto);
+    grid-auto-columns: 1fr auto;
+    grid-auto-rows: auto auto minmax($main-height, 1fr) minmax($main-height, auto);
+    row-gap: var(--inline-indent);
         
     h5 {
         font-size: 1rem;
@@ -21,23 +23,18 @@ $main-height: 10rem;
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        margin-left: 0;
-    }
-
-    figure {
-        margin-right: 0;
     }
 
     @include screen-medium {
-        grid-template-areas:    'h info'
-                                'desc img';
+        grid-template-areas:    'btns h info'
+                                'desc desc img';
 
-        grid-auto-columns: 2fr 1fr;
+        grid-auto-columns: auto 2fr 1fr;
         grid-auto-rows: auto minmax($main-height, auto);
 
         aside {
             background-color: $dark4;
-            margin-right: 0;
+            margin-inline: 0;
             padding-block: 0;
         }
 
@@ -47,6 +44,12 @@ $main-height: 10rem;
         }
         
         main {
+            margin-right: 0;
+        }
+    }
+
+    @include screen-large {
+        figure {
             margin-right: 0;
         }
     }

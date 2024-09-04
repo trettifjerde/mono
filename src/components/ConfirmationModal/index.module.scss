@@ -1,0 +1,41 @@
+@use '../../styles/variables' as *;
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: $pale-trans;
+    z-index: 0;
+    animation: var(--fade-in) $trans-dur $trans-fn;
+}
+
+.inner {
+    width: fit-content;
+    min-width: 20%;
+    padding: $double-gap 2*$double-gap;
+    background-color: $dark1;
+    border-radius: $border-radius;
+    z-index: 1;
+    text-align: center;
+    animation: var(--slide-down) $trans-dur ease-out;
+}
+
+.message {
+    font-size: 1.25rem;
+    margin-block: $double-gap;
+}
+
+.btns {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    gap: $gap;
+}

@@ -20,7 +20,7 @@ function TabLink({to, children}: {to: string, children: ReactNode}) {
             relative="path"
             className={({isActive}) => isActive ? styles.active : ''}
         >
-            {children}
+            <h2>{children}</h2>
         </NavLink>
     )
 }

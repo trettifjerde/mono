@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { Book } from "../../../services/BookService";
 import { makeAbsolutePath } from "../../../utils/helpers";
 import { Pathnames } from "../../../utils/consts";
-import { DetailsHeader, DetailsWrapper } from "../../../components/DetailsWrapper";
+import DetailsWrapper from "../../../components/Details/DetailsWrapper";
+import DetailsMenu from "../../../components/Details/DetailsMenu";
+import { DetailsHeader } from "../../../components/Details/DetailsHeader";
 import DefaultBookImage from '../../../assets/800x800.webp';
 import styles from './index.module.scss';
 
@@ -33,8 +35,9 @@ export default function BookWrapper({children, book, skeleton=false}: {
                     {book.authorName}
                 </Link>}
             </h5>
-            
         </DetailsHeader>
+
+        <DetailsMenu id={book?.id} />
 
         <aside>
             {children}

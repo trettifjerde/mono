@@ -21,7 +21,9 @@ $light2: #AAC4FF;
 // $light3: #D2DAFF;
 $light3: #9ba4cd;
 $light4: #EEF1FF;
-$light1-trans: rgba(177, 178, 255, 0.25);
+$light-trans: rgba(177, 178, 255, 0.5);
+$pale-trans: rgba(155, 164, 205, 0.5);
+$dark-trans: rgba(58, 59, 77, 0.85);
 
 $line-hight: 1.5;
 $input-line-height: 1.25;
@@ -32,8 +34,7 @@ $border-radius: 4px;
 
 $gap: 1rem;
 $double-gap: 2 * $gap;
-$el-padding: .5em;
-$input-padding: .5em;
+$input-padding: .75em;
 $main-inline-padding: 1rem;
 
 $p-margin: .75rem;

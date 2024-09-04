@@ -3,38 +3,39 @@
 $main-height: 10rem;
 
 .author {
-    grid-template-areas:    'h'
-                            'img'
-                            'desc'
-                            'info';
-    grid-auto-columns: 1fr;
+    grid-template-areas:    'h btns'    
+                            'img img'
+                            'desc desc'
+                            'info info';
+    grid-auto-columns: 1fr auto;
     grid-auto-rows: auto auto minmax($main-height, auto) 1fr;
+    row-gap: var(--inline-indent);
 
     aside {
         background-color: $dark2;
     }
 
     @include screen-medium {
-        grid-template-areas:    'h h'
-                                'img desc'
-                                'info info';
-        grid-auto-columns: 1fr 1fr;
+        grid-template-areas:    'h h btns'
+                                'img desc desc'
+                                'info info info';
+        grid-auto-columns: 1fr 1fr auto;
         grid-auto-rows: auto 1fr auto;
-        column-gap: var(--inline-indent);
 
         figure {
             margin-right: 0;
         }
-
-        main {
-            margin-left: 0;
-        }
     }
 
     @include screen-large {
-        grid-template-areas:    'img h'
-                                'img desc'
-                                'info info';
-        grid-auto-columns: 1fr 2fr;
+        grid-template-areas:    'img h btns'
+                                'img desc desc'
+                                'info info info';
+        grid-auto-columns: 1fr 2fr auto;
+
+        header,
+        main {
+            margin-left: var(--inline-indent);
+        }
     }
 }
