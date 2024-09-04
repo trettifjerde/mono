@@ -24,12 +24,5 @@
         top: 0;
         right: 0;
         height: 100%;
-        aspect-ratio: 1/1;
-        background-color: $light1;
-        color: $dark3;
-
-        @include hover {
-            color: $light4;
-        }
     }
 }

@@ -5,7 +5,7 @@
 }
 
 .price {
-    font-size: 2rem;
+    font-size: 2.5rem;
 }
 
 .stock {
@@ -15,24 +15,7 @@
 
 .buy {
     display: inline-block;
-    font-size: 1rem;
-    margin-left: 0.5rem;
-    margin-top: 0.5rem;
-
-    &:disabled {
-        background-color: $dark6;
-        color: $light3;
-        cursor: not-allowed;
-    }
-
-    i {
-        margin-right: 0.5rem;
-    }
-
-    @include hover {
-        &:not(:disabled) {
-            background-color: $light2;
-            color: $dark3;
-        }
-    }
+    font-size: 1.125rem;
+    margin-left: 0.5em;
+    margin-top: 0.5em;
 }

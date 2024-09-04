@@ -37,30 +37,17 @@ a {
   transition: color $trans-dur $trans-fn;
 }
 
-input,
-button {
+input {
+  @extend %input-btn-clear;
+
+  width: 100%;
   outline: $outline-width solid transparent;
   line-height: $input-line-height;
   padding: $input-padding;
-  border: $border-width solid transparent;
-  border-radius: $border-radius;
   background-color: $dark3;
-  color: $light4;
-  font-family: $main-font;
-  font-size: 1rem;
-  transition-duration: $trans-dur;
-  transition-timing-function: $trans-fn;
-  transition-property: color, background-color, opacity, visibility, border-color, outline-color;
 
   &:focus {
     outline-color: $light1;
-  }
-}
-
-input {
-  width: 100%;
-
-  &:focus {
     background-color: $dark2;
   }
 
@@ -68,35 +55,41 @@ input {
     color: $dark6;
   }
 
+  &[type=checkbox] {
+      appearance: none;
+      font-family: $icon-font;
+      font-size: .75rem;
+      line-height: 1;
+      width: fit-content;
+      aspect-ratio: 1/1;
+      padding: .25rem;
+      cursor: pointer;
+      color: $light3;
+    
+      &::after {
+        content: $check-icon;
+        transition-property: visibility, opacity;
+        transition-duration: $trans-dur;
+        transition-timing-function: $trans-fn;
+        visibility: hidden;
+        opacity: 0;
+      }
+    
+      &:checked::after {
+        visibility: visible;
+        opacity: 1;
+      }
+  }
+
   @include hover {
     background-color: $dark2;
   }
 }
 
-input[type=checkbox] {
-  appearance: none;
-  font-family: $icon-font;
-  font-size: .75rem;
-  line-height: 1;
-  width: fit-content;
-  aspect-ratio: 1/1;
-  padding: .25rem;
-  cursor: pointer;
-  color: $light3;
+button {
+  @extend %input-btn-clear;
 
-  &::after {
-    content: $check-icon;
-    transition-property: visibility, opacity;
-    transition-duration: $trans-dur;
-    transition-timing-function: $trans-fn;
-    visibility: hidden;
-    opacity: 0;
-  }
-
-  &:checked::after {
-    visibility: visible;
-    opacity: 1;
-  }
+  background-color: transparent;
 }
 
 button,
@@ -138,4 +131,13 @@ label {
 @keyframes fade-in {
   from {opacity: 0%;}
   to {opacity: 100%;}
+}
+
+%input-btn-clear {
+  color: inherit;
+  border: $border-width solid transparent;
+  border-radius: $border-radius;
+  font-family: inherit;
+  font-size: inherit;
+  transition: all $trans-dur $trans-fn;
 }

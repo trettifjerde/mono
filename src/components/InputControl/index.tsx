@@ -1,5 +1,6 @@
 import { ChangeEventHandler, forwardRef, MouseEventHandler, useEffect, useImperativeHandle, useRef } from 'react';
 import styles from './index.module.scss';
+import { IconButton } from '../Buttons';
 
 export type InputControlProps = {
     id: string,
@@ -62,9 +63,11 @@ const InputControl = forwardRef<HTMLInputElement, InputControlProps>(
             onClick={onClick}
             onChange={debouncedOnChange}
         />
-        <button type="button" onClick={cancelInput}>
-            <i className='icon-cross' />
-        </button>
+        <IconButton 
+            icon='icon-cross' 
+            color='light'
+            onClick={cancelInput} 
+        />
     </div>)
 });
 

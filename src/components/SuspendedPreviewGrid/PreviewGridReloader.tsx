@@ -1,6 +1,7 @@
 import { useAsyncError, useRevalidator } from "react-router-dom";
 import PreviewGrid from "../PreviewGrid";
 import SkeletonPreviews from "./PreviewGridSkeleton";
+import { Button } from "../Buttons";
 
 export default function Reloader() {
 
@@ -14,7 +15,7 @@ export default function Reloader() {
         default:
             return <PreviewGrid empty>
                 <div>{error.message}</div>
-                <button onClick={() => revalidate()}>Try again</button>
+                <Button onClick={() => revalidate()}>Try again</Button>
             </PreviewGrid>
     }
     
