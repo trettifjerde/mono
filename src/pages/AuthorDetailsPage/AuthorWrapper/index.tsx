@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Author } from "../../../services/AuthorService";
-import DetailsWrapper from "../../../components/DetailsWrapper";
+import { DetailsWrapper, DetailsHeader } from "../../../components/DetailsWrapper";
 import DefaultBookImage from '../../../assets/800x800.webp';
 import styles from './index.module.scss';
 
@@ -16,11 +16,7 @@ export default function AuthorWrapper({children, author, skeleton=false}: {
         skeleton={skeleton}
         notFound={!author && !skeleton}
     >
-        <header>
-            <hgroup>
-                <h1>{author?.name || (!skeleton && 'Oops!')}</h1>
-            </hgroup>
-        </header>
+        <DetailsHeader heading={author?.name} skeleton={skeleton} />
 
         <aside>
             {children}

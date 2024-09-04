@@ -5,6 +5,9 @@
 }
 
 .square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding-inline: $input-padding;
     aspect-ratio: 1/1;
 }
@@ -29,7 +32,7 @@
 
     @include hover {
         &:not(:disabled) {
-            background-color: $dark2;
+            background-color: $dark3;
             color: $light1;
         }
     }
@@ -43,5 +46,25 @@
         &:not(:disabled) {
             color: $light4;
         }
+    }
+}
+
+.btn.black {
+    background-color: $dark1;
+    color: $light2;
+
+    @include hover {
+        background-color: $dark2;
+        color: $light1;
+    }
+}
+
+.btn.blue {
+    background-color: $light2;
+    color: $dark1;
+
+    @include hover {
+        color: $light4;
+        background-color: $light1;;
     }
 }

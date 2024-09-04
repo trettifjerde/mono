@@ -5,7 +5,11 @@
 }
 
 .price {
-    font-size: 2.5rem;
+    font-size: 8vw;
+
+    @include screen-medium {
+        font-size: 2.5rem;
+    }
 }
 
 .stock {

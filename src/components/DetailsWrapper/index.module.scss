@@ -1,5 +1,7 @@
 @use '../../styles/variables' as *;
 
+$manage-btn-dimens: 4rem;
+
 %border {
     border-radius: $border-radius;
 }
@@ -39,10 +41,30 @@
 
         grid-area: h;
         background-color: $dark4;
-        padding: var(--inline-indent);
-
+        display: flex;
+        flex-flow: row wrap;
+        
         hgroup {
             @extend %fade-in;
+            flex-grow: 1;
+            flex-basis: 80%;
+            padding: var(--inline-indent);
+        }
+        
+        menu {
+            @extend %fade-in;
+            flex-grow: 1;
+            flex-basis: $manage-btn-dimens;
+            list-style-type: none;
+            display: flex;
+            flex-flow: row wrap;
+            align-content: space-between;
+            justify-content: space-between;
+
+            li {
+                width: $manage-btn-dimens;
+                height: $manage-btn-dimens;
+            }
         }
     }
 

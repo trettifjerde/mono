@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
+import { IconLinkButton } from "../Buttons";
 import styles from './index.module.scss';
 
-export default function DetailsWrapper({ info, img, children, className = "", skeleton=false, notFound=false }: {
+export function DetailsWrapper({ info, img, children, className = "", skeleton=false, notFound=false }: {
     img: string,
     info: string,
     children?: ReactNode,
@@ -22,4 +23,32 @@ export default function DetailsWrapper({ info, img, children, className = "", sk
             <p>{info}</p>
         </main>
     </article>
+}
+
+export function DetailsHeader({heading, skeleton, children}: {
+    skeleton: boolean,
+    heading?: string, 
+    children?: ReactNode
+}) {
+    return <header>
+
+        <DetailsMenu hollow={!heading && skeleton} />
+
+        <hgroup>
+            <h1>{heading || (!skeleton && 'Oops!')}</h1>
+
+            {children}
+        </hgroup>        
+    </header>
+}
+
+function DetailsMenu({hollow=true}: {hollow?: boolean}) {
+    return <menu>
+        <li>
+            {!hollow && <IconLinkButton to="edit" icon="icon-edit" color="blue"/>}
+        </li>
+        <li>
+            {!hollow && <IconLinkButton to="delete" icon="icon-bin" color="black"/>}
+        </li>
+    </menu>
 }

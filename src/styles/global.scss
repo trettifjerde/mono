@@ -112,16 +112,15 @@ label {
 }
 
 .link {
-    color: $light1;
+    color: $light2;
 
   @include hover {
-      color: $light2;
+      color: $light1;
   }
 }
 
 .link-btn {
   @extend %input-btn-clear;
-  
 }
 
 @keyframes shimmer {

@@ -1,9 +1,10 @@
 import { useLoaderData, Link } from "react-router-dom";
 import { AuthorLoaderData } from "../../utils/loaders";
+import { Author } from "../../services/AuthorService";
 import SuspendedEntry from "../../components/SuspendedEntry";
-import AuthorDetails from "./AuthorDetails";
 import AuthorWrapper from "./AuthorWrapper";
 import PreviewGridSkeleton from "../../components/SuspendedPreviewGrid/PreviewGridSkeleton";
+import BookPreviewGrid from "../../components/BookPreviewGrid";
 
 export default function AuthorDetailsPage() {
     const {data} = useLoaderData() as AuthorLoaderData;
@@ -14,6 +15,13 @@ export default function AuthorDetailsPage() {
         Fallback={AuthorSkeleton}
         ErrorBoundary={AuthorNotFound}
     />
+}
+
+function AuthorDetails({data: author}: {data: Author}) {
+
+    return <AuthorWrapper author={author}>
+        <BookPreviewGrid data={author.books} />
+    </AuthorWrapper>
 }
 
 function AuthorSkeleton() {
