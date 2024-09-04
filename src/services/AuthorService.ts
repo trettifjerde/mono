@@ -32,6 +32,19 @@ export default class AuthorService extends DataService {
                 bio
             }
         })
+        .then(author => this
+            .getAuthorBooks(author.id, author.bookN)
+            .then(books => {
+                const {bookN, ...authorInfo} = author;
+                return {
+                    ...authorInfo,
+                    books
+                }
+            })
+            .catch(() => {
+                throw new Error('Author not found')
+            })
+        )
     }
     getAuthorBooks(authorId: string, bookN: number) {
         return this.getBookPreviews({

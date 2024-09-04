@@ -3,6 +3,7 @@ import { BookLoaderData } from "../../utils/loaders";
 import SuspendedEntry from "../../components/SuspendedEntry";
 import BookDetails from "./BookDetails";
 import BookWrapper from "./BookWrapper";
+import { LinkButton } from "../../components/Buttons";
 
 export default function BookDetailsPage() {
     const {data} = useLoaderData() as BookLoaderData;
@@ -20,5 +21,7 @@ function BookSkeleton() {
 }
 
 function BookNotFound() {
-    return <BookWrapper />
+    return <BookWrapper>
+        <LinkButton className="link-btn" to="../../">Go browse other books</LinkButton>
+    </BookWrapper>
 }

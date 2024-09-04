@@ -6,7 +6,6 @@ import { Pathnames } from "../../../utils/consts";
 import DetailsWrapper from "../../../components/DetailsWrapper";
 import DefaultBookImage from '../../../assets/800x800.webp';
 import styles from './index.module.scss';
-import { LinkButton } from "../../../components/Buttons";
 
 export default function BookWrapper({children, book, skeleton }: {
     book?: Book,
@@ -37,9 +36,7 @@ export default function BookWrapper({children, book, skeleton }: {
         </header>
 
         <aside>
-            {children || (
-                !skeleton && <LinkButton className="link-btn" to="../../">Go browse other books</LinkButton>
-            )}
+            {children}
         </aside>
     </DetailsWrapper>
 }
