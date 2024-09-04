@@ -119,6 +119,11 @@ label {
   }
 }
 
+.link-btn {
+  @extend %input-btn-clear;
+  
+}
+
 @keyframes shimmer {
   from {
     background-position-x: 100%;

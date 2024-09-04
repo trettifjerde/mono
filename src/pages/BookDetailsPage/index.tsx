@@ -1,8 +1,8 @@
 import { useLoaderData } from "react-router-dom";
 import { BookLoaderData } from "../../utils/loaders";
 import SuspendedEntry from "../../components/SuspendedEntry";
+import BookDetails from "./BookDetails";
 import BookWrapper from "./BookWrapper";
-import { BookDetails } from "./BookDetails/BookDetails";
 
 export default function BookDetailsPage() {
     const {data} = useLoaderData() as BookLoaderData;
@@ -11,9 +11,14 @@ export default function BookDetailsPage() {
         promise={data}
         Component={BookDetails} 
         Fallback={BookSkeleton}
+        ErrorBoundary={BookNotFound}
     />
 }
 
 function BookSkeleton() {
+    return <BookWrapper skeleton />
+}
+
+function BookNotFound() {
     return <BookWrapper />
 }

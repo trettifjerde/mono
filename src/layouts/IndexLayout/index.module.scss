@@ -1,0 +1,8 @@
+@use '../../styles/variables' as *;
+
+.cont {
+    margin-top: $double-gap;
+    border-radius: $border-radius;
+    padding: $double-gap $main-inline-padding;
+    background-color: $dark1;
+}

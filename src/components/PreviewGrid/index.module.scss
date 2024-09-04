@@ -3,9 +3,7 @@
 $item-grid-dimens: 16rem;
 $scrollbar-extra: 1rem;
 
-
 .grid {
-    --col-n: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, $item-grid-dimens);
     grid-auto-rows: $item-grid-dimens;

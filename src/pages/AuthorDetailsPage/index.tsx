@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, Link } from "react-router-dom";
 import { AuthorLoaderData } from "../../utils/loaders";
 import SuspendedEntry from "../../components/SuspendedEntry";
 import AuthorDetails from "./AuthorDetails";
@@ -12,11 +12,18 @@ export default function AuthorDetailsPage() {
         promise={data}
         Component={AuthorDetails}
         Fallback={AuthorSkeleton}
+        ErrorBoundary={AuthorNotFound}
     />
 }
 
 function AuthorSkeleton() {
-    return <AuthorWrapper>
+    return <AuthorWrapper skeleton>
         <PreviewGridSkeleton />
+    </AuthorWrapper>
+}
+
+function AuthorNotFound() {
+    return <AuthorWrapper >
+        <Link to="../">Go browse other authors</Link>
     </AuthorWrapper>
 }

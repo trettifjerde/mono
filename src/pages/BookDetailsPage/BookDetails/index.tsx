@@ -1,9 +1,10 @@
-import { TextIconButton } from "../../../components/Buttons";
 import { Book } from "../../../services/BookService";
 import BookWrapper from "../BookWrapper";
+import { TextIconButton } from "../../../components/Buttons";
 import styles from './index.module.scss';
 
-export function BookDetails({data: book}: {data: Book}) {
+export default function BookDetails({data: book}: {data: Book}) {
+    
     return <BookWrapper 
         book={book}
     >

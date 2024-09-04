@@ -3,6 +3,7 @@ import { Pathnames } from "./utils/consts";
 import { authorLoader, authorsPageLoader, bookLoader, indexPageLoader } from "./utils/loaders";
 
 import RootLayout from "./layouts/RootLayout";
+import RootError from "./layouts/RootLayout/RootError";
 import IndexLayout from "./layouts/IndexLayout";
 import DetailsLayout from "./layouts/DetailsLayout";
 
@@ -10,8 +11,6 @@ import IndexPage from "./pages/IndexPage";
 import AuthorsPage from "./pages/AuthorsPage";
 import BookDetailsPage from "./pages/BookDetailsPage";
 import AuthorDetailsPage from "./pages/AuthorDetailsPage";
-import RootError from "./layouts/RootLayout/RootError";
-import DetailsNotFound from "./layouts/DetailsLayout/DetailsNotFound";
 
 export default function App() {
 
@@ -40,7 +39,6 @@ const router = createBrowserRouter([
       },
       {
         element: <DetailsLayout />,
-        errorElement: <DetailsNotFound />,
         children: [
           {
             path: Pathnames.books,

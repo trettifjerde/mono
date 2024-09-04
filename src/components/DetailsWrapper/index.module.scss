@@ -80,7 +80,7 @@
         grid-area: info;
         padding: var(--inline-indent);
 
-         & > div {
+         & > * {
             @extend %fade-in;
          }
     }
@@ -91,5 +91,11 @@
 
     @include screen-large {
         padding: var(--inline-indent);
+    }
+}
+
+.bleak {
+    img {
+        filter: opacity(0.25);
     }
 }

@@ -4,19 +4,21 @@ import DetailsWrapper from "../../../components/DetailsWrapper";
 import DefaultBookImage from '../../../assets/800x800.webp';
 import styles from './index.module.scss';
 
-export default function AuthorWrapper({children, author}: {
+export default function AuthorWrapper({children, author, skeleton=false}: {
     children: ReactNode,
-    author?: Author
+    author?: Author,
+    skeleton?: boolean
 }) {
     return <DetailsWrapper 
         img={author?.img || DefaultBookImage}
-        info={author ? (author.bio || 'No biography yet') : ''}
+        info={(author && (author.bio || 'No biography yet' )) || (!skeleton && 'Author not found') || ''}
         className={styles.author}
-        skeleton={!author}
+        skeleton={skeleton}
+        notFound={!author && !skeleton}
     >
         <header>
             <hgroup>
-                <h1>{author?.name || ''}</h1>
+                <h1>{author?.name || (!skeleton && 'Oops!')}</h1>
             </hgroup>
         </header>
 
