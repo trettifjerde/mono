@@ -1,37 +1,21 @@
-import { useLoaderData, Link } from "react-router-dom";
-import { AuthorLoaderData } from "../../utils/loaders";
-import { Author } from "../../services/AuthorService";
-import SuspendedEntry from "../../components/SuspendedEntry";
-import AuthorWrapper from "./AuthorWrapper";
-import PreviewGridSkeleton from "../../components/SuspendedPreviewGrid/PreviewGridSkeleton";
-import BookPreviewGrid from "../../components/BookPreviewGrid";
+import { useContext } from "react";
+import { useParams } from "react-router-dom";
+import { RootStoreContext } from "../../stores/StoreContext";
+import { DefaultBookImgSrc, Pathnames } from "../../utils/consts";
+import DetailsWrapper from "../../layouts/Details/DetailsWrapper";
+import AuthorBookGrid from "./AuthorBookGrid";
+import styles from './index.module.scss';
 
 export default function AuthorDetailsPage() {
-    const {data} = useLoaderData() as AuthorLoaderData;
-
-    return <SuspendedEntry 
-        promise={data}
-        Component={AuthorDetails}
-        Fallback={AuthorSkeleton}
-        ErrorBoundary={AuthorNotFound}
-    />
-}
-
-function AuthorDetails({data: author}: {data: Author}) {
-
-    return <AuthorWrapper author={author}>
-        <BookPreviewGrid data={author.books} />
-    </AuthorWrapper>
-}
-
-function AuthorSkeleton() {
-    return <AuthorWrapper skeleton>
-        <PreviewGridSkeleton />
-    </AuthorWrapper>
-}
-
-function AuthorNotFound() {
-    return <AuthorWrapper >
-        <Link to="../">Go browse other authors</Link>
-    </AuthorWrapper>
+    const {[Pathnames.authorId]: itemId} = useParams() as {[Pathnames.authorId]: string};
+    const {details} = useContext(RootStoreContext).authors;
+    
+    return <DetailsWrapper 
+        currentId={itemId}
+        details={details}
+        className={styles.author}
+        fallbackImg={DefaultBookImgSrc}
+    >
+        <AuthorBookGrid details={details}/>
+    </DetailsWrapper>
 }

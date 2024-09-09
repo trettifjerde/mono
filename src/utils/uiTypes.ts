@@ -1,3 +1,5 @@
+import Entity, { DetailsConstraint as DC, PreviewConstraint as PC } from "./classes/Entity";
+
 export type DropdownOption = {
     id: string,
     text: string
@@ -10,3 +12,9 @@ export type SelectOptionsConfig<T extends DropdownOption> =  {
     getOptions: (arg: string) => Promise<T[] | null>,
     dynamic: true
 };
+
+export type EntityPreview<P extends PC, D extends DC> = Entity<P, D>['preview'];
+
+export type EntityPreviewComponent<P extends PC, D extends DC> = (props: {
+    preview: EntityPreview<P, D>
+}) => JSX.Element;

@@ -1,20 +1,25 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Pathnames } from "./utils/consts";
-import { authorLoader, authorsPageLoader, bookLoader, indexPageLoader } from "./utils/loaders";
 
 import RootLayout from "./layouts/RootLayout";
 import RootError from "./layouts/RootLayout/RootError";
 import IndexLayout from "./layouts/IndexLayout";
-import DetailsLayout from "./layouts/DetailsLayout";
 
 import IndexPage from "./pages/IndexPage";
 import AuthorsPage from "./pages/AuthorsPage";
 import BookDetailsPage from "./pages/BookDetailsPage";
 import AuthorDetailsPage from "./pages/AuthorDetailsPage";
 
+import { useContext } from "react";
+import { RootStoreContext } from "./stores/StoreContext";
+
 export default function App() {
 
-  return <RouterProvider router={router} />
+  const rootStore = useContext(RootStoreContext);
+
+  return <RootStoreContext.Provider value={rootStore}>
+    <RouterProvider router={router} />
+  </RootStoreContext.Provider>
 }
 
 const router = createBrowserRouter([
@@ -27,18 +32,17 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <IndexPage />,
-            loader: indexPageLoader
+            element: <IndexPage />
           },
           {
             path: Pathnames.authors,
-            element: <AuthorsPage />,
-            loader: authorsPageLoader
+            element: <AuthorsPage />
           },
         ]
       },
       {
-        element: <DetailsLayout />,
+        // Details routes - no shared layout
+        // But they share rendering logic and wrapper components from layouts/Details
         children: [
           {
             path: Pathnames.books,
@@ -46,7 +50,6 @@ const router = createBrowserRouter([
               {
                 path: `:${Pathnames.bookId}`,
                 element: <BookDetailsPage />,
-                loader: bookLoader
               }
             ]
           },
@@ -56,7 +59,6 @@ const router = createBrowserRouter([
               {
                 path: `:${Pathnames.authorId}`,
                 element: <AuthorDetailsPage />,
-                loader: authorLoader
               }
             ]
 

@@ -1,59 +1,33 @@
-import { FirebaseAuthorPreview, FirebaseAuthorBio, FirebaseKeys } from "../utils/dbTypes";
+import { AuthorDetailsInfo, AuthorPreviewInfo } from "../utils/classes/Author";
+import { FirebaseKeys } from "../utils/dbTypes";
 import DataService from "./DataService";
 
-export default class AuthorService extends DataService {
+export default class AuthorService extends DataService<AuthorPreviewInfo, AuthorDetailsInfo> {
 
-    constructor() {
-        super()
-    }
+    previewsKey = FirebaseKeys.authors;
+    descriptionKey = FirebaseKeys.bios;
 
-    getAuthorPreviews() {
-        return this.getPreviews<FirebaseAuthorPreview>({
-            keys: [FirebaseKeys.authors]
-        })
-    }
-
-    getAuthor(id: string) {
-        return Promise.all([
-            this.fetchDB<FirebaseAuthorPreview>({
-                keys: [FirebaseKeys.authors, id]
-            }),
-            this.fetchDB<FirebaseAuthorBio>({
-                keys: [FirebaseKeys.authorBios, id]
-            })
-        ])
-        .then(([author, bio]) => {
-            if (!author)
-                throw new Error('Author not found')
-
-            return {
-                id,
-                ...author,
-                bio
-            }
-        })
-        .then(author => this
-            .getAuthorBooks(author.id, author.bookN)
-            .then(books => {
-                const {bookN, ...authorInfo} = author;
-                return {
-                    ...authorInfo,
-                    books
-                }
-            })
-            .catch(() => {
-                throw new Error('Author not found')
-            })
-        )
-    }
-    getAuthorBooks(authorId: string, bookN: number) {
+    getAuthorBooks(authorId: string) {
         return this.getBookPreviews({
             orderBy: `"authorId"`,
             startAt: `"${authorId}"`,
-            limitToFirst: bookN.toString()
+            endAt: `"${authorId}"`
+        })
+    }
+
+    override getDetails(id: string) {
+        return Promise.all([
+            this.getDescription(id),
+            this.getAuthorBooks(id)
+        ])
+        .then(([description, books]) => {
+            if (!books)
+                return null;
+
+            return {
+                description: description || '',
+                books: Object.entries(books).map(([id, info]) => ({id, ...info}))
+            }
         })
     }
 }
-
-export type AuthorPreviewType = Awaited<ReturnType<AuthorService['getAuthorPreviews']>>[0];
-export type Author = Awaited<ReturnType<AuthorService['getAuthor']>>

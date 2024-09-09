@@ -1,14 +1,14 @@
-import { useLoaderData } from "react-router-dom";
-import { BookPreviewsLoaderData } from "../../utils/loaders";
-import SuspendedPreviewGrid from "../../components/SuspendedPreviewGrid";
-import BookPreviewGrid from "../../components/BookPreviewGrid";
+import { useContext } from "react";
+import { RootStoreContext } from "../../stores/StoreContext";
+import IndexGrid from "../../layouts/IndexLayout/IndexGrid";
+import BookPreviewItem from "../../components/BookPreviewItem";
 
 export default function IndexPage() {
 
-    const {data} = useLoaderData() as BookPreviewsLoaderData;
+    const {grid} = useContext(RootStoreContext).books;
 
-    return <SuspendedPreviewGrid 
-        promise={data}
-        Grid={BookPreviewGrid} 
-    /> 
+    return <IndexGrid 
+        grid={grid}
+        ItemPreview={BookPreviewItem}
+    />
 }

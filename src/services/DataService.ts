@@ -1,63 +1,103 @@
-import { FirebaseBookPreview, FirebaseKeys } from "../utils/dbTypes";
+import { FirebaseKeys } from "../utils/dbTypes";
+import { DetailsConstraint, PreviewConstraint } from "../utils/classes/Entity";
+import { BookPreviewInfo } from "../utils/classes/Book";
 
-export default abstract class DataService {
+export default abstract class DataService<P extends PreviewConstraint, D extends DetailsConstraint> {
 
     static url = "https://mono-task34-default-rtdb.europe-west1.firebasedatabase.app/";
-    
-    static makeUrl(keys: DBURLConfig['keys'], params: DBURLConfig['params']) {
+    static makeUrl({ keys, params }: DBURLConfig) {
         let url = `${DataService.url}${keys ? keys.join('/') : ''}.json`;
 
-        if (params) 
+        if (params)
             url += `?${new URLSearchParams(params).toString()}`;
-            
+
         return url;
     }
 
-    constructor() { }
+    abstract previewsKey: FirebaseKeys;
+    abstract descriptionKey: FirebaseKeys;
+    abstract getDetails(id: string) : Promise<D | null>;
 
-    protected async fetchDB<T>({init, keys, params}: DBFetchInit) {
+    protected async fetchDB<T>({ init, keys, params }: DBFetchInit) {
 
         return fetch(
-            DataService.makeUrl(keys, params),
+            DataService.makeUrl({ keys, params }),
             init
         )
         .then(res => res
             .json()
             .then(data => {
                 if (res.ok)
-                    return data as T|null;
+                    return data as T | null;
 
                 throw new Error(`Fetch completed successfully, but return an error code ${res.status} with data ${data}`);
             }))
     }
 
-    protected getPreviews<T>(init: DBFetchInit) {
+    getPreviews(params?: DBURLParams) {
+        return this.fetchDB<{ [id: string]: P }>({
+            keys: [this.previewsKey],
+            params
+        })
+        .then(prevs => {
 
-        return this.fetchDB<{[id: string]: T}>(init)
-            .then(data => {
-                if (!data)
-                    return [];
-                return Object
-                    .entries(data)
-                    .map(([id, info]) => ({id, ...info}))
-            })
+            if (!prevs)
+                return [];
+
+            const fetchedItems = Object
+                .entries(prevs)
+                .map(([id, previewInfo]) => ({
+                    id,
+                    previewInfo,
+                }))
+                .sort((a, b) => a.id < b.id ? -1 : 1);
+
+            return fetchedItems;
+        })
     }
 
-    getBookPreviews(params?: DBFetchInit['params']) {
-        return this.getPreviews<FirebaseBookPreview>({
+    getPreview(id: string) {
+        return this.fetchDB<P>({
+            keys: [this.previewsKey, id]
+        })
+    }
+
+    getDescription(id: string) {
+        return this.fetchDB<string>({
+            keys: [this.descriptionKey, id]
+        })
+    }
+
+    getFullInfo(id: string) {
+        return Promise.all([
+            this.getPreview(id),
+            this.getDetails(id)
+        ])
+        .then(([previewInfo, detailsInfo]) => {
+            if (!previewInfo || !detailsInfo)
+                return null;
+
+            return {
+                id,
+                previewInfo,
+                detailsInfo,
+            };
+        })
+    }
+
+    getBookPreviews(params?: DBURLParams) {
+        return this.fetchDB<{ [id: string]: BookPreviewInfo }>({
             keys: [FirebaseKeys.books],
             params
         })
     }
-
 }
 
-export type BookPreviewType = Awaited<ReturnType<DataService['getBookPreviews']>>[0];
+export type DataServiceConstructor<P extends PreviewConstraint, D extends DetailsConstraint> = new () => DataService<P, D>;
 
-
+type DBURLParams = Record<string, string>;
 type DBURLConfig = {
-    keys?: string[], 
-    params?: Record<string, string>
-
+    keys?: string[],
+    params?: DBURLParams
 }
-type DBFetchInit = DBURLConfig & {init?: RequestInit};
+type DBFetchInit = DBURLConfig & { init?: RequestInit };

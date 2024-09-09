@@ -127,6 +127,13 @@ label {
 
 .link-btn {
   @extend %input-btn-clear;
+  display: inline-block;
+}
+
+.link-center {
+  display: block;
+  width: fit-content;
+  margin-inline: auto;
 }
 
 @keyframes shimmer {

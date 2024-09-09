@@ -1,0 +1,131 @@
+@use '../../../styles/variables' as *;
+
+$manage-btn-dimens: 4rem;
+
+%border {
+    border-radius: $border-radius;
+}
+
+%margined {
+    margin-inline: var(--inline-indent);
+
+    @include screen-large {
+        margin: 0;
+    }
+}
+
+%fade-in {
+    animation: var(--fade-in) $trans-dur $trans-fn;
+}
+
+.base {
+    --inline-indent: #{$gap};
+    --manage-btn-dimens: #{$manage-btn-dimens};
+
+    @extend %border;
+
+    display: grid;
+    align-content: flex-start;
+    background-color: $dark3;
+    padding-bottom: var(--inline-indent);
+
+    h1 {
+        min-height: 1lh;
+        font-size: 2rem;
+        margin-block: 1rem;
+    }
+    
+    header {
+        @extend %border;
+
+        grid-area: head;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: $dark4;
+        
+        hgroup {
+            @extend %fade-in;
+            padding: var(--inline-indent);
+        }
+    }
+
+    menu {
+        grid-area: menu;
+        list-style-type: none;
+        display: grid;
+        grid-auto-columns: minmax($manage-btn-dimens, auto);
+        grid-auto-rows: minmax($manage-btn-dimens, auto);
+        justify-content: space-between;
+        background-color: $dark4;
+
+        li {
+            aspect-ratio: 1/1;
+
+            &>* {
+                @extend %fade-in;
+                width: 100%;
+            }
+        }
+    }
+
+    figure {
+        @extend %margined;
+
+        grid-area: img;
+        line-height: 0;
+        
+        img {
+            @extend %border;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain
+        }
+    }
+
+    main {
+        @extend %border;
+        @extend %margined;
+
+        grid-area: main;
+        display: flex;
+        align-items: center;
+        background-color: $dark5;
+        padding: var(--inline-indent);
+
+        section {
+            width: 100%;
+            @extend %fade-in;
+
+            p {
+                margin-block: $p-margin;
+            }
+        }
+    }
+
+    aside {
+        @extend %margined;
+        @extend %border;
+
+        grid-area: aside;
+        padding: var(--inline-indent);
+
+         & > * {
+            @extend %fade-in;
+         }
+    }
+
+    @include screen-medium {
+        --inline-indent: #{$double-gap};
+    }
+
+    @include screen-large {
+        padding: var(--inline-indent);
+    }
+}
+
+.bleak {
+    img {
+        filter: opacity(0.25);
+    }
+}

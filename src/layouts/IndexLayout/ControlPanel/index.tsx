@@ -20,7 +20,7 @@ export default function ControlPanel() {
     const isAuthorsTab = location.pathname === makeAbsolutePath(Pathnames.authors);
 
     return (
-        <div className={styles.cont}>
+        <div className={styles.panel}>
             <div className={styles.search}>
                 <label htmlFor="itemSearchBar">Search {isAuthorsTab ? 'authors' : 'books'}</label>
                 <InputControl 

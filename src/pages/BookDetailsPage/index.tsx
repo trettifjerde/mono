@@ -1,27 +1,39 @@
-import { useLoaderData } from "react-router-dom";
-import { BookLoaderData } from "../../utils/loaders";
-import SuspendedEntry from "../../components/SuspendedEntry";
+import { useContext } from "react";
+import { useParams, Link } from "react-router-dom";
+import { observer } from "mobx-react-lite";
+import { RootStoreContext } from "../../stores/StoreContext";
+import Book from "../../utils/classes/Book";
+import { DefaultBookImgSrc, Pathnames } from "../../utils/consts";
+import { makeAbsolutePath } from "../../utils/helpers";
+import DetailsWrapper from "../../layouts/Details/DetailsWrapper";
 import BookDetails from "./BookDetails";
-import BookWrapper from "./BookWrapper";
-import { LinkButton } from "../../components/Buttons";
+import styles from './index.module.scss';
 
 export default function BookDetailsPage() {
-    const {data} = useLoaderData() as BookLoaderData;
+    const {[Pathnames.bookId]: bookId} = useParams() as {[Pathnames.bookId]: string};
+    const {details} = useContext(RootStoreContext).books;
     
-    return <SuspendedEntry 
-        promise={data}
-        Component={BookDetails} 
-        Fallback={BookSkeleton}
-        ErrorBoundary={BookNotFound}
-    />
-}
+    return <DetailsWrapper 
+        currentId={bookId}
+        details={details}
+        className={styles.book}
+        fallbackImg={DefaultBookImgSrc}
+        HeaderComponent={BookHeader}
+    >
+        <BookDetails details={details}/>
+    </DetailsWrapper>
+};
 
-function BookSkeleton() {
-    return <BookWrapper skeleton />
-}
+const BookHeader = observer(({item}: {item: Book | null}) => {
+    const info = item?.fullInfo;
 
-function BookNotFound() {
-    return <BookWrapper>
-        <LinkButton className="link-btn" to="../../">Go browse other books</LinkButton>
-    </BookWrapper>
-}
+    return <h5>
+        {info && <Link 
+            to={makeAbsolutePath(Pathnames.authors, info.authorId)} 
+            relative="path"
+            className="link"
+        >
+            {info.authorName}
+        </Link>}
+    </h5>
+});

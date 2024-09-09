@@ -3,67 +3,68 @@
 .btn {
     padding-block: $input-padding;
     padding-inline: $input-padding;
-}
 
-.square {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    aspect-ratio: 1/1;
-}
-
-.rect {
+    &.square {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        aspect-ratio: 1/1;
+    }
     
-    i {
-        margin-right: 0.75 * $input-padding;
+    &.rect {
+        
+        i {
+            margin-right: 0.75 * $input-padding;
+        }
     }
-}
-
-.dark {
-    background-color: $dark3;
-    color: $light4;
-
-    &:disabled {
-        background-color: $dark6;
-        color: $light3;
-        cursor: not-allowed;
+    
+    &.dark {
+        background-color: $dark3;
+        color: $light4;
+    
+        &:disabled {
+            background-color: $dark6;
+            color: $light3;
+            cursor: not-allowed;
+        }
+    
+        @include hover {
+            &:not(:disabled) {
+                background-color: $dark3;
+                color: $light1;
+            }
+        }
     }
-
-    @include hover {
-        &:not(:disabled) {
-            background-color: $dark3;
+    
+    &.light {
+        background-color: $light1;
+        color: $dark3;
+    
+        @include hover {
+            &:not(:disabled) {
+                color: $light4;
+            }
+        }
+    }
+    
+    &.black {
+        background-color: $dark1;
+        color: $light2;
+    
+        @include hover {
+            background-color: $dark2;
             color: $light1;
         }
     }
-}
-
-.light {
-    background-color: $light1;
-    color: $dark3;
-
-    @include hover {
-        &:not(:disabled) {
+    
+    &.blue {
+        background-color: $light2;
+        color: $dark1;
+    
+        @include hover {
             color: $light4;
+            background-color: $light1;;
         }
     }
 }
 
-.btn.black {
-    background-color: $dark1;
-    color: $light2;
-
-    @include hover {
-        background-color: $dark2;
-        color: $light1;
-    }
-}
-
-.btn.blue {
-    background-color: $light2;
-    color: $dark1;
-
-    @include hover {
-        color: $light4;
-        background-color: $light1;;
-    }
-}

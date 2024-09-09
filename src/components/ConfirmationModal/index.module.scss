@@ -20,6 +20,7 @@
 .inner {
     width: fit-content;
     min-width: 20%;
+    max-width: 25rem;
     padding: $double-gap 2*$double-gap;
     background-color: $dark1;
     border-radius: $border-radius;

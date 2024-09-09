@@ -1,0 +1,56 @@
+@use '../../styles/variables' as *;
+
+$main-height: 10rem;
+
+.book {
+    grid-template-areas:    'head menu'
+                            'img img'
+                            'aside aside'
+                            'main main';
+    grid-auto-columns: 1fr auto;
+    grid-auto-rows: auto auto minmax($main-height, 1fr) minmax($main-height, auto);
+    row-gap: var(--inline-indent);
+        
+    h5 {
+        font-size: 1rem;
+        color: $light3;
+        min-height: 1lh;
+        margin-bottom: 0.5em;
+    }
+
+    aside {
+        background-color: $dark2;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    @include screen-medium {
+        grid-template-areas:    'head head aside menu'
+                                'main main img img';
+
+        grid-auto-columns: 2fr auto 1fr auto;
+        grid-auto-rows: auto minmax($main-height, 1fr);
+
+        aside {
+            background-color: $dark4;
+            margin-inline: 0;
+            padding-block: 0;
+        }
+
+        figure {
+            margin-right: var(--inline-indent);
+            margin-left: 0;
+        }
+        
+        main {
+            margin-right: 0;
+        }
+    }
+
+    @include screen-large {
+        figure {
+            margin-right: 0;
+        }
+    }
+}

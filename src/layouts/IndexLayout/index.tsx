@@ -8,7 +8,7 @@ export default function IndexLayout() {
     return (<>
         <TabPanel />
         <ControlPanel />
-        <div className={styles.cont}>
+        <div className={styles.grid}>
             <Outlet />
         </div>
     </>)

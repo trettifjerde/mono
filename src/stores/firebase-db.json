@@ -3,29 +3,42 @@
     "id1": {
       "bookN": 2,
       "name": "Sir Pouncealot"
+    },
+    "id2": {
+      "bookN": 1,
+      "name": "The Dude"
     }
   },
   "bios": {
-    "id1": "He is both a thinker and an doer"
+    "id1": "He is both a thinker and an doer",
+    "id2": "Still upset about his rug"
   },
   "books": {
     "id1": {
       "authorId": "id1",
       "authorName": "Sir Pouncealot",
-      "numberInStock": 3,
+      "inStock": 3,
       "price": 2.99,
       "title": "How to meow"
     },
     "id2": {
       "authorId": "id1",
       "authorName": "Sir Pouncealot",
-      "numberInStock": 0,
+      "inStock": 0,
       "price": 3.99,
       "title": "How to woof"
+    },
+    "id3": {
+      "authorId": "id2",
+      "authorName": "The Dude",
+      "inStock": 10,
+      "price": 5.49,
+      "title": "Well, that's just, like, your opinion, man"
     }
   },
   "descriptions": {
     "id1": "A full guide",
-    "id2": "Be the master of woof"
+    "id2": "Be the master of woof",
+    "id3": "Keep rolling, man"
   }
 }

@@ -1,24 +1,24 @@
 export enum FirebaseKeys {
     books = "books",
     authors = "authors",
-    bookDescriptions = "descriptions",
-    authorBios = "bios"
+    bios = "bios",
+    descriptions = "descriptions"
 }
 
 export type FirebaseDB = {
     [FirebaseKeys.books]: {
         [bookId: string]: {
+            name: string,
             authorId: string,
             authorName: string,
-            title: string,
-            numberInStock: number,
+            inStock: number,
             price: number,
             img?: string,
         }
     },
-    [FirebaseKeys.bookDescriptions]: {
-        [bookId: string]: string,
-    }
+    [FirebaseKeys.descriptions]: {
+        [bookId: string]: string
+    },
     [FirebaseKeys.authors]: {
         [authorId: string]: {
             name: string,
@@ -26,12 +26,7 @@ export type FirebaseDB = {
             img?: string,
         }
     },
-    [FirebaseKeys.authorBios]: {
+    [FirebaseKeys.bios]: {
         [authorId: string]: string
     },
 };
-
-export type FirebaseBookPreview = FirebaseDB[FirebaseKeys.books][""];
-export type FirebaseAuthorPreview = FirebaseDB[FirebaseKeys.authors][""];
-export type FirebaseBookDescription = FirebaseDB[FirebaseKeys.bookDescriptions][""];
-export type FirebaseAuthorBio = FirebaseDB[FirebaseKeys.authorBios][""];
