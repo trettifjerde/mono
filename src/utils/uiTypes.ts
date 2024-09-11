@@ -1,19 +1,11 @@
 import Entity, { DetailsConstraint as DC, PreviewConstraint as PC } from "./classes/Entity";
 
-export type DropdownOption = {
-    value: string,
+export type DropdownOption<T> = {
+    value: T,
     text: string
 }
 
-export type DropdownOptionSelectHandler = (option: DropdownOption | null) => void;
-
-export type SelectOptionsConfig<T extends DropdownOption> =  {
-    defaultOptions: T[],
-    dynamic: false,
-} | {
-    getOptions: (arg: string) => Promise<T[] | null>,
-    dynamic: true
-};
+export type DropdownOptionSelectHandler<T> = (option: DropdownOption<T> | null) => void;
 
 export type EntityPreview<P extends PC, D extends DC> = Entity<P, D>['preview'];
 

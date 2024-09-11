@@ -10,13 +10,27 @@ import BookPreviewItem from "../../components/BookPreviewItem";
 export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo> {
     override slice: BookSlice;
     override rootPath = "/";
-    override entityTitleName = "title";
+    override entityTitleName = "book title";
     override ItemPreview = BookPreviewItem;
+    override sortOptions: FilterConfig<BookSortTypes> = {
+        name: 'sort',
+        label: 'Sort by',
+        placeholder: 'Select type',
+        options: Object.entries(BookSortOptions)
+            .map(([key, {text}]) => (
+                {value: key as BookSortTypes, text}
+            )),
+        selectedOption: null            
+    }
 
     constructor(slice: BookSlice) {
         super();
 
         this.slice = slice;
+
+        this.sortOptions.options = Object
+            .entries(BookSortOptions)
+            .map(([key, info]) => ({value: key as BookSortTypes, text: info.text}))
 
         makeObservable(this, {
             mainView: observable,
@@ -34,35 +48,15 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
         })
     }
 
-    override sortOptions: FilterConfig<BookSortTypes> = {
-        name: 'sort',
-        options: Object.entries(BookSortOptions)
-            .map(([key, info]) => ({
-                text: info.text,
-                value: key
-            })),
-        selectedValue: null
-    };
-
     override getParamsAndSortFn() {
 
         const queryParams: DBURLParams = {};
         let sortFn: CompareFn<Book['previewInfo']>;
         let batchSizeExtentedBy = 0;
 
-        const selectedValue = this.sortOptions.selectedValue;
+        const selectedValue = this.sortOptions.selectedOption?.value || null;
 
         switch (selectedValue) {
-            case null:
-                queryParams.orderBy = '$key';
-                queryParams.limitToFirst = this.batchSize;
-
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.id);
-
-                sortFn = (a, b) => a.id < b.id ? -1 : 1;
-                break;
-
             case BookSortTypes.title:
                 queryParams.orderBy = BookSortOptions[selectedValue].dbKey;
                 queryParams.limitToFirst = this.batchSize;
@@ -91,6 +85,16 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
                     queryParams[at] = this.lastPreview.price;
                 }
                 sortFn = fn;
+                break;
+
+            default:
+                queryParams.orderBy = '$key';
+                queryParams.limitToFirst = this.batchSize;
+
+                if (this.lastPreview)
+                    queryParams.startAt = incrementStr(this.lastPreview.id);
+
+                sortFn = (a, b) => a.id < b.id ? -1 : 1;
                 break;
         }
         return {

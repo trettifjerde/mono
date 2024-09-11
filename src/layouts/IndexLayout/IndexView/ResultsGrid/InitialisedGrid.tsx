@@ -6,7 +6,7 @@ import LoadMore from "./LoadMore";
 
 function InitialisedGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P,D>}) {
 
-    const {previews, isFull, ItemPreview} = grid;
+    const {previews, isFull, isLoading, ItemPreview, loadPreviews} = grid;
 
     return (
         <PreviewGrid 
@@ -14,7 +14,11 @@ function InitialisedGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P,
             itemName={grid.slice.entityName}
             ItemPreview={ItemPreview}
         >  
-            {!isFull && <LoadMore grid={grid} />}
+        
+            {!isFull && <LoadMore 
+                isLoading={isLoading} 
+                loadPreviews={loadPreviews} 
+            />}
         </PreviewGrid>   
     )
 }

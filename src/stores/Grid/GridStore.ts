@@ -12,14 +12,14 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     abstract slice: StoreSlice<P,D>;
     abstract rootPath: string;
     abstract entityTitleName: string;
-    abstract sortOptions : FilterConfig<any>;
-
+    
+    abstract sortOptions: FilterConfig<any>;
+    abstract ItemPreview : EntityPreviewComponent<P,D>;
     abstract getParamsAndSortFn() : {
         batchSizeExtentedBy: number,
         queryParams: DBURLParams, 
         sortFn: CompareFn<P>
     };
-    abstract ItemPreview : EntityPreviewComponent<P,D>;
 
     mainView : GridView;
     filteredView : GridView;
@@ -30,7 +30,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     }
 
     get currentView() {
-        return !this.sortOptions.selectedValue ? this.mainView : this.filteredView;
+        return !this.sortOptions.selectedOption ? this.mainView : this.filteredView;
     }
 
     get isNotInitialised() {
@@ -65,8 +65,8 @@ export default abstract class GridStore<P extends PC, D extends DC> {
         return this.previews[this.previews.length - 1] || null;
     }
 
-    setSortOption(value: any) {
-        this.sortOptions.selectedValue = value;
+    setSortOption(option: DropdownOption<GridStore<P,D>['sortOptions']['options'][0]['value']> | null) {
+        this.sortOptions.selectedOption = option;
         this.filteredView = this.getCleanView();
     };
 
@@ -110,6 +110,14 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     }
 }
 
+export type FilterConfig<T> = {
+    name: string;
+    label: string;
+    placeholder: string;
+    options: DropdownOption<T>[];
+    selectedOption: DropdownOption<T> | null;
+}
+
 export enum CacheState {
     notInitialised,
     initialised,
@@ -120,12 +128,6 @@ type GridView = {
     ids: Set<string>,
     cacheState: CacheState,
     loadingState: LoadingState
-}
-
-export type FilterConfig<T> = {
-    name: string,
-    options: DropdownOption[],
-    selectedValue: T | null;
 }
 
 export type CompareFn<P> = (a: {id: string, previewInfo: P}, b: {id: string, previewInfo: P}) => number;

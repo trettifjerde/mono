@@ -1,79 +1,47 @@
-import { forwardRef, InputHTMLAttributes, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes';
-import Dropdown from '../Dropdown';
+import { useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { FilterConfig } from '../../stores/Grid/GridStore';
+import { DropdownOptionSelectHandler } from '../../utils/uiTypes';
 import { InputWithIconButton } from '../Inputs';
+import Dropdown from '../Dropdown';
 import styles from './index.module.scss';
 
-type SelectProps = InputHTMLAttributes<HTMLInputElement> & {
-    id: string,
-    label: string,
-    defaultValue?: string,
-    options: DropdownOption[],
-    selectOption: DropdownOptionSelectHandler
+type SelectProps<T> = {
+    config: FilterConfig<T>,
+    selectOption: DropdownOptionSelectHandler<T>
 };
 
-const Select = forwardRef<HTMLInputElement, SelectProps>(({
-    id, label, defaultValue, options, selectOption, ...props
-}, ref) => {
+function Select<T>({config, selectOption}: SelectProps<T>) {
 
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const ddOpenerRef = useRef<HTMLInputElement>(null);
-    
-    const openDropdown = useCallback(() => setDropdownVisible(true), []);
-    const cancelSelect = useCallback(() => {
-        selectOption(null);
-        
-    }, [selectOption]);
-    
-    useImperativeHandle(ref, () => ddOpenerRef.current!, []);
 
-    useEffect(() => {
-        if (isDropdownVisible) {
-            function closeDropdown(e: Event) {
-                const clickTarget = e.target as Element | null;
+    const {name, label, placeholder, selectedOption, options} = config;
 
-                if (ddOpenerRef.current && 
-                    ddOpenerRef.current.contains(clickTarget)
-                ) 
-                    e.stopPropagation();
-                
-                setTimeout(() => setDropdownVisible(false), 0);
-            }
-
-            document.addEventListener(
-                'click', 
-                closeDropdown, 
-                {capture: true}
-            );
-
-            return () => document.removeEventListener(
-                'click', 
-                closeDropdown, 
-                {capture: true}
-            );
-        }
-
-    }, [isDropdownVisible, ddOpenerRef]);
-
-    return (<>
-        <label htmlFor={id}>{label}</label>
+    return (<div>
+        <label htmlFor={name}>
+            {label}
+        </label>
         
         <div className={styles.cont}>
             <InputWithIconButton
-                {...props}
-                id={id}
+                id={name}
+                placeholder={placeholder}
                 ref={ddOpenerRef}
-                defaultValue={defaultValue}
-                onClick={openDropdown}
-                onBtnClick={cancelSelect}
+                readOnly={true}
+                value={selectedOption?.text || ''}
+                onClick={() => setDropdownVisible(true)}
+                onBtnClick={() => selectOption(null)}
             />
 
-            {isDropdownVisible && <Dropdown 
-                options={options} 
+            {isDropdownVisible && <Dropdown
+                ddOpenerRef={ddOpenerRef}
                 selectOption={selectOption}
+                closeDropdown={() => setDropdownVisible(false)}
+                options={options} 
             />}
         </div>
-    </>);
-})
+    </div>);
+}
 
-export default Select;
+export default observer(Select);

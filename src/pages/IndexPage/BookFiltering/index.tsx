@@ -1,5 +1,4 @@
 // import { DropdownOptionSelectHandler } from '../../../utils/uiTypes';
-import Select from '../../../components/Select';
 import styles from './index.module.scss';
 // import { useSearchParams } from 'react-router-dom';
 // import { ChangeEventHandler, useCallback } from 'react';
@@ -28,7 +27,7 @@ const BookFiltering = () => {
     // }, [setSearchParams]);
 
     return (<>
-        <div>
+        {/* <div>
             <Select 
                 id="authorFilter" 
                 placeholder="Type author's name"
@@ -36,7 +35,7 @@ const BookFiltering = () => {
                 options={[]}
                 selectOption={() => {}}
              />
-        </div>
+        </div> */}
 
         <div className={styles.chbx}>
             <label htmlFor="inStock">Currently in stock</label>

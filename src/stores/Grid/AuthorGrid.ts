@@ -12,13 +12,27 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
     
     override slice: AuthorSlice;
     override rootPath = makeAbsolutePath(Pathnames.authors);
-    override entityTitleName = "name";
+    override entityTitleName = "author name";
     override ItemPreview = AuthorPreviewItem;
+    override sortOptions: FilterConfig<AuthorSortTypes> = {
+        name: 'sort',
+        label: 'Sort by',
+        placeholder: 'Select type',
+        options: Object.entries(AuthorSortOptions)
+            .map(([key, {text}]) => (
+                {value: key as AuthorSortTypes, text}
+            )),
+        selectedOption: null            
+    }
 
     constructor(slice: AuthorSlice) {
         super();
         
         this.slice = slice;
+
+        this.sortOptions.options = Object
+            .entries(AuthorSortOptions)
+            .map(([key, {text}]) => ({text, value: key as AuthorSortTypes}));
 
         makeObservable(this, {
             mainView: observable,
@@ -36,36 +50,17 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
         })
     }
 
-    override sortOptions : FilterConfig<AuthorSortTypes> = {
-        name: 'sort',
-        options: Object
-            .entries(AuthorSortOptions)
-            .map(([key, {text}]) => ({text, value: key})),
-        selectedValue: null
-    };
-
     override getParamsAndSortFn() {
-        const selVal = this.sortOptions.selectedValue;
-
         let queryParams: DBURLParams;
         let sortFn : CompareFn<Author['previewInfo']>;
         let batchSizeExtentedBy = 0;
 
-        switch (selVal) {
-            case null:
-                queryParams = {
-                    orderBy: '$key',
-                    limitToFirst: this.batchSize
-                };
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.id);
+        const selectedValue = this.sortOptions.selectedOption?.value || null;
 
-                sortFn = (a, b) => a.id < b.id ? -1 : 1;
-                break;
-
+        switch (selectedValue) {
             case AuthorSortTypes.name:
                 queryParams = {
-                    orderBy: AuthorSortOptions[selVal].dbKey,
+                    orderBy: AuthorSortOptions[selectedValue].dbKey,
                     limitToFirst: this.batchSize
                 };
                 if (this.lastPreview)
@@ -76,7 +71,7 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
 
             case AuthorSortTypes.books:
                 queryParams = {
-                    orderBy: AuthorSortOptions[selVal].dbKey,
+                    orderBy: AuthorSortOptions[selectedValue].dbKey,
                     limitToLast: this.batchSize
                 };
                 
@@ -95,6 +90,17 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
                     queryParams.endAt = this.lastPreview.bookN;
                 }
                 sortFn = (a, b) => b.previewInfo.bookN - a.previewInfo.bookN;
+                break;
+
+            default:
+                queryParams = {
+                    orderBy: '$key',
+                    limitToFirst: this.batchSize
+                };
+                if (this.lastPreview)
+                    queryParams.startAt = incrementStr(this.lastPreview.id);
+
+                sortFn = (a, b) => a.id < b.id ? -1 : 1;
                 break;
         }
         return {batchSizeExtentedBy, queryParams, sortFn};

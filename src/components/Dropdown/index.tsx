@@ -1,10 +1,15 @@
+import { MouseEventHandler, RefObject, useEffect } from 'react';
 import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes';
 import styles from './index.module.scss';
 
-export default function Dropdown({selectOption, options, isFetching=false}: {
-    selectOption: DropdownOptionSelectHandler,
-    options?: DropdownOption[],
-    isFetching?: boolean
+export default function Dropdown<T>({
+    ddOpenerRef, selectOption, closeDropdown, options, isFetching=false
+}: {
+    ddOpenerRef: RefObject<HTMLElement>,
+    selectOption: DropdownOptionSelectHandler<T>,
+    closeDropdown: MouseEventHandler,
+    isFetching?: boolean,
+    options?: DropdownOption<T>[],
 }) {
 
     if (!options)
@@ -21,17 +26,41 @@ export default function Dropdown({selectOption, options, isFetching=false}: {
                 No results
             </li>
 
-        return options.map(option => (<li
-            key={option.value}
-            onClick={() => selectOption(option)}
-        >
-            {option.text}
-        </li>))
+        return options.map(option => (
+            <li 
+                key={option.text} 
+                onClick={() => selectOption(option)}
+            >
+                {option.text}
+            </li>
+        ));
     }();
 
-    return (
-        <menu className={styles.dd}> 
-            {dropdownList} 
-        </menu>
-    );
+    useEffect(() => {
+        function triggerCloseDropdown(e: Event) {
+            const clickTarget = e.target as Element | null;
+
+            if (ddOpenerRef.current && 
+                ddOpenerRef.current.contains(clickTarget)
+            ) 
+                e.stopPropagation();
+            
+            setTimeout(closeDropdown, 0);
+        }
+
+        document.addEventListener('click', 
+            triggerCloseDropdown, 
+            {capture: true}
+        );
+
+        return () => document.removeEventListener('click', 
+            triggerCloseDropdown, 
+            {capture: true}
+        );
+
+    }, [closeDropdown]);
+
+    return <menu className={styles.dd}> 
+        {dropdownList} 
+    </menu>;
 }

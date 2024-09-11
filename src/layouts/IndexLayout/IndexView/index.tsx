@@ -3,8 +3,8 @@ import { observer } from "mobx-react-lite";
 import GridStore from "../../../stores/Grid/GridStore";
 import { DetailsConstraint as DC, PreviewConstraint as PC } from '../../../utils/classes/Entity';
 import SearchBar from "./SearchBar";
+import Select from "../../../components/Select";
 import ResultsGrid from "./ResultsGrid";
-import { ItemSorting } from "./ItemSorting";
 import styles from './index.module.scss';
 
 function IndexView<P extends PC, D extends DC>({grid, children}: {
@@ -16,7 +16,7 @@ function IndexView<P extends PC, D extends DC>({grid, children}: {
         <div className={styles.panel}>
             <SearchBar grid={grid} className={styles.search}/>
 
-            <ItemSorting grid={grid} />
+            <Select config={grid.sortOptions} selectOption={grid.setSortOption}/>
             
             {children}
         </div>

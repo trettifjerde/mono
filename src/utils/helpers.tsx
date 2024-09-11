@@ -16,7 +16,7 @@ export function getCleanValue(input: HTMLInputElement) {
 
 export function updateSearchParams(params: URLSearchParams, key: string, value?: string) {
     const updParams = new URLSearchParams(params);
-    console.log(params);
+    // console.log(params);
 
     if (value)
         updParams.set(key, value);
