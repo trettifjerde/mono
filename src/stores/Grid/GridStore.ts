@@ -23,6 +23,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
     mainView : GridView;
     filteredView : GridView;
+    filterString = '';
 
     constructor() {
         this.mainView = this.getCleanView();
@@ -30,7 +31,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     }
 
     get currentView() {
-        return !this.sortOptions.selectedOption ? this.mainView : this.filteredView;
+        return this.sortOptions.selectedOption ? this.filteredView : this.mainView;
     }
 
     get isNotInitialised() {
@@ -54,7 +55,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
         this.currentView.ids.forEach(id => {
             const item = this.slice.store.items.get(id);
-            if (item)
+            if (item && item.preview.name.toLowerCase().includes(this.filterString))
                 prevs.push(item.preview)
         })
 
@@ -69,6 +70,10 @@ export default abstract class GridStore<P extends PC, D extends DC> {
         this.sortOptions.selectedOption = option;
         this.filteredView = this.getCleanView();
     };
+
+    applyFilterString(value: string) {
+        this.filterString = value.toLowerCase();
+    }
 
     *loadPreviews() {
 

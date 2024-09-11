@@ -36,6 +36,7 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
             mainView: observable,
             filteredView: observable,
             sortOptions: observable,
+            filterString: observable,
             currentView: computed,
             previews: computed,
             lastPreview: computed,
@@ -44,6 +45,7 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
             isLoading: computed,
             isError: computed,
             setSortOption: action.bound,
+            applyFilterString: action.bound,
             loadPreviews: flow.bound
         })
     }

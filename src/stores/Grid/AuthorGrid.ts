@@ -38,6 +38,7 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
             mainView: observable,
             filteredView: observable,
             sortOptions: observable,
+            filterString: observable,
             currentView: computed,
             previews: computed,
             lastPreview: computed,
@@ -46,6 +47,7 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
             isLoading: computed,
             isError: computed,
             setSortOption: action.bound,
+            applyFilterString: action.bound,
             loadPreviews: flow.bound
         })
     }

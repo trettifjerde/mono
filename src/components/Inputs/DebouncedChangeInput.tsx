@@ -1,62 +1,39 @@
-import { ChangeEventHandler, forwardRef, InputHTMLAttributes, memo, useEffect, useImperativeHandle, useRef } from 'react';
-import { getCleanValue } from '../../utils/helpers';
-import { InputWithIconButton } from '.';
+import { ChangeEventHandler, useEffect, useRef } from "react";
+import { InputWithIconButton } from ".";
+import { getCleanValue } from "../../utils/helpers";
 
-export type InputControlProps = InputHTMLAttributes<HTMLInputElement> & {
+export default function DebouncedChangeInput({id, applyValue, entityTitleName}: {
     id: string,
-    placeholder: string,
-    onChange: (value: string) => void,
-    timeout?: number,
-    onCancel?: () => void
-}
-
-const DebouncedChangeInput = forwardRef<HTMLInputElement, InputControlProps>(
-    ({id, onChange, onCancel, timeout=250, ...props}, ref) => {
-
+    applyValue: (value: string) => void,
+    entityTitleName: string
+}) {  
+    
     const timer = useRef<any>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const debouncedOnChange : ChangeEventHandler<HTMLInputElement> = (e) => {
         clearTimeout(timer.current);
-
-        timer.current = setTimeout(() => {
-            onChange(getCleanValue(e.target));
-            timer.current = null;
-        }, timeout);
+        timer.current = setTimeout(() => applyValue(getCleanValue(e.target)), 250);
     }
 
     const clearInput = () => {
-        if (inputRef.current)
+        if (inputRef.current) {
+            clearTimeout(timer.current);
             inputRef.current.value = '';
-    };
-
-    const cancelInput = () => {
-        clearTimeout(timer.current);
-        clearInput();
-        if (onCancel)
-            onCancel();
+            applyValue('');
+        }
     }
-
-    useImperativeHandle(ref, () => inputRef.current!, []);
-
-    useEffect(() => {
-        clearInput();
-        clearTimeout(timer.current);
-    }, [id]);
 
     useEffect(() => {
         return () => clearTimeout(timer.current);
-    }, []);
+    }, [])
 
     return <InputWithIconButton 
-        {...props}
         id={id}
-        required
         ref={inputRef}
-        color='light'
+        placeholder={`Start typing ${entityTitleName}...`}
         onChange={debouncedOnChange}
-        onBtnClick={cancelInput}
-    /> 
-})
+        onBtnClick={clearInput}
+    />
 
-export default memo(DebouncedChangeInput);
+}
