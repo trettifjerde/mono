@@ -4,9 +4,9 @@ import Entity, { DetailsConstraint, EntityInit } from "./Entity";
 
 export default class Author extends Entity<AuthorPreviewInfo, AuthorDetailsInfo> {
 
-    constructor ({id, previewInfo, detailsInfo, isInGrid, store} : EntityInit<AuthorPreviewInfo, AuthorDetailsInfo>) {
+    constructor ({id, previewInfo, detailsInfo, store} : EntityInit<AuthorPreviewInfo, AuthorDetailsInfo>) {
         
-        super({id, previewInfo, detailsInfo, isInGrid, store});
+        super({id, previewInfo, detailsInfo, store});
     }
 }
 

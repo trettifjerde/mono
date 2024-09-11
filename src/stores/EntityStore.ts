@@ -19,11 +19,10 @@ export default class EntityStore<P extends PC, D extends DC> {
         })
     } 
 
-    add(isInGrid: boolean, ...itemInits: EntityInitInfo<P,D>[]) {
+    add(...itemInits: EntityInitInfo<P,D>[]) {
 
         const items = itemInits.map(init => new this.slice.EntityConstructor({
             ...init,
-            isInGrid,
             store: this
         }));
 
@@ -33,7 +32,7 @@ export default class EntityStore<P extends PC, D extends DC> {
     }
 
     // TODO: will be buggy behaviour because Entity properties are not observables. will fix later
-    update(isInGrid: boolean, ...itemInfos: EntityUpdateInfo<P,D>[]) {
+    update(...itemInfos: EntityUpdateInfo<P,D>[]) {
 
         const updItems: Array<Entity<P,D>|null> = [];
 
@@ -43,7 +42,6 @@ export default class EntityStore<P extends PC, D extends DC> {
             if (item) {
                 info.previewInfo && item.setPreview(info.previewInfo);
                 info.detailsInfo && item.setDetails(info.detailsInfo);
-                item.isInGrid = item.isInGrid || isInGrid;
                 updItems.push(item)
             }
             else

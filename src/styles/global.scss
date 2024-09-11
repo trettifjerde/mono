@@ -4,6 +4,8 @@
   --fade-in: fade-in;
   --slide-down: slide-down;
 
+  --anim-fade-in: var(--fade-in) #{$trans-dur} #{$trans-fn};
+
   line-height: $line-hight;
 
   font-weight: 400;

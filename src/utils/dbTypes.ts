@@ -30,3 +30,40 @@ export type FirebaseDB = {
         [authorId: string]: string
     },
 };
+
+export enum BookSortTypes {
+    title = "title",
+    priceHigh = "high",
+    priceLow = "low"
+};
+
+export const BookSortOptions = {
+    [BookSortTypes.title]: {
+        dbKey: "name",
+        text: "Book title"
+    },
+    [BookSortTypes.priceHigh]: {
+        dbKey: "price",
+        text: "Price (high)"
+    },
+    [BookSortTypes.priceLow]: {
+        dbKey: "price",
+        text: "Price (low)"
+    }
+}
+
+export enum AuthorSortTypes {
+    name = "name",
+    books = "books"
+};
+
+export const AuthorSortOptions = {
+    [AuthorSortTypes.name]: {
+        dbKey: "name",
+        text: "Author name"
+    },
+    [AuthorSortTypes.books]: {
+        dbKey: "bookN",
+        text: "Number of books"
+    },
+}

@@ -1,0 +1,20 @@
+@use '../../../../styles/variables' as *;
+
+.grid {
+    position: relative;
+    margin-top: $double-gap;
+    border-radius: $border-radius;
+    padding: $main-inline-padding;
+    padding-bottom: calc(2 * $main-inline-padding + $btn-std);
+    background-color: $dark1;
+}
+
+.more {
+    position: absolute;
+    bottom: $main-inline-padding;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    animation: var(--anim-fade-in);
+}

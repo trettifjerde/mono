@@ -12,11 +12,12 @@ function AuthorBookGrid({details}: {details: AuthorSlice['details']}) {
     switch (state) {
         case LoadingState.loading:
             return <PreviewGridSkeleton />
-
-        default:
+        
+        default: 
+            const previews = loadedItem?.details?.books || [];
             return <PreviewGridList
-                previews={loadedItem?.details?.books || []}
-                itemName={"Book"} 
+                previews={previews}
+                itemName={details.slice.entityName}
                 ItemPreview={BookPreviewItem} 
             />
     }

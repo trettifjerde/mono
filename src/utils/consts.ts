@@ -11,8 +11,9 @@ export enum LoadingState {
     idle,
     loading,
     error,
-    notFound,
-    notInitialised
+    notFound
 };
 
 export const DefaultBookImgSrc = '/800x800.webp';
+
+export const FETCH_BATCH_SIZE = 2;

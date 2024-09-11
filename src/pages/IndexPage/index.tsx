@@ -1,14 +1,13 @@
 import { useContext } from "react";
 import { RootStoreContext } from "../../stores/StoreContext";
-import IndexGrid from "../../layouts/IndexLayout/IndexGrid";
-import BookPreviewItem from "../../components/BookPreviewItem";
+import BookFiltering from "./BookFiltering";
+import IndexView from "../../layouts/IndexLayout/IndexView";
 
 export default function IndexPage() {
 
     const {grid} = useContext(RootStoreContext).books;
 
-    return <IndexGrid 
-        grid={grid}
-        ItemPreview={BookPreviewItem}
-    />
+    return <IndexView grid={grid}>
+        <BookFiltering />
+    </IndexView>
 }

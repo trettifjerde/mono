@@ -1,4 +1,5 @@
 import { AuthorDetailsInfo, AuthorPreviewInfo } from "../utils/classes/Author";
+import { FETCH_BATCH_SIZE } from "../utils/consts";
 import { FirebaseKeys } from "../utils/dbTypes";
 import DataService from "./DataService";
 
@@ -9,9 +10,9 @@ export default class AuthorService extends DataService<AuthorPreviewInfo, Author
 
     getAuthorBooks(authorId: string) {
         return this.getBookPreviews({
-            orderBy: `"authorId"`,
-            startAt: `"${authorId}"`,
-            endAt: `"${authorId}"`
+            orderBy: "authorId",
+            equalTo: authorId,
+            limitToFirst: FETCH_BATCH_SIZE
         })
     }
 

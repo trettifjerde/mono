@@ -13,7 +13,7 @@
     gap: $gap;
     padding: 1rem;
     transition: background-color $trans-dur $trans-fn;
-    animation: var(--fade-in) $trans-dur $trans-fn;
+    animation: var(--anim-fade-in);
 
     @include hover {
         background-color: $light2;

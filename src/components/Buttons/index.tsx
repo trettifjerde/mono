@@ -1,11 +1,12 @@
 import { ButtonHTMLAttributes } from "react";
 import { Link, LinkProps } from "react-router-dom";
 import styles from './index.module.scss';
+import { getSkeletonClassIfNeeded } from "../../utils/helpers";
 
-type ButtonColor = 'dark' | 'light' | 'blue' | 'black';
-type ButtonShape = 'square' | 'rect';
+export type ButtonColor = 'dark' | 'light' | 'blue' | 'black';
+export type ButtonShape = 'square' | 'rect';
 
-type ButtonConfig = {
+export type ButtonConfig = {
     color?: ButtonColor,
     shape?: ButtonShape
 };
@@ -33,6 +34,12 @@ export function Button({
     return <button className={cls} {...props}>
         {children}
     </button>
+}
+
+export function LoadingButton({loading, ...props}: ButtonProps & {loading: boolean}) {
+    return <div className={getSkeletonClassIfNeeded(loading)}>
+        <Button {...props} />
+    </div>
 }
 
 export function IconButton({icon, ...props}: IconButtonProps) {

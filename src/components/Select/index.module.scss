@@ -2,39 +2,4 @@
 
 .cont {
     position: relative;
-
-    menu {
-        position: absolute;
-        z-index: 1;
-        left: 0;
-        right: 0;
-        top: calc($btn-std + 2 * $outline-width);
-        border-radius: $border-radius;
-        box-shadow: 0 0 4px $outline-width $dark1;
-        overflow: auto;
-        max-height: 10rem;
-
-        li {
-            padding: $input-padding;
-            list-style-type: none;
-            background-color: $dark3;
-            transition: color $trans-dur $trans-fn, background-color $trans-dur $trans-fn;
-            cursor: default;
-            
-            &:nth-child(even) {
-                background-color: $dark4;
-            }
-            
-            &:not(.loading, .empty) {
-                cursor: pointer;
-
-                @include hover {
-                    background-color: $light1;
-                    color: $dark2;
-                }
-            }
-
-
-        }
-    }
 }

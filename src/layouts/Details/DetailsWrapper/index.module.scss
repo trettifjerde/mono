@@ -15,7 +15,7 @@ $manage-btn-dimens: 4rem;
 }
 
 %fade-in {
-    animation: var(--fade-in) $trans-dur $trans-fn;
+    animation: var(--anim-fade-in);
 }
 
 .base {

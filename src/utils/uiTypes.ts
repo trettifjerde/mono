@@ -1,9 +1,11 @@
 import Entity, { DetailsConstraint as DC, PreviewConstraint as PC } from "./classes/Entity";
 
 export type DropdownOption = {
-    id: string,
+    value: string,
     text: string
 }
+
+export type DropdownOptionSelectHandler = (option: DropdownOption | null) => void;
 
 export type SelectOptionsConfig<T extends DropdownOption> =  {
     defaultOptions: T[],

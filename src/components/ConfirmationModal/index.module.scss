@@ -14,7 +14,7 @@
     inset: 0;
     background-color: $pale-trans;
     z-index: 0;
-    animation: var(--fade-in) $trans-dur $trans-fn;
+    animation: var(--anim-fade-in);
 }
 
 .inner {

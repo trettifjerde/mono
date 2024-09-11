@@ -11,15 +11,13 @@ export default abstract class Entity<
     id: string;
     protected previewInfo: PreviewInfo;
     protected detailsInfo: DetailsInfo | null;
-    isInGrid: boolean;
     store: EntityStore<PreviewInfo, DetailsInfo>;
 
-    constructor ({id, previewInfo, detailsInfo, isInGrid, store}: EntityInit<PreviewInfo, DetailsInfo>) {
+    constructor ({id, previewInfo, detailsInfo, store}: EntityInit<PreviewInfo, DetailsInfo>) {
 
         this.id = id;
         this.previewInfo = previewInfo;
         this.detailsInfo = detailsInfo || null;
-        this.isInGrid = isInGrid;
         this.store = store;
     }
 
@@ -68,7 +66,6 @@ export type EntityUpdateInfo<P extends PreviewConstraint, D extends DetailsConst
 }
 
 export type EntityInit<P extends PreviewConstraint, D extends DetailsConstraint> = EntityInitInfo<P,D> & {
-    isInGrid: boolean,
     store: EntityStore<P, D>
 };
 

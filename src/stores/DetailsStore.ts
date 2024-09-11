@@ -79,7 +79,7 @@ export default class DetailsStore<P extends PC, D extends DC> {
             .then(fullInfo => {
                 if (fullInfo) 
                     return action(() => {
-                            const item = this.slice.store.add(false, fullInfo)[0];
+                            const item = this.slice.store.add(fullInfo)[0];
                             this.loadedItem = item;
                             this.state = LoadingState.idle;
                         })
@@ -92,7 +92,7 @@ export default class DetailsStore<P extends PC, D extends DC> {
             .then(detailsInfo => {
                 if (detailsInfo) 
                     return action(() => {
-                        const item = this.slice.store.update(false, {id, detailsInfo})[0]; 
+                        const item = this.slice.store.update({id, detailsInfo})[0]; 
                         this.loadedItem = item;
                         this.state = LoadingState.idle;
                     })

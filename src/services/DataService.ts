@@ -1,21 +1,38 @@
 import { FirebaseKeys } from "../utils/dbTypes";
 import { DetailsConstraint, PreviewConstraint } from "../utils/classes/Entity";
 import { BookPreviewInfo } from "../utils/classes/Book";
+import { FETCH_BATCH_SIZE } from "../utils/consts";
 
 export default abstract class DataService<P extends PreviewConstraint, D extends DetailsConstraint> {
 
     static url = "https://mono-task34-default-rtdb.europe-west1.firebasedatabase.app/";
     static makeUrl({ keys, params }: DBURLConfig) {
-        let url = `${DataService.url}${keys ? keys.join('/') : ''}.json`;
-
-        if (params)
-            url += `?${new URLSearchParams(params).toString()}`;
-
+        let url = DataService.url;
+        url += DataService.appendKeys(keys);
+        url += DataService.makeSearchParams(params);
         return url;
     }
+    static appendKeys(keys?: string[]) {
+        return !keys ? '.json' : (keys.join('/') + '.json');
+    }
+    static makeSearchParams(params?: DBURLParams) {
+        if (!params)
+            return '';
+
+        const stringParams : Record<string, string> = {};
+
+        for (const [key, value] of Object.entries(params)) {
+            stringParams[key] = typeof value === 'number' ? `${value}` : `"${value}"`
+        }
+
+        return '?' + new URLSearchParams(stringParams).toString();
+    }
+
+    batchSize = FETCH_BATCH_SIZE;
 
     abstract previewsKey: FirebaseKeys;
     abstract descriptionKey: FirebaseKeys;
+
     abstract getDetails(id: string) : Promise<D | null>;
 
     protected async fetchDB<T>({ init, keys, params }: DBFetchInit) {
@@ -34,7 +51,7 @@ export default abstract class DataService<P extends PreviewConstraint, D extends
             }))
     }
 
-    getPreviews(params?: DBURLParams) {
+    getPreviews(params: DBURLParams) {
         return this.fetchDB<{ [id: string]: P }>({
             keys: [this.previewsKey],
             params
@@ -50,7 +67,6 @@ export default abstract class DataService<P extends PreviewConstraint, D extends
                     id,
                     previewInfo,
                 }))
-                .sort((a, b) => a.id < b.id ? -1 : 1);
 
             return fetchedItems;
         })
@@ -94,10 +110,11 @@ export default abstract class DataService<P extends PreviewConstraint, D extends
 }
 
 export type DataServiceConstructor<P extends PreviewConstraint, D extends DetailsConstraint> = new () => DataService<P, D>;
+export type DBURLParams = Record<string, string|number>;
 
-type DBURLParams = Record<string, string>;
 type DBURLConfig = {
     keys?: string[],
     params?: DBURLParams
 }
+
 type DBFetchInit = DBURLConfig & { init?: RequestInit };

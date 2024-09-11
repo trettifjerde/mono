@@ -3,9 +3,9 @@ import { FirebaseDB, FirebaseKeys } from "../dbTypes";
 
 export default class Book extends Entity<BookPreviewInfo, BookDetailsInfo> {
 
-    constructor ({id, previewInfo, detailsInfo, isInGrid, store} : EntityInit<BookPreviewInfo, BookDetailsInfo>) {
+    constructor ({id, previewInfo, detailsInfo, store} : EntityInit<BookPreviewInfo, BookDetailsInfo>) {
 
-        super({ id, previewInfo, detailsInfo, isInGrid, store });
+        super({ id, previewInfo, detailsInfo, store });
     }
 }
 
