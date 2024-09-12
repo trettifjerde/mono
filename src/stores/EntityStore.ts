@@ -1,6 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 import StoreSlice from "./slices/StoreSlice";
-import Entity, { EntityInitInfo, EntityUpdateInfo, PreviewConstraint as PC, DetailsConstraint as DC  } from "../utils/classes/Entity";
+import Entity, { EntityInitInfo, EntityUpdateInfo } from "../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/firestoreDbTypes';
 
 export default class EntityStore<P extends PC, D extends DC> {
 

@@ -1,18 +1,32 @@
-import { AuthorDetailsInfo, AuthorPreviewInfo } from "../utils/classes/Author";
-import { FETCH_BATCH_SIZE } from "../utils/consts";
-import { FirebaseKeys } from "../utils/dbTypes";
+import { collection, CollectionReference, FirestoreDataConverter } from "firebase/firestore/lite";
+import { DetailsConstraint, FirestoreAuthor, FirestoreBook, FirestoreKeys } from "../utils/firestoreDbTypes";
 import DataService from "./DataService";
+import db from "./Firestore";
+import Book from "../utils/classes/Book";
 
-export default class AuthorService extends DataService<AuthorPreviewInfo, AuthorDetailsInfo> {
+export type AuthorPreview = FirestoreAuthor;
+export type AuthorDetails = DetailsConstraint & {
+    books: Book['preview'][]
+}
 
-    previewsKey = FirebaseKeys.authors;
-    descriptionKey = FirebaseKeys.bios;
+export default class AuthorService extends DataService<AuthorPreview, AuthorDetails> {
 
-    getAuthorBooks(authorId: string) {
-        return this.getBookPreviews({
-            orderBy: "authorId",
-            equalTo: authorId,
-            limitToFirst: FETCH_BATCH_SIZE
+    override previewsRef: CollectionReference<FirestoreAuthor>;
+
+    constructor() {
+        super(FirestoreKeys.bios);
+        
+        this.previewsRef = collection(db, FirestoreKeys.authors)
+            .withConverter(DataService.makePreviewsConverter<AuthorPreview>())
+    }
+
+    async getAuthorBooks(authorId: string) {
+        return this.getAnyPreviews({
+            collectionRef: this.booksRef,
+            converter: this.authorBooksConverter,
+            params: {
+                filters: [[FirestoreKeys.authorId, authorId]]
+            }
         })
     }
 
@@ -21,14 +35,24 @@ export default class AuthorService extends DataService<AuthorPreviewInfo, Author
             this.getDescription(id),
             this.getAuthorBooks(id)
         ])
-        .then(([description, books]) => {
-            if (!books)
-                return null;
+        .then(([description, books]) => ({
+            description,
+            books
+        }))
+    }
 
+    authorBooksConverter : FirestoreDataConverter<Book['preview'], FirestoreBook> = {
+        toFirestore: (value: Book['preview']) => {
+            const {id, ...info} = value;
+            return info;
+        },
+        fromFirestore(snapshot) {
+            const id = snapshot.id;
+            const data = snapshot.data();
             return {
-                description: description || '',
-                books: Object.entries(books).map(([id, info]) => ({id, ...info}))
-            }
-        })
+                id,
+                ...data
+            } as Book['preview']
+        }
     }
 }

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './index.module.scss';
 import { getSkeletonClassIfNeeded } from '../../../utils/helpers';
+import styles from './index.module.scss';
 
 export default function PreviewItem({url, children}: {
     url?: string,

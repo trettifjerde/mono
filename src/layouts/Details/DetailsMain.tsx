@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import DetailsStore from "../../stores/DetailsStore"
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/classes/Entity'
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes'
 import { LoadingState } from "../../utils/consts"
 import DetailsReloader from "./DetailsReloader"
 import { LinkButton } from "../../components/Buttons"

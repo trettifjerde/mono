@@ -1,7 +1,8 @@
 import DataService from "../../services/DataService";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
+import { EntityConstructor } from "../../utils/classes/Entity";
 import EntityStore from "../EntityStore";
 import DetailsStore from "../DetailsStore";
-import { PreviewConstraint as PC, DetailsConstraint as DC, EntityConstructor } from "../../utils/classes/Entity";
 import GridStore from "../Grid/GridStore";
 
 export default abstract class StoreSlice<P extends PC, D extends DC> {

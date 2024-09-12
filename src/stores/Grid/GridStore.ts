@@ -1,13 +1,12 @@
 
 import StoreSlice from "../slices/StoreSlice";
-import { DBURLParams } from "../../services/DataService";
-import Entity, { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/classes/Entity";
-import { FETCH_BATCH_SIZE, LoadingState } from "../../utils/consts";
+import Entity from "../../utils/classes/Entity";
+import { PreviewsQueryParams } from "../../services/DataService";
+import { LoadingState } from "../../utils/consts";
 import { DropdownOption, EntityPreviewComponent } from "../../utils/uiTypes";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes';
 
 export default abstract class GridStore<P extends PC, D extends DC> {
-
-    readonly batchSize = FETCH_BATCH_SIZE;
 
     abstract slice: StoreSlice<P,D>;
     abstract rootPath: string;
@@ -15,11 +14,6 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     
     abstract sortOptions: FilterConfig<any>;
     abstract ItemPreview : EntityPreviewComponent<P,D>;
-    abstract getParamsAndSortFn() : {
-        batchSizeExtentedBy: number,
-        queryParams: DBURLParams, 
-        sortFn: CompareFn<P>
-    };
 
     mainView : GridView;
     filteredView : GridView;
@@ -31,8 +25,8 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     }
 
     get currentView() {
-        return this.sortOptions.selectedOption ? this.filteredView : this.mainView;
-    }
+        return (this.sortOptions.selectedOption || this.filterString) ? this.filteredView : this.mainView;
+    };
 
     get isNotInitialised() {
         return this.currentView.cacheState === CacheState.notInitialised;
@@ -73,6 +67,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
     applyFilterString(value: string) {
         this.filterString = value.toLowerCase();
+        this.filteredView = this.getCleanView();
     }
 
     *loadPreviews() {
@@ -82,17 +77,16 @@ export default abstract class GridStore<P extends PC, D extends DC> {
         let fetchedPreviews : Awaited<ReturnType<typeof this.slice.service.getPreviews>>;
         
         try {
-            const {batchSizeExtentedBy, queryParams, sortFn} = this.getParamsAndSortFn();
-            fetchedPreviews = yield this.slice.service.getPreviews(queryParams);
+            
+            fetchedPreviews = yield this.slice.service.getPreviews(this.queryParams);
 
             fetchedPreviews
-                .sort(sortFn)
                 .forEach(preview => {
                     this.slice.store.add(preview);
                     this.currentView.ids.add(preview.id);
                 })
             
-            if (fetchedPreviews.length < (this.batchSize + batchSizeExtentedBy))
+            if (fetchedPreviews.length < this.slice.service.batchSize)
                 this.currentView.cacheState = CacheState.full;
 
             else if (this.currentView.cacheState === CacheState.notInitialised) 
@@ -105,6 +99,8 @@ export default abstract class GridStore<P extends PC, D extends DC> {
             this.currentView.loadingState = LoadingState.error;
         }
     }
+
+    abstract get queryParams() : PreviewsQueryParams;
 
     protected getCleanView() : GridView {
         return {
@@ -134,5 +130,3 @@ type GridView = {
     cacheState: CacheState,
     loadingState: LoadingState
 }
-
-export type CompareFn<P> = (a: {id: string, previewInfo: P}, b: {id: string, previewInfo: P}) => number;

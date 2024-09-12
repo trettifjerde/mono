@@ -1,9 +1,9 @@
 import StoreSlice from "./StoreSlice";
-import AuthorService from "../../services/AuthorService";
+import AuthorService, { AuthorDetails, AuthorPreview } from "../../services/AuthorService";
 import AuthorGrid from "../Grid/AuthorGrid";
-import Author, { AuthorDetailsInfo, AuthorPreviewInfo } from "../../utils/classes/Author";
+import Author from "../../utils/classes/Author";
 
-export default class AuthorSlice extends StoreSlice<AuthorPreviewInfo, AuthorDetailsInfo> {
+export default class AuthorSlice extends StoreSlice<AuthorPreview, AuthorDetails> {
 
     override entityName = 'Author';
     override EntityConstructor = Author;

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import DetailsStore from "../../stores/DetailsStore";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
 
 function DetailsImage<P extends PC, D extends DC>({details, fallbackImg, errorClassName}: {
     details: DetailsStore<P,D>,

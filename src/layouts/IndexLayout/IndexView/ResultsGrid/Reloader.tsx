@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { DetailsConstraint as DC, PreviewConstraint as PC} from "../../../../utils/classes/Entity";
+import { DetailsConstraint as DC, PreviewConstraint as PC} from "../../../../utils/firestoreDbTypes";
 import GridStore from "../../../../stores/Grid/GridStore";
 import PreviewGridWrapper from "../../../../components/PreviewGrid/PreviewGridWrapper";
 import { Button } from "../../../../components/Buttons";

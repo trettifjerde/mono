@@ -1,14 +1,15 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
+import { documentId } from "firebase/firestore/lite";
 import AuthorSlice from "../slices/AuthorSlice";
-import { DBURLParams } from "../../services/DataService";
-import Author, { AuthorDetailsInfo, AuthorPreviewInfo } from "../../utils/classes/Author";
-import { AuthorSortOptions, AuthorSortTypes } from "../../utils/dbTypes";
+import { PreviewsQueryParams } from "../../services/DataService";
+import { AuthorDetails, AuthorPreview } from "../../services/AuthorService";
+import GridStore, { FilterConfig } from "./GridStore";
+import { FirestoreAuthor, FirestoreKeys } from "../../utils/firestoreDbTypes";
 import { Pathnames } from "../../utils/consts";
-import { incrementStr, makeAbsolutePath } from "../../utils/helpers";
-import GridStore, { CompareFn, FilterConfig } from "./GridStore";
+import { makeAbsolutePath } from "../../utils/helpers";
 import AuthorPreviewItem from "../../components/AuthorPreviewItem";
 
-export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetailsInfo> {
+export default class AuthorGrid extends GridStore<AuthorPreview, AuthorDetails> {
     
     override slice: AuthorSlice;
     override rootPath = makeAbsolutePath(Pathnames.authors);
@@ -23,6 +24,35 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
                 {value: key as AuthorSortTypes, text}
             )),
         selectedOption: null            
+    }
+
+    override get queryParams(): PreviewsQueryParams {
+        const params : PreviewsQueryParams = {};
+
+        if (this.filterString) {
+            params.filters = [[FirestoreKeys.name_lowercase, this.filterString]];
+        }
+
+        const sortOption = this.sortOptions.selectedOption?.value;
+
+        if (sortOption) {
+            const {dbKey, isDesc} = AuthorSortOptions[sortOption];
+            params.sort = {dbKey, isDesc};
+
+            if (this.lastPreview) {
+                params.lastItemValue = this.lastPreview[dbKey];
+                params.sort = {dbKey, isDesc: false};
+            }  
+        }
+        else {
+            params.sort = {dbKey: documentId(), isDesc: false};
+
+            if (this.lastPreview) {
+                params.lastItemValue = this.lastPreview[FirestoreKeys.name_lowercase];
+            }
+        }
+
+        return params;
     }
 
     constructor(slice: AuthorSlice) {
@@ -51,60 +81,22 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
             loadPreviews: flow.bound
         })
     }
+}
 
-    override getParamsAndSortFn() {
-        let queryParams: DBURLParams;
-        let sortFn : CompareFn<Author['previewInfo']>;
-        let batchSizeExtentedBy = 0;
+export enum AuthorSortTypes {
+    name = "name",
+    books = "books"
+};
 
-        const selectedValue = this.sortOptions.selectedOption?.value || null;
-
-        switch (selectedValue) {
-            case AuthorSortTypes.name:
-                queryParams = {
-                    orderBy: AuthorSortOptions[selectedValue].dbKey,
-                    limitToFirst: this.batchSize
-                };
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.name);
-                
-                sortFn = (a, b) => a.previewInfo.name < b.previewInfo.name ? -1 : 1;
-                break;
-
-            case AuthorSortTypes.books:
-                queryParams = {
-                    orderBy: AuthorSortOptions[selectedValue].dbKey,
-                    limitToLast: this.batchSize
-                };
-                
-
-                if (this.lastPreview) {
-                    const authorWithSameNBooks = Array
-                        .from(this.currentView.ids)
-                        .map(id => this.slice.store.items.get(id))
-                        .filter(item => (item &&
-                            item.preview.bookN === this.lastPreview.bookN
-                        ))
-                        .length;
-
-                    batchSizeExtentedBy = authorWithSameNBooks;
-                    queryParams.limitToLast = this.batchSize + authorWithSameNBooks;
-                    queryParams.endAt = this.lastPreview.bookN;
-                }
-                sortFn = (a, b) => b.previewInfo.bookN - a.previewInfo.bookN;
-                break;
-
-            default:
-                queryParams = {
-                    orderBy: '$key',
-                    limitToFirst: this.batchSize
-                };
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.id);
-
-                sortFn = (a, b) => a.id < b.id ? -1 : 1;
-                break;
-        }
-        return {batchSizeExtentedBy, queryParams, sortFn};
-    }
+export const AuthorSortOptions = {
+    [AuthorSortTypes.name]: {
+        dbKey: FirestoreKeys.name_lowercase as keyof FirestoreAuthor,
+        text: "Author name",
+        isDesc: false
+    },
+    [AuthorSortTypes.books]: {
+        dbKey: FirestoreKeys.bookN as keyof FirestoreAuthor,
+        text: "Number of books",
+        isDesc: true
+    },
 }

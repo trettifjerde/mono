@@ -1,7 +1,5 @@
 import EntityStore from "../../stores/EntityStore";
-
-export type PreviewConstraint = {name: string, img?: string};
-export type DetailsConstraint = {description: string};
+import { DetailsConstraint, PreviewConstraint } from "../firestoreDbTypes";
 
 export default abstract class Entity<
     PreviewInfo extends PreviewConstraint, 
@@ -29,10 +27,7 @@ export default abstract class Entity<
     }
 
     get details() {
-        return this.detailsInfo ? {
-            id: this.id, 
-            ...this.detailsInfo
-        } : null;
+        return this.detailsInfo ? this.detailsInfo : null;
     }
 
     setPreview(previewInfo: PreviewInfo) {

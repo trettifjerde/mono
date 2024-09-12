@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
 import DetailsStore from "../../../stores/DetailsStore";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../../utils/firestoreDbTypes";
 import { getSkeletonClassIfNeeded } from "../../../utils/helpers";
 import DetailsAside from "../DetailsAside";
 import DetailsHeader from "../DetailsHeader";

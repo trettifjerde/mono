@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import DetailsStore from "../../stores/DetailsStore";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes';
+import Entity from "../../utils/classes/Entity";
 import { getSkeletonClassIfNeeded } from "../../utils/helpers";
-import Entity, { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/classes/Entity";
 import { IconButton, IconLinkButton } from '../../components/Buttons';
 import ConfirmationModal from "../../components/ConfirmationModal";
 

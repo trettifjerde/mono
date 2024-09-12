@@ -1,7 +1,8 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import StoreSlice from "./slices/StoreSlice";
-import Entity, { PreviewConstraint as PC, DetailsConstraint as DC } from "../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/firestoreDbTypes';
 import { LoadingState } from "../utils/consts";
+import Entity from "../utils/classes/Entity";
 
 export default class DetailsStore<P extends PC, D extends DC> {
     slice: StoreSlice<P, D>;
@@ -79,7 +80,7 @@ export default class DetailsStore<P extends PC, D extends DC> {
             .then(fullInfo => {
                 if (fullInfo) 
                     return action(() => {
-                            const item = this.slice.store.add(fullInfo)[0];
+                            const item = this.slice.store.add({id, ...fullInfo})[0];
                             this.loadedItem = item;
                             this.state = LoadingState.idle;
                         })

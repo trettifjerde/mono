@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../utils/classes/Entity";
+import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../utils/firestoreDbTypes";
 import { EntityPreview, EntityPreviewComponent } from "../../utils/uiTypes";
 import PreviewGridWrapper from "./PreviewGridWrapper";
 

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import GridStore from "../../../stores/Grid/GridStore"
-import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../../utils/classes/Entity"
+import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../../utils/firestoreDbTypes"
 import DebouncedChangeInput from "../../../components/Inputs/DebouncedChangeInput";
 
 function SearchBar<P extends PC, D extends DC>({grid, className}: {

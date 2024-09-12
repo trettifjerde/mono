@@ -1,4 +1,5 @@
-import Entity, { DetailsConstraint as DC, PreviewConstraint as PC } from "./classes/Entity";
+import Entity from "./classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/firestoreDbTypes';
 
 export type DropdownOption<T> = {
     value: T,

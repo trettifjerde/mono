@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { observer } from "mobx-react-lite"
-import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
 import DetailsStore from "../../stores/DetailsStore";
 
 function DetailsHeader<P extends PC, D extends DC>({details, children}: {

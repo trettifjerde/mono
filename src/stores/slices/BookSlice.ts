@@ -1,9 +1,10 @@
 import StoreSlice from "./StoreSlice";
 import BookService from "../../services/BookService";
-import Book, { BookDetailsInfo, BookPreviewInfo } from "../../utils/classes/Book";
+import Book from "../../utils/classes/Book";
 import BookGrid from "../Grid/BookGrid";
+import { DetailsConstraint, FirestoreBook } from "../../utils/firestoreDbTypes";
 
-export default class BookSlice extends StoreSlice<BookPreviewInfo, BookDetailsInfo> {
+export default class BookSlice extends StoreSlice<FirestoreBook, DetailsConstraint> {
 
     override entityName = 'Book';
     override EntityConstructor = Book;

@@ -1,17 +1,18 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
+import { documentId } from "firebase/firestore/lite";
 import BookSlice from "../slices/BookSlice";
-import { DBURLParams } from "../../services/DataService";
-import GridStore, { CompareFn, FilterConfig } from "./GridStore";
-import Book, { BookDetailsInfo, BookPreviewInfo } from "../../utils/classes/Book";
-import { BookSortOptions, BookSortTypes } from "../../utils/dbTypes";
-import { incrementStr } from "../../utils/helpers";
+import { PreviewsQueryParams } from "../../services/DataService";
+import GridStore, { FilterConfig } from "./GridStore";
+import { DetailsConstraint, FirestoreBook, FirestoreKeys } from "../../utils/firestoreDbTypes";
 import BookPreviewItem from "../../components/BookPreviewItem";
 
-export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo> {
+export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint> {
     override slice: BookSlice;
+
     override rootPath = "/";
     override entityTitleName = "book title";
     override ItemPreview = BookPreviewItem;
+
     override sortOptions: FilterConfig<BookSortTypes> = {
         name: 'sort',
         label: 'Sort by',
@@ -21,6 +22,34 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
                 {value: key as BookSortTypes, text}
             )),
         selectedOption: null            
+    }
+
+    override get queryParams(): PreviewsQueryParams {
+        const params : PreviewsQueryParams = {};
+
+        if (this.filterString) {
+            params.filters = [[FirestoreKeys.name_lowercase, this.filterString]];
+        }
+
+        const sortOption = this.sortOptions.selectedOption?.value;
+
+        if (sortOption) {
+            const {dbKey, isDesc} = BookSortOptions[sortOption];
+            params.sort = {dbKey, isDesc};
+
+            if (this.lastPreview) {
+                params.lastItemValue = this.lastPreview[dbKey];
+            }  
+        }
+        else {
+            params.sort = {dbKey: documentId(), isDesc: false};
+            
+            if (this.lastPreview) {
+                params.lastItemValue = this.lastPreview.id;
+            }
+        }
+
+        return params;
     }
 
     constructor(slice: BookSlice) {
@@ -49,76 +78,28 @@ export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo
             loadPreviews: flow.bound
         })
     }
+}
 
-    override getParamsAndSortFn() {
+export enum BookSortTypes {
+    title = "title",
+    priceHigh = "high",
+    priceLow = "low"
+};
 
-        const queryParams: DBURLParams = {};
-        let sortFn: CompareFn<Book['previewInfo']>;
-        let batchSizeExtentedBy = 0;
-
-        const selectedValue = this.sortOptions.selectedOption?.value || null;
-
-        switch (selectedValue) {
-            case BookSortTypes.title:
-                queryParams.orderBy = BookSortOptions[selectedValue].dbKey;
-                queryParams.limitToFirst = this.batchSize;
-
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.name);
-
-                sortFn = (a, b) => a.previewInfo.name < b.previewInfo.name ? -1 : 1;
-                break;
-
-            case BookSortTypes.priceHigh:
-            case BookSortTypes.priceLow:
-                const {limit, at, fn} = this.getPriceParamsAndSortFn(selectedValue);
-                
-                queryParams.orderBy = BookSortOptions[selectedValue].dbKey;
-                queryParams[limit] = this.batchSize;
-
-                if (this.lastPreview) {
-                    const batchSizeExtention = Array
-                        .from(this.currentView.ids)
-                        .map(id => this.slice.store.items.get(id))
-                        .filter(item => item && item.preview.price === this.lastPreview.price)
-                        .length;
-                    batchSizeExtentedBy = batchSizeExtention;
-                    queryParams[limit] += batchSizeExtention;
-                    queryParams[at] = this.lastPreview.price;
-                }
-                sortFn = fn;
-                break;
-
-            default:
-                queryParams.orderBy = '$key';
-                queryParams.limitToFirst = this.batchSize;
-
-                if (this.lastPreview)
-                    queryParams.startAt = incrementStr(this.lastPreview.id);
-
-                sortFn = (a, b) => a.id < b.id ? -1 : 1;
-                break;
-        }
-        return {
-            batchSizeExtentedBy,
-            queryParams, 
-            sortFn
-        };
-    }
-
-    private getPriceParamsAndSortFn(selectedValue: BookSortTypes) : {
-        limit: string,
-        at: string,
-        fn: CompareFn<Book['previewInfo']>
-    } {
-        return selectedValue === BookSortTypes.priceHigh ? {
-            limit: 'limitToLast',
-            at: 'endAt',
-            fn: (a, b) => b.previewInfo.price - a.previewInfo.price
-        } : {
-            limit: 'limitToFirst',
-            at: 'startAt',
-            fn: (a, b) => a.previewInfo.price - b.previewInfo.price
-        }
+export const BookSortOptions = {
+    [BookSortTypes.title]: {
+        dbKey: FirestoreKeys.name_lowercase as keyof FirestoreBook,
+        isDesc: false,
+        text: "Book title",
+    },
+    [BookSortTypes.priceHigh]: {
+        dbKey: FirestoreKeys.price as keyof FirestoreBook,
+        isDesc: true,
+        text: "Price (high)",
+    },
+    [BookSortTypes.priceLow]: {
+        dbKey: FirestoreKeys.price as keyof FirestoreBook,
+        isDesc: false,
+        text: "Price (low)",
     }
 }

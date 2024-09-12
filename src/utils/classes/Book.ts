@@ -1,13 +1,10 @@
-import Entity, { DetailsConstraint, EntityInit } from "./Entity";
-import { FirebaseDB, FirebaseKeys } from "../dbTypes";
+import { DetailsConstraint, FirestoreBook } from "../firestoreDbTypes";
+import Entity, { EntityInit } from "./Entity";
 
-export default class Book extends Entity<BookPreviewInfo, BookDetailsInfo> {
+export default class Book extends Entity<FirestoreBook, DetailsConstraint> {
 
-    constructor ({id, previewInfo, detailsInfo, store} : EntityInit<BookPreviewInfo, BookDetailsInfo>) {
+    constructor ({id, previewInfo, detailsInfo, store} : EntityInit<FirestoreBook, DetailsConstraint>) {
 
         super({ id, previewInfo, detailsInfo, store });
     }
 }
-
-export type BookPreviewInfo = FirebaseDB[FirebaseKeys.books][""];
-export type BookDetailsInfo = DetailsConstraint;
