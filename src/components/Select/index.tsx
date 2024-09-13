@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { FilterConfig } from '../../stores/Grid/GridStore';
+import { SelectSettings } from '../../stores/Grid/GridStore';
 import { DropdownOptionSelectHandler } from '../../utils/uiTypes';
 import { InputWithIconButton } from '../Inputs';
 import Dropdown from '../Dropdown';
 import styles from './index.module.scss';
 
 type SelectProps<T> = {
-    config: FilterConfig<T>,
+    config: SelectSettings<T>,
     selectOption: DropdownOptionSelectHandler<T>
 };
 
@@ -16,17 +16,15 @@ function Select<T>({config, selectOption}: SelectProps<T>) {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const ddOpenerRef = useRef<HTMLInputElement>(null);
 
-    const {name, label, placeholder, selectedOption, options} = config;
+    const {selectedOption, options} = config;
 
     return (<div>
-        <label htmlFor={name}>
-            {label}
-        </label>
+        <label htmlFor="sortBy">Sort by</label>
         
         <div className={styles.cont}>
             <InputWithIconButton
-                id={name}
-                placeholder={placeholder}
+                id="sortBy"
+                placeholder="Select type"
                 ref={ddOpenerRef}
                 readOnly={true}
                 value={selectedOption?.text || ''}

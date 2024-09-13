@@ -12,11 +12,16 @@ function IndexView<P extends PC, D extends DC>({grid, children}: {
     children?: ReactNode
 }) {
 
+    const {isStoreNotInitialised, loadPreviews} = grid;
+
+    if (isStoreNotInitialised)
+        loadPreviews();
+
     return <>
         <div className={styles.panel}>
             <SearchBar grid={grid} className={styles.search}/>
 
-            <Select config={grid.sortOptions} selectOption={grid.setSortOption}/>
+            <Select config={grid.sortSettings} selectOption={grid.selectSortType}/>
             
             {children}
         </div>

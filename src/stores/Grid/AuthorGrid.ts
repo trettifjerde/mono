@@ -1,102 +1,82 @@
-import { action, computed, flow, makeObservable, observable } from "mobx";
-import { documentId } from "firebase/firestore/lite";
+import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
 import AuthorSlice from "../slices/AuthorSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
 import { AuthorDetails, AuthorPreview } from "../../services/AuthorService";
-import GridStore, { FilterConfig } from "./GridStore";
 import { FirestoreAuthor, FirestoreKeys } from "../../utils/firestoreDbTypes";
 import { Pathnames } from "../../utils/consts";
 import { makeAbsolutePath } from "../../utils/helpers";
+import GridStore, { SelectSettings, SortConfig } from "./GridStore";
 import AuthorPreviewItem from "../../components/AuthorPreviewItem";
 
 export default class AuthorGrid extends GridStore<AuthorPreview, AuthorDetails> {
-    
+
     override slice: AuthorSlice;
     override rootPath = makeAbsolutePath(Pathnames.authors);
     override entityTitleName = "author name";
     override ItemPreview = AuthorPreviewItem;
-    override sortOptions: FilterConfig<AuthorSortTypes> = {
-        name: 'sort',
-        label: 'Sort by',
-        placeholder: 'Select type',
-        options: Object.entries(AuthorSortOptions)
-            .map(([key, {text}]) => (
-                {value: key as AuthorSortTypes, text}
-            )),
-        selectedOption: null            
-    }
 
-    override get queryParams(): PreviewsQueryParams {
-        const params : PreviewsQueryParams = {};
-
-        if (this.filterString) {
-            params.filters = [[FirestoreKeys.name_lowercase, this.filterString]];
-        }
-
-        const sortOption = this.sortOptions.selectedOption?.value;
-
-        if (sortOption) {
-            const {dbKey, isDesc} = AuthorSortOptions[sortOption];
-            params.sort = {dbKey, isDesc};
-
-            if (this.lastPreview) {
-                params.lastItemValue = this.lastPreview[dbKey];
-                params.sort = {dbKey, isDesc: false};
-            }  
-        }
-        else {
-            params.sort = {dbKey: documentId(), isDesc: false};
-
-            if (this.lastPreview) {
-                params.lastItemValue = this.lastPreview[FirestoreKeys.name_lowercase];
-            }
-        }
-
-        return params;
-    }
+    override sortConfig = AuthorSortConfig;
+    override sortSettings: SelectSettings<AuthorSortTypes> = {
+        options: [],
+        selectedOption: null
+    };
 
     constructor(slice: AuthorSlice) {
         super();
-        
+
         this.slice = slice;
 
-        this.sortOptions.options = Object
-            .entries(AuthorSortOptions)
-            .map(([key, {text}]) => ({text, value: key as AuthorSortTypes}));
+        this.populateSortOptions();
 
         makeObservable(this, {
-            mainView: observable,
+            defaultView: observable,
             filteredView: observable,
-            sortOptions: observable,
-            filterString: observable,
+            sortSettings: observable,
+            nameFilter: observable,
             currentView: computed,
             previews: computed,
-            lastPreview: computed,
+            isStoreNotInitialised: computed,
             isNotInitialised: computed,
             isFull: computed,
             isLoading: computed,
             isError: computed,
-            setSortOption: action.bound,
-            applyFilterString: action.bound,
+            selectSortType: action.bound,
+            applyNameFilter: action.bound,
             loadPreviews: flow.bound
-        })
+        });
+
+        reaction(
+            () => [this.nameFilter, this.sortSettings.selectedOption], 
+            (areAnyFiltersSelected) => {
+                if (areAnyFiltersSelected.reduce((acc, v) => acc || !!v, false)) 
+                    this.applyFilters();
+            }
+        )
+    }
+
+    override get queryParams(): PreviewsQueryParams {
+        const params: PreviewsQueryParams = {
+            filters: [],
+            sorts: []
+        };
+
+        this.addNameFilterParams(params);
+        this.addSortAndPagination(params);
+
+        return params;
     }
 }
 
-export enum AuthorSortTypes {
-    name = "name",
+enum AuthorSortTypes {
     books = "books"
 };
 
-export const AuthorSortOptions = {
-    [AuthorSortTypes.name]: {
-        dbKey: FirestoreKeys.name_lowercase as keyof FirestoreAuthor,
-        text: "Author name",
-        isDesc: false
-    },
-    [AuthorSortTypes.books]: {
-        dbKey: FirestoreKeys.bookN as keyof FirestoreAuthor,
-        text: "Number of books",
-        isDesc: true
-    },
-}
+const AuthorSortConfig : SortConfig<AuthorSortTypes, FirestoreAuthor> = new Map([
+    [
+        AuthorSortTypes.books, {
+            dbKey: FirestoreKeys.bookN,
+            text: "Number of books",
+            desc: 'desc'
+        }
+    ]
+]);

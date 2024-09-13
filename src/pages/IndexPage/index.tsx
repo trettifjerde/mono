@@ -8,6 +8,6 @@ export default function IndexPage() {
     const {grid} = useContext(RootStoreContext).books;
 
     return <IndexView grid={grid}>
-        <BookFiltering />
+        <BookFiltering grid={grid} />
     </IndexView>
 }

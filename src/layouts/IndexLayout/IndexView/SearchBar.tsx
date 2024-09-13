@@ -16,7 +16,7 @@ function SearchBar<P extends PC, D extends DC>({grid, className}: {
         <DebouncedChangeInput 
             id="itemSearchBar"
             entityTitleName={grid.entityTitleName}
-            applyValue={grid.applyFilterString}
+            applyValue={grid.applyNameFilter}
         />
     </div>
 }

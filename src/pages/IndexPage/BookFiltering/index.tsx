@@ -1,30 +1,11 @@
 // import { DropdownOptionSelectHandler } from '../../../utils/uiTypes';
+import { observer } from 'mobx-react-lite';
 import styles from './index.module.scss';
-// import { useSearchParams } from 'react-router-dom';
-// import { ChangeEventHandler, useCallback } from 'react';
-// import { updateSearchParams } from '../../../utils/helpers';
+import BookGrid from '../../../stores/Grid/BookGrid';
 
-const BookFiltering = () => {
+function BookFiltering({grid}: {grid: BookGrid})  {
 
-    // const [searchParams, setSearchParams] = useSearchParams();
-
-    // const inStockChecked = !!searchParams.get('inStock');
-
-    // const selectAuthor : DropdownOptionSelectHandler = useCallback(option => {
-    //     setSearchParams(prev => updateSearchParams(
-    //         prev, 
-    //         'author', 
-    //         option?.value
-    //     ))
-    // }, [setSearchParams]);
-
-    // const selectInStock : ChangeEventHandler<HTMLInputElement> = useCallback(e => {
-    //     setSearchParams(prev => updateSearchParams(
-    //         prev,
-    //         'inStock',
-    //         e.target.checked ? 'true' : undefined
-    //     ))
-    // }, [setSearchParams]);
+    const {applyInStockFilter} = grid;
 
     return (<>
         {/* <div>
@@ -42,11 +23,11 @@ const BookFiltering = () => {
             <input 
                 id="inStock" type="checkbox" 
                 defaultChecked={false} 
-                onChange={() => {}}
+                onChange={(e) => applyInStockFilter(e.target.checked)}
             />
         </div>
     </>
     )
 };
 
-export default BookFiltering;
+export default observer(BookFiltering);

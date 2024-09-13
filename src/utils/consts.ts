@@ -16,4 +16,4 @@ export enum LoadingState {
 
 export const DefaultBookImgSrc = '/800x800.webp';
 
-export const FETCH_BATCH_SIZE = 2;
+export const FETCH_BATCH_SIZE = 1;

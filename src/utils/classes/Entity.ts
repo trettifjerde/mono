@@ -1,5 +1,5 @@
 import EntityStore from "../../stores/EntityStore";
-import { DetailsConstraint, PreviewConstraint } from "../firestoreDbTypes";
+import { DetailsConstraint, FirestoreKeys, PreviewConstraint } from "../firestoreDbTypes";
 
 export default abstract class Entity<
     PreviewInfo extends PreviewConstraint, 
@@ -36,6 +36,10 @@ export default abstract class Entity<
 
     setDetails(detailsInfo: DetailsInfo) {
         this.detailsInfo = detailsInfo;
+    }
+
+    nameStartsWith(str: string) {
+        return this.previewInfo[FirestoreKeys.name_lowercase].startsWith(str);
     }
 
     get fullInfo() {

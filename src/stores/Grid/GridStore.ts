@@ -1,10 +1,11 @@
 
+import { QueryDocumentSnapshot } from "firebase/firestore/lite";
 import StoreSlice from "../slices/StoreSlice";
-import Entity from "../../utils/classes/Entity";
 import { PreviewsQueryParams } from "../../services/DataService";
+import { PreviewConstraint as PC, DetailsConstraint as DC, FirestoreKeys } from '../../utils/firestoreDbTypes';
+import Entity from "../../utils/classes/Entity";
 import { LoadingState } from "../../utils/consts";
 import { DropdownOption, EntityPreviewComponent } from "../../utils/uiTypes";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes';
 
 export default abstract class GridStore<P extends PC, D extends DC> {
 
@@ -12,21 +13,27 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     abstract rootPath: string;
     abstract entityTitleName: string;
     
-    abstract sortOptions: FilterConfig<any>;
+    abstract sortConfig: SortConfig<any, P>;
+    abstract sortSettings: SelectSettings<any>;
+    nameFilter = '';
     abstract ItemPreview : EntityPreviewComponent<P,D>;
 
-    mainView : GridView;
-    filteredView : GridView;
-    filterString = '';
+    defaultView : GridView<P>;
+    filteredView : GridView<P>;
 
     constructor() {
-        this.mainView = this.getCleanView();
+        this.defaultView = this.getCleanView();
         this.filteredView = this.getCleanView();
     }
 
     get currentView() {
-        return (this.sortOptions.selectedOption || this.filterString) ? this.filteredView : this.mainView;
+        return (this.sortSettings.selectedOption || this.nameFilter) ? this.filteredView : this.defaultView;
     };
+
+    get isStoreNotInitialised() {
+        return this.defaultView.cacheState === CacheState.notInitialised && 
+            this.defaultView.loadingState === LoadingState.idle;
+    }
 
     get isNotInitialised() {
         return this.currentView.cacheState === CacheState.notInitialised;
@@ -49,36 +56,33 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
         this.currentView.ids.forEach(id => {
             const item = this.slice.store.items.get(id);
-            if (item && item.preview.name.toLowerCase().includes(this.filterString))
+            if (item)
                 prevs.push(item.preview)
         })
 
         return prevs;
     }
 
-    get lastPreview() {
-        return this.previews[this.previews.length - 1] || null;
-    }
-
-    setSortOption(option: DropdownOption<GridStore<P,D>['sortOptions']['options'][0]['value']> | null) {
-        this.sortOptions.selectedOption = option;
-        this.filteredView = this.getCleanView();
+    selectSortType(option: GridStore<P,D>['sortSettings']['options'][0] | null) {
+        this.sortSettings.selectedOption = option;
     };
 
-    applyFilterString(value: string) {
-        this.filterString = value.toLowerCase();
-        this.filteredView = this.getCleanView();
+    applyNameFilter(value: string) {
+        this.nameFilter = value;
     }
 
     *loadPreviews() {
 
         this.currentView.loadingState = LoadingState.loading;
 
-        let fetchedPreviews : Awaited<ReturnType<typeof this.slice.service.getPreviews>>;
+        let fetchedSnaps : Awaited<ReturnType<typeof this.slice.service.getPreviews>>;
         
         try {
             
-            fetchedPreviews = yield this.slice.service.getPreviews(this.queryParams);
+            fetchedSnaps = yield this.slice.service.getPreviews(this.queryParams);
+            const {previews: fetchedPreviews, lastSnap} = fetchedSnaps;
+
+            this.currentView.lastSnap = lastSnap;
 
             fetchedPreviews
                 .forEach(preview => {
@@ -95,26 +99,67 @@ export default abstract class GridStore<P extends PC, D extends DC> {
             this.currentView.loadingState = LoadingState.idle;
         }
         catch (error) {
-            console.log(error);
             this.currentView.loadingState = LoadingState.error;
         }
     }
 
     abstract get queryParams() : PreviewsQueryParams;
 
-    protected getCleanView() : GridView {
+    protected populateSortOptions() {
+        for (const [sortType, info] of this.sortConfig)
+            this.sortSettings.options.push({ value: sortType, text: info.text });
+    }
+
+    protected getCleanView() : GridView<P> {
         return {
             ids: new Set(),
             cacheState: CacheState.notInitialised,
-            loadingState: LoadingState.idle
+            loadingState: LoadingState.idle,
+            lastSnap: null
+        };
+    }
+
+    protected applyFilters() {
+        this.filteredView = this.getCleanView();
+        this.loadPreviews();
+    }
+
+    protected addNameFilterParams(params: PreviewsQueryParams) {
+
+        if (this.nameFilter) {
+            params.filters.push(...GridStore.makeNameFilterConstraint(this.nameFilter));
+            params.sorts.push({ key: FirestoreKeys.name_lowercase });
         }
+    }
+
+    protected addSortAndPagination(params: PreviewsQueryParams) {
+
+        const selectedSort = this.sortSettings.selectedOption && this.sortConfig.get(this.sortSettings.selectedOption.value);
+
+        if (selectedSort) {
+            const {dbKey, desc} = selectedSort;
+            params.sorts.push({key: dbKey as FirestoreKeys, desc});
+        }
+
+        if (this.currentView.lastSnap) 
+            params.lastSnap = this.currentView.lastSnap;
+    };
+
+    static makeNameFilterConstraint(filterStr: string) {
+        return [
+            [FirestoreKeys.name_lowercase, '>=', filterStr],
+            [FirestoreKeys.name_lowercase, '<=', `${filterStr}\uf8ff`]
+        ] as NonNullable<PreviewsQueryParams['filters']>
     }
 }
 
-export type FilterConfig<T> = {
-    name: string;
-    label: string;
-    placeholder: string;
+export type SortConfig<Key, P extends PC> = Map<Key, {
+    dbKey: keyof P, 
+    text: string,
+    desc?: 'desc'
+}>
+
+export type SelectSettings<T> = {
     options: DropdownOption<T>[];
     selectedOption: DropdownOption<T> | null;
 }
@@ -125,8 +170,9 @@ export enum CacheState {
     full
 }
 
-type GridView = {
+type GridView<P> = {
     ids: Set<string>,
+    lastSnap : QueryDocumentSnapshot<P> | null,
     cacheState: CacheState,
     loadingState: LoadingState
 }

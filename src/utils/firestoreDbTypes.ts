@@ -13,6 +13,15 @@ export enum FirestoreKeys {
     bookN = "bookN"
 };
 
+export type PreviewConstraint = {
+    [FirestoreKeys.name]: string, 
+    [FirestoreKeys.name_lowercase]: string,
+    [FirestoreKeys.img]?: string,
+};
+export type DetailsConstraint = {
+    description: string
+};
+
 export type DbSchema = {
     [FirestoreKeys.books]: {
         [bookId: string]: FirestoreBook
@@ -28,23 +37,13 @@ export type DbSchema = {
     },
 }
 
-export type FirestoreBook = {
-    [FirestoreKeys.name]: string,
-    [FirestoreKeys.name_lowercase]: string,
+export type FirestoreBook = PreviewConstraint & {
     [FirestoreKeys.price]: number,
     [FirestoreKeys.inStock]: number
     [FirestoreKeys.authorId]: string,
     [FirestoreKeys.authorName]: string
-    [FirestoreKeys.img]?: string,
 }
 
-export type FirestoreAuthor = {
-    [FirestoreKeys.name]: string,
-    [FirestoreKeys.name_lowercase]: string,
+export type FirestoreAuthor = PreviewConstraint & {
     [FirestoreKeys.bookN]: number,
-    [FirestoreKeys.img]?: string
 };
-
-export type PreviewConstraint = {name: string, img?: string};
-export type DetailsConstraint = {description: string};
-

@@ -1,5 +1,5 @@
-import { collection, CollectionReference, FirestoreDataConverter } from "firebase/firestore/lite";
-import { DetailsConstraint, FirestoreAuthor, FirestoreBook, FirestoreKeys } from "../utils/firestoreDbTypes";
+import { collection, CollectionReference } from "firebase/firestore/lite";
+import { DetailsConstraint, FirestoreAuthor, FirestoreKeys } from "../utils/firestoreDbTypes";
 import DataService from "./DataService";
 import db from "./Firestore";
 import Book from "../utils/classes/Book";
@@ -21,13 +21,17 @@ export default class AuthorService extends DataService<AuthorPreview, AuthorDeta
     }
 
     async getAuthorBooks(authorId: string) {
-        return this.getAnyPreviews({
+        return this.getPreviewSnapshots({
             collectionRef: this.booksRef,
-            converter: this.authorBooksConverter,
             params: {
-                filters: [[FirestoreKeys.authorId, authorId]]
+                filters: [[FirestoreKeys.authorId, '==', authorId]],
+                sorts: []
             }
         })
+        .then(snaps => snaps.map(snap => ({
+            id: snap.id,
+            ...snap.data()
+        })))
     }
 
     override getDetails(id: string) {
@@ -39,20 +43,5 @@ export default class AuthorService extends DataService<AuthorPreview, AuthorDeta
             description,
             books
         }))
-    }
-
-    authorBooksConverter : FirestoreDataConverter<Book['preview'], FirestoreBook> = {
-        toFirestore: (value: Book['preview']) => {
-            const {id, ...info} = value;
-            return info;
-        },
-        fromFirestore(snapshot) {
-            const id = snapshot.id;
-            const data = snapshot.data();
-            return {
-                id,
-                ...data
-            } as Book['preview']
-        }
     }
 }

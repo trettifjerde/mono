@@ -9,7 +9,7 @@ function Reloader<P extends PC, D extends DC>(
 
     return <PreviewGridWrapper type='empty'>
 
-        <div>Failed to fetch {grid.slice.entityName.toLowerCase()}</div>
+        <div>Failed to fetch {grid.slice.entityName.toLowerCase() + 's'}</div>
         
         <Button onClick={() => grid.loadPreviews()}>Try again</Button>
 

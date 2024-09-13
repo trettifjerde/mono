@@ -6,13 +6,10 @@ import Reloader from "./Reloader";
 
 function NotInitialisedGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P,D>}) {
 
-    const {isError, isLoading, loadPreviews} = grid;
+    const {isError} = grid;
 
     if (isError)
         return <Reloader grid={grid} />
-
-    if (!isLoading) 
-        loadPreviews();
 
     return <PreviewGridSkeleton />
 }

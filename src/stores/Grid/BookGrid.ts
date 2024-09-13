@@ -1,9 +1,8 @@
-import { action, computed, flow, makeObservable, observable } from "mobx";
-import { documentId } from "firebase/firestore/lite";
+import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
 import BookSlice from "../slices/BookSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
-import GridStore, { FilterConfig } from "./GridStore";
 import { DetailsConstraint, FirestoreBook, FirestoreKeys } from "../../utils/firestoreDbTypes";
+import GridStore, { SelectSettings, SortConfig } from "./GridStore";
 import BookPreviewItem from "../../components/BookPreviewItem";
 
 export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint> {
@@ -13,93 +12,110 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
     override entityTitleName = "book title";
     override ItemPreview = BookPreviewItem;
 
-    override sortOptions: FilterConfig<BookSortTypes> = {
-        name: 'sort',
-        label: 'Sort by',
-        placeholder: 'Select type',
-        options: Object.entries(BookSortOptions)
-            .map(([key, {text}]) => (
-                {value: key as BookSortTypes, text}
-            )),
-        selectedOption: null            
+    override sortConfig = BookSortConfig;
+    override sortSettings: SelectSettings<BookSortTypes> = {
+        options: [],
+        selectedOption: null
+    };
+
+    authorFilter: SelectSettings<string> = {
+        options: [],
+        selectedOption: null
     }
-
-    override get queryParams(): PreviewsQueryParams {
-        const params : PreviewsQueryParams = {};
-
-        if (this.filterString) {
-            params.filters = [[FirestoreKeys.name_lowercase, this.filterString]];
-        }
-
-        const sortOption = this.sortOptions.selectedOption?.value;
-
-        if (sortOption) {
-            const {dbKey, isDesc} = BookSortOptions[sortOption];
-            params.sort = {dbKey, isDesc};
-
-            if (this.lastPreview) {
-                params.lastItemValue = this.lastPreview[dbKey];
-            }  
-        }
-        else {
-            params.sort = {dbKey: documentId(), isDesc: false};
-            
-            if (this.lastPreview) {
-                params.lastItemValue = this.lastPreview.id;
-            }
-        }
-
-        return params;
-    }
+    inStockFilterOn = false;
 
     constructor(slice: BookSlice) {
         super();
 
         this.slice = slice;
 
-        this.sortOptions.options = Object
-            .entries(BookSortOptions)
-            .map(([key, info]) => ({value: key as BookSortTypes, text: info.text}))
+        this.populateSortOptions();
 
         makeObservable(this, {
-            mainView: observable,
+            defaultView: observable,
             filteredView: observable,
-            sortOptions: observable,
-            filterString: observable,
+            sortSettings: observable,
+            nameFilter: observable,
+            authorFilter: observable,
+            inStockFilterOn: observable,
             currentView: computed,
             previews: computed,
-            lastPreview: computed,
+            isStoreNotInitialised: computed,
             isNotInitialised: computed,
             isFull: computed,
             isLoading: computed,
             isError: computed,
-            setSortOption: action.bound,
-            applyFilterString: action.bound,
+            selectSortType: action.bound,
+            applyNameFilter: action.bound,
+            applyInStockFilter: action.bound,
             loadPreviews: flow.bound
-        })
+        });
+
+        reaction(
+            () => [
+                this.nameFilter, 
+                this.authorFilter,
+                this.inStockFilterOn,
+                this.sortSettings.selectedOption,
+            ], 
+            (areAnyFiltersSelected) => {
+                if (areAnyFiltersSelected.reduce((acc, v) => acc || !!v, false)) 
+                    this.applyFilters();
+            }
+        )
+
+        console.log(this.sortSettings.options);
+    }
+
+    override get currentView() {
+        return (this.sortSettings.selectedOption || this.nameFilter || 
+            this.authorFilter.selectedOption || this.inStockFilterOn) ? 
+            this.filteredView : this.defaultView;
+    }
+
+    override get queryParams(): PreviewsQueryParams {
+
+        const params : PreviewsQueryParams = {
+            filters: [],
+            sorts: []
+        }
+
+        if (this.authorFilter.selectedOption) {
+            params.filters.push([FirestoreKeys.authorId, '==', this.authorFilter.selectedOption.value]);
+            params.sorts.push({key: FirestoreKeys.authorId});
+        }
+
+        this.addNameFilterParams(params);
+
+        if (this.inStockFilterOn) {
+            params.filters.push([FirestoreKeys.inStock, '>', 0]);
+            params.sorts.push({key: FirestoreKeys.inStock, desc: 'desc'});
+        }
+
+        this.addSortAndPagination(params);
+
+        return params;
+    }
+
+    applyInStockFilter(checked: boolean) {
+        this.inStockFilterOn = checked;
     }
 }
 
-export enum BookSortTypes {
-    title = "title",
+enum BookSortTypes {
     priceHigh = "high",
     priceLow = "low"
 };
 
-export const BookSortOptions = {
-    [BookSortTypes.title]: {
-        dbKey: FirestoreKeys.name_lowercase as keyof FirestoreBook,
-        isDesc: false,
-        text: "Book title",
-    },
-    [BookSortTypes.priceHigh]: {
-        dbKey: FirestoreKeys.price as keyof FirestoreBook,
-        isDesc: true,
+const BookSortConfig : SortConfig<BookSortTypes, FirestoreBook> = new Map([[
+    BookSortTypes.priceHigh, {
+        dbKey: FirestoreKeys.price,
         text: "Price (high)",
-    },
-    [BookSortTypes.priceLow]: {
-        dbKey: FirestoreKeys.price as keyof FirestoreBook,
-        isDesc: false,
+        desc: 'desc',
+    }], [
+    BookSortTypes.priceLow, {
+        dbKey: FirestoreKeys.price,
         text: "Price (low)",
-    }
-}
+    }]
+]);
+
