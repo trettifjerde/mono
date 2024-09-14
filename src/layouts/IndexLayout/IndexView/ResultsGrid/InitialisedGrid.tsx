@@ -6,7 +6,8 @@ import LoadMore from "./LoadMore";
 
 function InitialisedGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P,D>}) {
 
-    const {previews, isFull, isLoading, ItemPreview, loadPreviews} = grid;
+    const {currentView, ItemPreview, loadPreviews} = grid;
+    const {previews, isFull, isLoading} = currentView;
 
     return (
         <PreviewGrid 

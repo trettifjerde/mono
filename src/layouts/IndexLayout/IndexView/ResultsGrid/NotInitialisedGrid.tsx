@@ -6,7 +6,7 @@ import Reloader from "./Reloader";
 
 function NotInitialisedGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P,D>}) {
 
-    const {isError} = grid;
+    const {isError} = grid.currentView;
 
     if (isError)
         return <Reloader grid={grid} />

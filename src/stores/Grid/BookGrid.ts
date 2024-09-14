@@ -39,12 +39,7 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
             authorFilter: observable,
             inStockFilterOn: observable,
             currentView: computed,
-            previews: computed,
             isStoreNotInitialised: computed,
-            isNotInitialised: computed,
-            isFull: computed,
-            isLoading: computed,
-            isError: computed,
             selectSortType: action.bound,
             applyNameFilter: action.bound,
             applyInStockFilter: action.bound,
@@ -54,17 +49,15 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
         reaction(
             () => [
                 this.nameFilter, 
-                this.authorFilter,
+                this.authorFilter.selectedOption?.value,
                 this.inStockFilterOn,
-                this.sortSettings.selectedOption,
+                this.sortSettings.selectedOption?.value,
             ], 
             (areAnyFiltersSelected) => {
-                if (areAnyFiltersSelected.reduce((acc, v) => acc || !!v, false)) 
+                if (areAnyFiltersSelected.reduce((acc, v) =>  acc || !!v, false)) 
                     this.applyFilters();
             }
         )
-
-        console.log(this.sortSettings.options);
     }
 
     override get currentView() {
@@ -80,9 +73,11 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
             sorts: []
         }
 
+        this.addSortAndPagination(params);
+
         if (this.authorFilter.selectedOption) {
             params.filters.push([FirestoreKeys.authorId, '==', this.authorFilter.selectedOption.value]);
-            params.sorts.push({key: FirestoreKeys.authorId});
+            // params.sorts.push({key: FirestoreKeys.authorId});
         }
 
         this.addNameFilterParams(params);
@@ -92,7 +87,6 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
             params.sorts.push({key: FirestoreKeys.inStock, desc: 'desc'});
         }
 
-        this.addSortAndPagination(params);
 
         return params;
     }

@@ -7,7 +7,7 @@ import styles from './index.module.scss';
 
 function ResultsGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P, D>}) {
 
-    const {isNotInitialised } = grid;
+    const { isNotInitialised } = grid.currentView;
 
     return <div className={styles.grid}>
         {isNotInitialised ? 

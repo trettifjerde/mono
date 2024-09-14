@@ -1,11 +1,10 @@
-
-import { QueryDocumentSnapshot } from "firebase/firestore/lite";
 import StoreSlice from "../slices/StoreSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
 import { PreviewConstraint as PC, DetailsConstraint as DC, FirestoreKeys } from '../../utils/firestoreDbTypes';
-import Entity from "../../utils/classes/Entity";
 import { LoadingState } from "../../utils/consts";
 import { DropdownOption, EntityPreviewComponent } from "../../utils/uiTypes";
+import { DefaultView } from "./View/DefaultView";
+import { FilteredView } from "./View/FilteredView";
 
 export default abstract class GridStore<P extends PC, D extends DC> {
 
@@ -15,15 +14,18 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     
     abstract sortConfig: SortConfig<any, P>;
     abstract sortSettings: SelectSettings<any>;
-    nameFilter = '';
+    
     abstract ItemPreview : EntityPreviewComponent<P,D>;
 
-    defaultView : GridView<P>;
-    filteredView : GridView<P>;
-
+    abstract get queryParams() : PreviewsQueryParams;
+    
+    defaultView : DefaultView<P, D>;
+    filteredView : FilteredView<P, D>;
+    nameFilter = '';
+    
     constructor() {
-        this.defaultView = this.getCleanView();
-        this.filteredView = this.getCleanView();
+        this.defaultView = new DefaultView(this);
+        this.filteredView = new FilteredView(this);
     }
 
     get currentView() {
@@ -33,34 +35,6 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     get isStoreNotInitialised() {
         return this.defaultView.cacheState === CacheState.notInitialised && 
             this.defaultView.loadingState === LoadingState.idle;
-    }
-
-    get isNotInitialised() {
-        return this.currentView.cacheState === CacheState.notInitialised;
-    }
-
-    get isLoading() {
-        return this.currentView.loadingState === LoadingState.loading;
-    }
-
-    get isFull() {
-        return this.currentView.cacheState === CacheState.full;
-    }
-
-    get isError() {
-        return this.currentView.loadingState === LoadingState.error;
-    }
-
-    get previews() {
-        const prevs : Entity<P,D>['preview'][] = [];
-
-        this.currentView.ids.forEach(id => {
-            const item = this.slice.store.items.get(id);
-            if (item)
-                prevs.push(item.preview)
-        })
-
-        return prevs;
     }
 
     selectSortType(option: GridStore<P,D>['sortSettings']['options'][0] | null) {
@@ -73,55 +47,41 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
     *loadPreviews() {
 
-        this.currentView.loadingState = LoadingState.loading;
+        this.currentView.setLoadingState(LoadingState.loading);
 
         let fetchedSnaps : Awaited<ReturnType<typeof this.slice.service.getPreviews>>;
         
         try {
             
             fetchedSnaps = yield this.slice.service.getPreviews(this.queryParams);
-            const {previews: fetchedPreviews, lastSnap} = fetchedSnaps;
 
-            this.currentView.lastSnap = lastSnap;
-
-            fetchedPreviews
-                .forEach(preview => {
-                    this.slice.store.add(preview);
-                    this.currentView.ids.add(preview.id);
-                })
-            
-            if (fetchedPreviews.length < this.slice.service.batchSize)
-                this.currentView.cacheState = CacheState.full;
-
-            else if (this.currentView.cacheState === CacheState.notInitialised) 
-                this.currentView.cacheState = CacheState.initialised;            
-
-            this.currentView.loadingState = LoadingState.idle;
+            const {previews: previewInits, lastSnap} = fetchedSnaps;
+            const items = this.slice.store.add(...previewInits);
+            this.currentView.addPreviews(items, lastSnap);
         }
         catch (error) {
-            this.currentView.loadingState = LoadingState.error;
+            // console.log(error);
+            this.currentView.setLoadingState(LoadingState.error);
         }
     }
 
-    abstract get queryParams() : PreviewsQueryParams;
+    protected applyFilters() {
+        if (this.defaultView.cacheState === CacheState.full)
+            this.filterCachedPreviews();
+
+        else {
+            this.filteredView.clear();
+            this.loadPreviews();
+        }
+    }
+
+    protected filterCachedPreviews() {
+
+    }
 
     protected populateSortOptions() {
         for (const [sortType, info] of this.sortConfig)
             this.sortSettings.options.push({ value: sortType, text: info.text });
-    }
-
-    protected getCleanView() : GridView<P> {
-        return {
-            ids: new Set(),
-            cacheState: CacheState.notInitialised,
-            loadingState: LoadingState.idle,
-            lastSnap: null
-        };
-    }
-
-    protected applyFilters() {
-        this.filteredView = this.getCleanView();
-        this.loadPreviews();
     }
 
     protected addNameFilterParams(params: PreviewsQueryParams) {
@@ -168,11 +128,4 @@ export enum CacheState {
     notInitialised,
     initialised,
     full
-}
-
-type GridView<P> = {
-    ids: Set<string>,
-    lastSnap : QueryDocumentSnapshot<P> | null,
-    cacheState: CacheState,
-    loadingState: LoadingState
 }

@@ -22,13 +22,22 @@ export default class EntityStore<P extends PC, D extends DC> {
 
     add(...itemInits: EntityInitInfo<P,D>[]) {
 
-        const items = itemInits.map(init => new this.slice.EntityConstructor({
-            ...init,
-            store: this
-        }));
+        const items : Entity<P,D>[] = [];
 
-        items.forEach(item => this.items.set(item.id, item));
-
+        itemInits.forEach(init => {
+            const existingItem = this.items.get(init.id);
+            if (existingItem)
+                items.push(existingItem)
+            else {
+                const item = new this.slice.EntityConstructor({
+                    ...init,
+                    store: this
+                });
+                this.items.set(item.id, item);
+                items.push(item);
+            }
+        })
+        
         return items;
     }
 

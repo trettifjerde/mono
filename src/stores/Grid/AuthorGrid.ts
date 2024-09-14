@@ -34,21 +34,19 @@ export default class AuthorGrid extends GridStore<AuthorPreview, AuthorDetails> 
             sortSettings: observable,
             nameFilter: observable,
             currentView: computed,
-            previews: computed,
             isStoreNotInitialised: computed,
-            isNotInitialised: computed,
-            isFull: computed,
-            isLoading: computed,
-            isError: computed,
             selectSortType: action.bound,
             applyNameFilter: action.bound,
             loadPreviews: flow.bound
         });
 
         reaction(
-            () => [this.nameFilter, this.sortSettings.selectedOption], 
+            () => [
+                this.nameFilter, 
+                this.sortSettings.selectedOption?.value,
+            ], 
             (areAnyFiltersSelected) => {
-                if (areAnyFiltersSelected.reduce((acc, v) => acc || !!v, false)) 
+                if (areAnyFiltersSelected.reduce((acc, v) =>  acc || !!v, false)) 
                     this.applyFilters();
             }
         )
