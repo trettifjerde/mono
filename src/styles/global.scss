@@ -167,5 +167,7 @@ label {
   border-radius: $border-radius;
   font-family: inherit;
   font-size: inherit;
-  transition: all $trans-dur $trans-fn;
+  transition-property: color, background-color;
+  transition-duration: $trans-dur;
+  transition-timing-function: $trans-fn;
 }

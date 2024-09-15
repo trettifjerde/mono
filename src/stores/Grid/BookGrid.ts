@@ -1,8 +1,10 @@
-import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
+import { action, makeObservable, observable, reaction } from "mobx";
 import BookSlice from "../slices/BookSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
-import { DetailsConstraint, FirestoreBook, FirestoreKeys } from "../../utils/firestoreDbTypes";
-import GridStore, { SelectSettings, SortConfig } from "./GridStore";
+import GridStore from "./GridStore";
+import { DetailsConstraint, FirestoreBook, FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
+import Book from "../../utils/classes/Book";
+import SortSelect, { SortConfig } from "./SortSelect";
 import BookPreviewItem from "../../components/BookPreviewItem";
 
 export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint> {
@@ -12,16 +14,9 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
     override entityTitleName = "book title";
     override ItemPreview = BookPreviewItem;
 
-    override sortConfig = BookSortConfig;
-    override sortSettings: SelectSettings<BookSortTypes> = {
-        options: [],
-        selectedOption: null
-    };
+    override sortSelect: SortSelect<FirestoreBook, BookSortTypes>;
 
-    authorFilter: SelectSettings<string> = {
-        options: [],
-        selectedOption: null
-    }
+    // authorIdFilter: 
     inStockFilterOn = false;
 
     constructor(slice: BookSlice) {
@@ -29,29 +24,20 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
 
         this.slice = slice;
 
-        this.populateSortOptions();
+        this.sortSelect = new SortSelect(BookSortConfig);
 
         makeObservable(this, {
-            defaultView: observable,
-            filteredView: observable,
-            sortSettings: observable,
-            nameFilter: observable,
-            authorFilter: observable,
+            // authorIdFilter: observable,
             inStockFilterOn: observable,
-            currentView: computed,
-            isStoreNotInitialised: computed,
-            selectSortType: action.bound,
-            applyNameFilter: action.bound,
-            applyInStockFilter: action.bound,
-            loadPreviews: flow.bound
+            applyInStockFilter: action.bound
         });
 
         reaction(
             () => [
                 this.nameFilter, 
-                this.authorFilter.selectedOption?.value,
+                // this.authorIdFilter.selectedOption?.value,
                 this.inStockFilterOn,
-                this.sortSettings.selectedOption?.value,
+                this.sortSelect.selectedOption?.value,
             ], 
             (areAnyFiltersSelected) => {
                 if (areAnyFiltersSelected.reduce((acc, v) =>  acc || !!v, false)) 
@@ -61,8 +47,8 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
     }
 
     override get currentView() {
-        return (this.sortSettings.selectedOption || this.nameFilter || 
-            this.authorFilter.selectedOption || this.inStockFilterOn) ? 
+        return (this.sortSelect.selectedOption || this.nameFilter || 
+            this.sortSelect.selectedOption || this.inStockFilterOn) ? 
             this.filteredView : this.defaultView;
     }
 
@@ -75,20 +61,35 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
 
         this.addSortAndPagination(params);
 
-        if (this.authorFilter.selectedOption) {
-            params.filters.push([FirestoreKeys.authorId, '==', this.authorFilter.selectedOption.value]);
-            // params.sorts.push({key: FirestoreKeys.authorId});
-        }
+        // if (this.authorIdFilter.selectedOption) {
+        //     params.filters.push([FK.authorId, '==', this.authorIdFilter.selectedOption.value]);
+        //     // params.sorts.push({key: FK.authorId});
+        // }
 
         this.addNameFilterParams(params);
 
         if (this.inStockFilterOn) {
-            params.filters.push([FirestoreKeys.inStock, '>', 0]);
-            params.sorts.push({key: FirestoreKeys.inStock, desc: 'desc'});
+            params.filters.push([FK.inStock, '>', 0]);
+            params.sorts.push({dbKey: FK.inStock, desc: 'desc'});
         }
 
-
         return params;
+    }
+
+    override get currentFilterFn() : (p: Book['preview']) => boolean {
+        let filterFns : Array<(p: Book['preview']) => boolean> = [];
+
+        // if (this.authorIdFilter.selectedOption) {
+        //     const authorId = this.authorIdFilter.selectedOption.value;
+        //     filterFns.push(p => p[FK.authorId] === authorId);
+        // }
+        if (this.nameFilter) 
+            filterFns.push(p => p[FK.name_lowercase].startsWith(this.nameFilter));
+
+        if (this.inStockFilterOn)
+            filterFns.push(p => p[FK.inStock] > 0)
+
+        return (p) => filterFns.reduce((acc, v) => acc && v(p), true);
     }
 
     applyInStockFilter(checked: boolean) {
@@ -101,14 +102,14 @@ enum BookSortTypes {
     priceLow = "low"
 };
 
-const BookSortConfig : SortConfig<BookSortTypes, FirestoreBook> = new Map([[
+const BookSortConfig : SortConfig<FirestoreBook, BookSortTypes> = new Map([[
     BookSortTypes.priceHigh, {
-        dbKey: FirestoreKeys.price,
+        dbKey: FK.price,
         text: "Price (high)",
         desc: 'desc',
     }], [
     BookSortTypes.priceLow, {
-        dbKey: FirestoreKeys.price,
+        dbKey: FK.price,
         text: "Price (low)",
     }]
 ]);

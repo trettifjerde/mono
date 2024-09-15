@@ -1,49 +1,35 @@
-import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
+import { reaction } from "mobx";
 import AuthorSlice from "../slices/AuthorSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
-import { AuthorDetails, AuthorPreview } from "../../services/AuthorService";
-import { FirestoreAuthor, FirestoreKeys } from "../../utils/firestoreDbTypes";
+import { FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
 import { Pathnames } from "../../utils/consts";
 import { makeAbsolutePath } from "../../utils/helpers";
-import GridStore, { SelectSettings, SortConfig } from "./GridStore";
+import GridStore from "./GridStore";
 import AuthorPreviewItem from "../../components/AuthorPreviewItem";
+import Author from "../../utils/classes/Author";
+import SelectView, { SortConfig } from "./SortSelect";
+import { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
+import SortSelect from "./SortSelect";
 
-export default class AuthorGrid extends GridStore<AuthorPreview, AuthorDetails> {
+export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetailsInfo> {
 
     override slice: AuthorSlice;
     override rootPath = makeAbsolutePath(Pathnames.authors);
     override entityTitleName = "author name";
     override ItemPreview = AuthorPreviewItem;
 
-    override sortConfig = AuthorSortConfig;
-    override sortSettings: SelectSettings<AuthorSortTypes> = {
-        options: [],
-        selectedOption: null
-    };
+    override sortSelect: SelectView<AuthorPreviewInfo, AuthorSortTypes>;
 
     constructor(slice: AuthorSlice) {
         super();
 
         this.slice = slice;
-
-        this.populateSortOptions();
-
-        makeObservable(this, {
-            defaultView: observable,
-            filteredView: observable,
-            sortSettings: observable,
-            nameFilter: observable,
-            currentView: computed,
-            isStoreNotInitialised: computed,
-            selectSortType: action.bound,
-            applyNameFilter: action.bound,
-            loadPreviews: flow.bound
-        });
+        this.sortSelect = new SortSelect(AuthorSortConfig);
 
         reaction(
             () => [
                 this.nameFilter, 
-                this.sortSettings.selectedOption?.value,
+                this.sortSelect.selectedOption?.value,
             ], 
             (areAnyFiltersSelected) => {
                 if (areAnyFiltersSelected.reduce((acc, v) =>  acc || !!v, false)) 
@@ -63,16 +49,23 @@ export default class AuthorGrid extends GridStore<AuthorPreview, AuthorDetails> 
 
         return params;
     }
+
+    override get currentFilterFn() : (p: Author['preview']) => boolean {
+        if (this.nameFilter)
+            return (p) => p[FK.name_lowercase].startsWith(this.nameFilter);
+
+        return () => true;
+    }
 }
 
 enum AuthorSortTypes {
     books = "books"
 };
 
-const AuthorSortConfig : SortConfig<AuthorSortTypes, FirestoreAuthor> = new Map([
+const AuthorSortConfig : SortConfig<AuthorPreviewInfo, AuthorSortTypes> = new Map([
     [
         AuthorSortTypes.books, {
-            dbKey: FirestoreKeys.bookN,
+            dbKey: FK.bookN,
             text: "Number of books",
             desc: 'desc'
         }

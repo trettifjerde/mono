@@ -32,7 +32,7 @@ export default abstract class DataService<P extends PC, D extends DC> {
 
             filters.forEach((filter) => constraints.push(where(...filter)));
 
-            sorts.forEach(({key, desc}) => constraints.push(orderBy(key, desc)));
+            sorts.forEach(({dbKey, desc}) => constraints.push(orderBy(dbKey, desc)));
 
             if (lastSnap) 
                 constraints.push(startAfter(lastSnap));
@@ -108,7 +108,7 @@ export default abstract class DataService<P extends PC, D extends DC> {
 
 export type PreviewsQueryParams = {
     filters: Array<[FirestoreKeys, WhereFilterOp, string |number]>,
-    sorts: Array<{key: FirestoreKeys, desc?: 'desc'}>,
+    sorts: Array<{dbKey: FirestoreKeys, desc?: 'desc'}>,
     lastSnap?: DocumentSnapshot, 
 };
 

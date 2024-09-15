@@ -4,12 +4,12 @@ import DataService from "./DataService";
 import db from "./Firestore";
 import Book from "../utils/classes/Book";
 
-export type AuthorPreview = FirestoreAuthor;
-export type AuthorDetails = DetailsConstraint & {
+export type AuthorPreviewInfo = FirestoreAuthor;
+export type AuthorDetailsInfo = DetailsConstraint & {
     books: Book['preview'][]
 }
 
-export default class AuthorService extends DataService<AuthorPreview, AuthorDetails> {
+export default class AuthorService extends DataService<AuthorPreviewInfo, AuthorDetailsInfo> {
 
     override previewsRef: CollectionReference<FirestoreAuthor>;
 
@@ -17,7 +17,7 @@ export default class AuthorService extends DataService<AuthorPreview, AuthorDeta
         super(FirestoreKeys.bios);
         
         this.previewsRef = collection(db, FirestoreKeys.authors)
-            .withConverter(DataService.makePreviewsConverter<AuthorPreview>())
+            .withConverter(DataService.makePreviewsConverter<AuthorPreviewInfo>())
     }
 
     async getAuthorBooks(authorId: string) {

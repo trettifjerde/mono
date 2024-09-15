@@ -1,19 +1,16 @@
-import { observer } from "mobx-react-lite";
-import { DetailsConstraint as DC, PreviewConstraint as PC} from "../../../../utils/firestoreDbTypes";
-import GridStore from "../../../../stores/Grid/GridStore";
 import PreviewGridWrapper from "../../../../components/PreviewGrid/PreviewGridWrapper";
 import { Button } from "../../../../components/Buttons";
 
-function Reloader<P extends PC, D extends DC>(
-    {grid} : {grid: GridStore<P,D>}) {
+function Reloader(
+    {loadPreviews, entityName} : {loadPreviews: () => void, entityName: string}) {
 
     return <PreviewGridWrapper type='empty'>
 
-        <div>Failed to fetch {grid.slice.entityName.toLowerCase() + 's'}</div>
+        <div>Failed to fetch {entityName.toLowerCase() + 's'}</div>
         
-        <Button onClick={() => grid.loadPreviews()}>Try again</Button>
+        <Button onClick={loadPreviews}>Try again</Button>
 
     </PreviewGridWrapper>
 };
 
-export default observer(Reloader);
+export default Reloader;

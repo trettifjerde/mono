@@ -9,12 +9,13 @@
     background-color: $dark1;
 }
 
-.more {
+.pag {
     position: absolute;
-    bottom: $main-inline-padding;
     left: 0;
     right: 0;
+    bottom: $main-inline-padding;
     display: flex;
     justify-content: center;
+    gap: $main-inline-padding;
     animation: var(--anim-fade-in);
 }
