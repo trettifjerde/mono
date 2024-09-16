@@ -3,7 +3,8 @@ import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/fires
 
 export type DropdownOption<T> = {
     value: T,
-    text: string
+    text: string,
+    icon?: string
 }
 
 export type DropdownOptionSelectHandler<T> = (option: DropdownOption<T> | null) => void;

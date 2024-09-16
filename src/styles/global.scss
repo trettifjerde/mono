@@ -40,6 +40,15 @@ a {
   transition: color $trans-dur $trans-fn;
 }
 
+i {
+  font-size: .875em;
+}
+
+i + span,
+span + i {
+  margin-left: 0.5rem;
+}
+
 input {
   @extend %input-btn-clear;
 
@@ -167,7 +176,5 @@ label {
   border-radius: $border-radius;
   font-family: inherit;
   font-size: inherit;
-  transition-property: color, background-color;
-  transition-duration: $trans-dur;
-  transition-timing-function: $trans-fn;
+  transition: all $trans-dur $trans-fn;
 }

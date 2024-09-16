@@ -18,9 +18,15 @@ function IndexView<P extends PC, D extends DC>({grid, children}: {
 
     return <>
         <div className={styles.panel}>
-            <SearchBar grid={grid} className={styles.search}/>
+            <SearchBar grid={grid}/>
 
-            <Select sortSelect={grid.sortSelect}/>
+            <Select 
+                sortSelect={grid.sortSelect}
+                id="sortSelect"
+                label="Sort by"
+                icon="icon-arrows-v"
+                placeholder="Select type"
+            />
             
             {children}
         </div>

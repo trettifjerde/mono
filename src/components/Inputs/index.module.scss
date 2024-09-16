@@ -10,19 +10,22 @@
             cursor: pointer;
         }
 
-        &:focus+button,
-        &:not(:placeholder-shown)+button {
+        &:focus+button.hwb,
+        &:not(:placeholder-shown)+button.hwb {
             opacity: 1;
             visibility: visible;
         }
     }
 
     button {
-        opacity: 0;
-        visibility: hidden;
         position: absolute;
         top: 0;
         right: 0;
         height: 100%;
+        
+        &.hwb {
+            visibility: hidden;
+            opacity: 0;
+        }
     }
 }

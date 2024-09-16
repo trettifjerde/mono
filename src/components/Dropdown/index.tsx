@@ -3,17 +3,15 @@ import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes
 import styles from './index.module.scss';
 
 export default function Dropdown<T>({
-    ddOpenerRef, selectOption, closeDropdown, options, isFetching=false
+    ddOpenerRef, selectOption, closeDropdown, options, countFromParent=false, isFetching=false
 }: {
     ddOpenerRef: RefObject<HTMLElement>,
+    options: DropdownOption<T>[],
     selectOption: DropdownOptionSelectHandler<T>,
     closeDropdown: MouseEventHandler,
+    countFromParent?: boolean,
     isFetching?: boolean,
-    options?: DropdownOption<T>[],
 }) {
-
-    if (!options)
-        return null;
 
     const dropdownList = function(){
         if (isFetching)
@@ -26,12 +24,13 @@ export default function Dropdown<T>({
                 No results
             </li>
 
-        return options.map(option => (
+        return options.map((option, i) => (
             <li 
-                key={option.text} 
+                key={option.text + i} 
                 onClick={() => selectOption(option)}
             >
-                {option.text}
+                <span>{option.text}</span>
+                {option.icon && <i className={option.icon} />}
             </li>
         ));
     }();
@@ -40,10 +39,12 @@ export default function Dropdown<T>({
         function triggerCloseDropdown(e: Event) {
             const clickTarget = e.target as Element | null;
 
-            if (ddOpenerRef.current && 
-                ddOpenerRef.current.contains(clickTarget)
-            ) 
-                e.stopPropagation();
+            if (ddOpenerRef.current) { 
+                const opener = countFromParent ? ddOpenerRef.current.parentElement! : ddOpenerRef.current;
+                
+                if (opener.contains(clickTarget))
+                    e.stopPropagation();
+            }
             
             setTimeout(closeDropdown, 0);
         }

@@ -19,11 +19,16 @@ function BookFiltering({grid}: {grid: BookGrid})  {
         </div> */}
 
         <div className={styles.chbx}>
-            <label htmlFor="inStock">Currently in stock</label>
+            <label htmlFor="inStock">
+                <i className='icon-basket' />
+                <span>
+                    Currently in stock
+                </span>
+                </label>
             <input 
                 id="inStock" type="checkbox" 
                 defaultChecked={false} 
-                onChange={(e) => applyInStockFilter(e.target.checked)}
+                onChange={applyInStockFilter}
             />
         </div>
     </>

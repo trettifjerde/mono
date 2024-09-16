@@ -4,7 +4,7 @@ import GridStore from "../../../../stores/Grid/GridStore";
 import PreviewGridSkeleton from "../../../../components/PreviewGrid/PreviewGridSkeleton";
 import Reloader from "./Reloader";
 import PreviewGrid from "../../../../components/PreviewGrid";
-import { IconButton } from "../../../../components/Buttons";
+import PagButton from "./PagButton";
 import styles from './index.module.scss';
 
 function ResultsGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P, D>}) {
@@ -31,14 +31,14 @@ function ResultsGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P, D>}
             >  
             
             <div className={styles.pag}>
-                <IconButton 
-                    icon="icon-cross" 
-                    style={{visibility: currentView.isPrevBtnVisible ? 'visible' : 'hidden'}} 
+                <PagButton 
+                    icon="icon-arrow-left" 
+                    isVisible={currentView.isPrevBtnVisible}
                     onClick={currentView.showPrev}
                 />
-                <IconButton 
-                    icon="icon-cross" 
-                    style={{visibility: currentView.isNextBtnVisible ? 'visible' : 'hidden'}}
+                <PagButton 
+                    icon="icon-arrow-right" 
+                    isVisible={currentView.isNextBtnVisible}
                     onClick={currentView.showNext}
                 />
             </div>

@@ -4,7 +4,7 @@
   src:  url('/fonts/icomoon.eot#iefix') format('embedded-opentype'),
     url('/fonts/icomoon.ttf') format('truetype'),
     url('/fonts/icomoon.woff') format('woff'),
-    url('/fonts/icomoon.svg') format('svg');
+    url('/fonts/icomoon.svg#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,36 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-basket:before {
+  content: "\e912";
+}
+.icon-arrows-v:before {
+  content: "\e911";
+}
+.icon-slim-arrow-up:before {
+  content: "\e90e";
+}
+.icon-slim-arrow-down:before {
+  content: "\e90f";
+}
+.icon-chevron-down:before {
+  content: "\e90d";
+}
+.icon-search:before {
+  content: "\e910";
+}
+.icon-arrow-left:before {
+  content: "\e90b";
+}
+.icon-arrow-right:before {
+  content: "\e90c";
+}
+.icon-author:before {
+  content: "\e909";
+}
+.icon-books:before {
+  content: "\e90a";
+}
 .icon-check:before {
   content: "\e908";
 }

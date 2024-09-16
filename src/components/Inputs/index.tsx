@@ -1,11 +1,13 @@
 import { forwardRef, InputHTMLAttributes, MouseEventHandler } from 'react';
-import { IconButton } from '../Buttons';
+import { ButtonColor, IconButton } from '../Buttons';
 import styles from './index.module.scss';
 
 type InputProps<T> = InputHTMLAttributes<HTMLInputElement> & { id: string } & T;
 
 export type InputWithIconButtonProps = InputProps<{
     icon?: string,
+    color?: ButtonColor,
+    hiddenWhenBlurred?: boolean,
     onBtnClick: MouseEventHandler<HTMLButtonElement>
 }>;
 
@@ -16,13 +18,21 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
 );
 
 export const InputWithIconButton = forwardRef<HTMLInputElement, InputWithIconButtonProps>(
-    ({ onBtnClick, icon = 'icon-cross', ...props }, ref) => {
+    ({ 
+        onClick, onBtnClick, className, hiddenWhenBlurred=true, 
+        color='light', icon = 'icon-cross', ...props 
+    }, ref) => {
 
-    return <div className={styles.btninp}>
+    let cls = `${styles.btninp} ${className || ''}`;
+
+    return <div className={cls}
+        onClick={onClick}
+    >
         <Input ref={ref} {...props} />
         <IconButton
             icon={icon}
-            color={'light'}
+            color={color}
+            className={hiddenWhenBlurred ? styles.hwb : ''}
             onClick={onBtnClick}
         />
     </div>;

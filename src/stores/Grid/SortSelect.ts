@@ -30,7 +30,7 @@ export default class SortSelect<P extends PC, Key=any> {
     protected initialiseOptions() {
         const options : SortSelect<P, Key>['options'] = [];
         for (const [sortType, info] of this.config)
-            options.push({ value: sortType, text: info.text });
+            options.push({ value: sortType, text: info.text, icon: info.icon || '' });
 
         return options;
     }
@@ -39,5 +39,6 @@ export default class SortSelect<P extends PC, Key=any> {
 export type SortConfig<P extends PC, Key> = Map<Key, {
     dbKey: keyof P, 
     text: string,
+    icon?: string,
     desc?: 'desc'
 }>

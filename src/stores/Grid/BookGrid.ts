@@ -1,3 +1,4 @@
+import { ChangeEvent } from "react";
 import { action, makeObservable, observable, reaction } from "mobx";
 import BookSlice from "../slices/BookSlice";
 import { PreviewsQueryParams } from "../../services/DataService";
@@ -92,8 +93,8 @@ export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint
         return (p) => filterFns.reduce((acc, v) => acc && v(p), true);
     }
 
-    applyInStockFilter(checked: boolean) {
-        this.inStockFilterOn = checked;
+    applyInStockFilter(e: ChangeEvent<HTMLInputElement>) {
+        this.inStockFilterOn = e.target.checked;
     }
 }
 
@@ -103,14 +104,16 @@ enum BookSortTypes {
 };
 
 const BookSortConfig : SortConfig<FirestoreBook, BookSortTypes> = new Map([[
+    BookSortTypes.priceLow, {
+            dbKey: FK.price,
+            text: "Price",
+            icon: 'icon-slim-arrow-up',
+    }], [
     BookSortTypes.priceHigh, {
         dbKey: FK.price,
-        text: "Price (high)",
+        text: "Price",
+        icon: 'icon-slim-arrow-down',
         desc: 'desc',
-    }], [
-    BookSortTypes.priceLow, {
-        dbKey: FK.price,
-        text: "Price (low)",
     }]
 ]);
 

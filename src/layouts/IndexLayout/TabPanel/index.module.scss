@@ -14,6 +14,13 @@
         transition-timing-function: $trans-fn;
         transition-property: color, background-color;
 
+        h2 {
+            font-size: 1.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         &.active {
             background-color: $dark6;
             margin-bottom: -1 * $border-width;

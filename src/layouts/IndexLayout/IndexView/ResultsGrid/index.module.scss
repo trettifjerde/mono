@@ -16,6 +16,6 @@
     bottom: $main-inline-padding;
     display: flex;
     justify-content: center;
-    gap: $main-inline-padding;
+    gap: $double-gap;
     animation: var(--anim-fade-in);
 }

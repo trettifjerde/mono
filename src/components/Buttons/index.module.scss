@@ -11,13 +11,6 @@
         aspect-ratio: 1/1;
     }
     
-    &.rect {
-        
-        i {
-            margin-right: 0.75 * $input-padding;
-        }
-    }
-    
     &.dark {
         background-color: $dark3;
         color: $light4;
@@ -30,7 +23,7 @@
     
         @include hover {
             &:not(:disabled) {
-                background-color: $dark3;
+                background-color: $dark4;
                 color: $light1;
             }
         }

@@ -7,8 +7,14 @@ import styles from './index.module.scss';
 export default function TabPanel() {
     return (
         <div className={styles.panel}>
-            <TabLink to={makeAbsolutePath(Pathnames.index)}>Books</TabLink>
-            <TabLink to={makeAbsolutePath(Pathnames.authors)}>Authors</TabLink>
+            <TabLink to={makeAbsolutePath(Pathnames.index)}>
+                <i className='icon-books'/> 
+                <span>Books</span>
+            </TabLink>
+            <TabLink to={makeAbsolutePath(Pathnames.authors)}>
+                <i className='icon-author' />
+                <span>Authors</span>
+            </TabLink>
         </div>
     );
 }
