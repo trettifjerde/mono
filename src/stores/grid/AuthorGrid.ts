@@ -1,15 +1,13 @@
 import { reaction } from "mobx";
 import AuthorSlice from "../slices/AuthorSlice";
-import { PreviewsQueryParams } from "../../services/DataService";
-import { FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
+import { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
+import { FirestoreKeys as FK, PreviewsQueryParams } from "../../utils/firestoreDbTypes";
 import { Pathnames } from "../../utils/consts";
 import { makeAbsolutePath } from "../../utils/helpers";
-import GridStore from "./GridStore";
-import AuthorPreviewItem from "../../components/AuthorPreviewItem";
 import Author from "../../utils/classes/Author";
-import SelectView, { SortConfig } from "./SortSelect";
-import { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
-import SortSelect from "./SortSelect";
+import GridStore from "./GridStore";
+import SortSelect, { SortConfig } from "./SortSelect";
+import AuthorPreviewItem from "../../components/AuthorPreviewItem";
 
 export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetailsInfo> {
 
@@ -18,7 +16,7 @@ export default class AuthorGrid extends GridStore<AuthorPreviewInfo, AuthorDetai
     override entityTitleName = "author name";
     override ItemPreview = AuthorPreviewItem;
 
-    override sortSelect: SelectView<AuthorPreviewInfo, AuthorSortTypes>;
+    override sortSelect: SortSelect<AuthorPreviewInfo, AuthorSortTypes>;
 
     constructor(slice: AuthorSlice) {
         super();
@@ -66,7 +64,7 @@ const AuthorSortConfig : SortConfig<AuthorPreviewInfo, AuthorSortTypes> = new Ma
     [
         AuthorSortTypes.books, {
             dbKey: FK.bookN,
-            text: "Number of books",
+            text: "Books",
             desc: 'desc'
         }
     ]

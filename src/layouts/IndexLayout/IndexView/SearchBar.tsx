@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import GridStore from "../../../stores/Grid/GridStore"
+import GridStore from "../../../stores/grid/GridStore"
 import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../../utils/firestoreDbTypes"
 import DebouncedChangeInput from "../../../components/Inputs/DebouncedChangeInput";
 import styles from './index.module.scss';

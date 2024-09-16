@@ -1,13 +1,12 @@
 import { action, computed, flow, makeObservable, observable } from "mobx";
 import StoreSlice from "../slices/StoreSlice";
-import { PreviewsQueryParams } from "../../services/DataService";
 import DefaultView from "./GridView/DefaultView";
 import FilteredView from "./GridView/FilteredView";
-import { PreviewConstraint as PC, DetailsConstraint as DC, FirestoreKeys as FK} from '../../utils/firestoreDbTypes';
-import Entity from "../../utils/classes/Entity";
-import { LoadingState } from "../../utils/consts";
-import { EntityPreviewComponent } from "../../utils/uiTypes";
 import SortSelect from "./SortSelect";
+import Entity from "../../utils/classes/Entity";
+import { PreviewConstraint as PC, DetailsConstraint as DC, FirestoreKeys as FK, PreviewsQueryParams} from '../../utils/firestoreDbTypes';
+import { EntityPreviewComponent } from "../../utils/uiTypes";
+import { LoadingState } from "../../utils/consts";
 
 export default abstract class GridStore<P extends PC, D extends DC> {
 
@@ -51,7 +50,6 @@ export default abstract class GridStore<P extends PC, D extends DC> {
     }
 
     *loadPreviews() {
-
         this.currentView.setLoadingState(LoadingState.loading);
 
         let fetchedPreviews : Awaited<ReturnType<typeof this.slice.service.getPreviews>>;
@@ -62,7 +60,7 @@ export default abstract class GridStore<P extends PC, D extends DC> {
 
             const {previews: previewInits, lastSnap} = fetchedPreviews;
 
-            const items = this.slice.store.add(...previewInits);
+            const items = this.slice.dataStore.add(...previewInits);
             
             this.currentView.addPreviews(items.map(item => item.preview), lastSnap);
         }

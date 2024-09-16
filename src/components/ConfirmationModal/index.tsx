@@ -16,7 +16,7 @@ export default function ConfirmationModal({children, confirm, close}: {
                 {children}
             </div>
             <div className={styles.btns}>
-                <Button color="blue" onClick={confirm}>Confirm</Button>
+                <Button color="blue" onClick={confirm}>Yes, I am</Button>
                 <Button color="black" onClick={close}>Cancel</Button>
             </div>
         </div>

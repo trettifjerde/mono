@@ -3,10 +3,9 @@ import StoreSlice from "./slices/StoreSlice";
 import Entity, { EntityInitInfo, EntityUpdateInfo } from "../utils/classes/Entity";
 import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/firestoreDbTypes';
 
-export default class EntityStore<P extends PC, D extends DC> {
+export default class DataStore<P extends PC, D extends DC> {
 
     slice: StoreSlice<P, D>;
-
     items : Map<string, Entity<P, D>> = new Map();
 
     constructor (slice: StoreSlice<P, D>) {
@@ -26,6 +25,7 @@ export default class EntityStore<P extends PC, D extends DC> {
 
         itemInits.forEach(init => {
             const existingItem = this.items.get(init.id);
+            
             if (existingItem)
                 items.push(existingItem)
             else {

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import GridStore from "../../../stores/Grid/GridStore";
+import GridStore from "../../../stores/grid/GridStore";
 import { DetailsConstraint as DC, PreviewConstraint as PC } from '../../../utils/firestoreDbTypes';
 import SearchBar from "./SearchBar";
 import Select from "../../../components/Select";

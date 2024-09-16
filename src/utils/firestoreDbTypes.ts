@@ -1,3 +1,5 @@
+import { DocumentSnapshot, WhereFilterOp } from "firebase/firestore/lite";
+
 export enum FirestoreKeys {
     authors = "authors",
     books = "books",
@@ -46,4 +48,10 @@ export type FirestoreBook = PreviewConstraint & {
 
 export type FirestoreAuthor = PreviewConstraint & {
     [FirestoreKeys.bookN]: number,
+};
+
+export type PreviewsQueryParams = {
+    filters: Array<[FirestoreKeys, WhereFilterOp, string |number]>,
+    sorts: Array<{dbKey: FirestoreKeys, desc?: 'desc'}>,
+    lastSnap?: DocumentSnapshot, 
 };

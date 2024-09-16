@@ -1,7 +1,7 @@
 // import { DropdownOptionSelectHandler } from '../../../utils/uiTypes';
 import { observer } from 'mobx-react-lite';
 import styles from './index.module.scss';
-import BookGrid from '../../../stores/Grid/BookGrid';
+import BookGrid from '../../../stores/grid/BookGrid';
 
 function BookFiltering({grid}: {grid: BookGrid})  {
 

@@ -7,7 +7,7 @@ export default class RootStore {
     authors: AuthorSlice
 
     constructor() {
-        this.books = new BookSlice();
-        this.authors = new AuthorSlice();
+        this.books = new BookSlice(this);
+        this.authors = new AuthorSlice(this);
     }
 }

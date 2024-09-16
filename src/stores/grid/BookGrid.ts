@@ -1,21 +1,21 @@
 import { ChangeEvent } from "react";
 import { action, makeObservable, observable, reaction } from "mobx";
 import BookSlice from "../slices/BookSlice";
-import { PreviewsQueryParams } from "../../services/DataService";
 import GridStore from "./GridStore";
-import { DetailsConstraint, FirestoreBook, FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
-import Book from "../../utils/classes/Book";
 import SortSelect, { SortConfig } from "./SortSelect";
+import { BookDetailsInfo, BookPreviewInfo } from "../../services/BookService";
+import Book from "../../utils/classes/Book";
+import { FirestoreKeys as FK, PreviewsQueryParams } from "../../utils/firestoreDbTypes";
 import BookPreviewItem from "../../components/BookPreviewItem";
 
-export default class BookGrid extends GridStore<FirestoreBook, DetailsConstraint> {
+export default class BookGrid extends GridStore<BookPreviewInfo, BookDetailsInfo> {
     override slice: BookSlice;
 
     override rootPath = "/";
     override entityTitleName = "book title";
     override ItemPreview = BookPreviewItem;
 
-    override sortSelect: SortSelect<FirestoreBook, BookSortTypes>;
+    override sortSelect: SortSelect<BookPreviewInfo, BookSortTypes>;
 
     // authorIdFilter: 
     inStockFilterOn = false;
@@ -103,7 +103,7 @@ enum BookSortTypes {
     priceLow = "low"
 };
 
-const BookSortConfig : SortConfig<FirestoreBook, BookSortTypes> = new Map([[
+const BookSortConfig : SortConfig<BookPreviewInfo, BookSortTypes> = new Map([[
     BookSortTypes.priceLow, {
             dbKey: FK.price,
             text: "Price",

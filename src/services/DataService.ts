@@ -1,5 +1,6 @@
-import { collection, CollectionReference, doc, DocumentSnapshot, FirestoreDataConverter, getDoc, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where, WhereFilterOp } from "firebase/firestore/lite";
-import { FirestoreKeys, PreviewConstraint as PC, DetailsConstraint as DC, FirestoreBook } from "../utils/firestoreDbTypes";
+import { collection, CollectionReference, doc, FirestoreDataConverter, getDoc, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "firebase/firestore/lite";
+import { FirestoreKeys, PreviewConstraint as PC, DetailsConstraint as DC, FirestoreBook, PreviewsQueryParams } from "../utils/firestoreDbTypes";
+import StoreSlice from "../stores/slices/StoreSlice";
 import { FETCH_BATCH_SIZE } from "../utils/consts";
 import db from "./Firestore";
 
@@ -7,11 +8,14 @@ export default abstract class DataService<P extends PC, D extends DC> {
 
     batchSize = FETCH_BATCH_SIZE;
 
+    slice: StoreSlice<P,D>;
     abstract previewsRef: CollectionReference<P>;
     descriptionsRef: CollectionReference<string>;
     booksRef: CollectionReference<FirestoreBook>;
 
-    constructor(descriptionsKey: FirestoreKeys) {
+    constructor(storeSlice: StoreSlice<P,D>, descriptionsKey: FirestoreKeys) {
+
+        this.slice = storeSlice;
 
         this.booksRef = collection(db, FirestoreKeys.books)
             .withConverter(DataService.makePreviewsConverter<FirestoreBook>());
@@ -105,12 +109,6 @@ export default abstract class DataService<P extends PC, D extends DC> {
         }
     };
 }
-
-export type PreviewsQueryParams = {
-    filters: Array<[FirestoreKeys, WhereFilterOp, string |number]>,
-    sorts: Array<{dbKey: FirestoreKeys, desc?: 'desc'}>,
-    lastSnap?: DocumentSnapshot, 
-};
 
 type FetchPreviewsInit<T extends PC> = {
     collectionRef: CollectionReference<T>,

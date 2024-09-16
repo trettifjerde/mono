@@ -1,7 +1,9 @@
+import RootStore from "../RootStore";
 import StoreSlice from "./StoreSlice";
 import AuthorService, { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
-import AuthorGrid from "../Grid/AuthorGrid";
+import AuthorGrid from "../grid/AuthorGrid";
 import Author from "../../utils/classes/Author";
+import AuthorDetailsView from "../details/AuthorDetailsView";
 
 export default class AuthorSlice extends StoreSlice<AuthorPreviewInfo, AuthorDetailsInfo> {
 
@@ -9,12 +11,14 @@ export default class AuthorSlice extends StoreSlice<AuthorPreviewInfo, AuthorDet
     override EntityConstructor = Author;
     override service : AuthorService;
     override grid: AuthorGrid;
+    override details: AuthorDetailsView;
 
-    constructor() {
-        super();
+    constructor(rootStore: RootStore) {
+        super(rootStore);
 
         this.grid = new AuthorGrid(this);
-        this.service = new AuthorService();
+        this.details = new AuthorDetailsView(this);
+        this.service = new AuthorService(this);
     }
 
 }

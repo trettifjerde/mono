@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import SortSelect from '../../stores/Grid/SortSelect';
+import SortSelect from '../../stores/grid/SortSelect';
 import { PreviewConstraint } from '../../utils/firestoreDbTypes';
 import { InputWithIconButton } from '../Inputs';
 import Dropdown from '../Dropdown';

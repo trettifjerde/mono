@@ -1,26 +1,21 @@
 import { observer } from "mobx-react-lite";
-import AuthorSlice from "../../stores/slices/AuthorSlice";
-import { LoadingState } from "../../utils/consts";
 import PreviewGridList from "../../components/PreviewGrid";
 import PreviewGridSkeleton from "../../components/PreviewGrid/PreviewGridSkeleton";
 import BookPreviewItem from "../../components/BookPreviewItem";
+import AuthorDetailsView from "../../stores/details/AuthorDetailsView";
 
-function AuthorBookGrid({details}: {details: AuthorSlice['details']}) {
+function AuthorBookGrid({details}: {details: AuthorDetailsView}) {
 
-    const {state, loadedItem} = details;
+    if (details.isLoading) 
+        return <PreviewGridSkeleton />
+    
+    const previews = details.books;
 
-    switch (state) {
-        case LoadingState.loading:
-            return <PreviewGridSkeleton />
-        
-        default: 
-            const previews = loadedItem?.details?.books || [];
-            return <PreviewGridList
-                previews={previews}
-                itemName={details.slice.entityName}
-                ItemPreview={BookPreviewItem} 
-            />
-    }
+    return <PreviewGridList
+        previews={previews}
+        itemName={details.slice.entityName}
+        ItemPreview={BookPreviewItem} 
+    />
 }
 
 export default observer(AuthorBookGrid);

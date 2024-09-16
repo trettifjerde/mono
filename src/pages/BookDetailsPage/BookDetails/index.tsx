@@ -7,20 +7,20 @@ function BookDetails({details}: {details: BookSlice['details']}) {
     
     const info = details.loadedItem?.fullInfo;
 
-    if (info)
+    if (!info)
+        return <></>
 
-        return <div className={styles.info}>
-            <p className={styles.price}>{info.price} €</p>
-            <span className={styles.stock}>({info.inStock} in stock)</span>
+    return <div className={styles.info}>
+        <p className={styles.price}>{info.price} €</p>
+        <span className={styles.stock}>({info.inStock} in stock)</span>
 
-            <TextIconButton 
-                className={styles.buy} 
-                disabled={!info.inStock}
-                icon="icon-cart"
-                text="Buy"
-            />
-        </div>
-    return <></>
+        <TextIconButton 
+            className={styles.buy} 
+            disabled={!info.inStock}
+            icon="icon-cart"
+            text="Buy"
+        />
+    </div>
 }
 
 export default observer(BookDetails);

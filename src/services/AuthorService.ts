@@ -1,6 +1,7 @@
 import { collection, CollectionReference } from "firebase/firestore/lite";
 import { DetailsConstraint, FirestoreAuthor, FirestoreKeys } from "../utils/firestoreDbTypes";
 import DataService from "./DataService";
+import AuthorSlice from "../stores/slices/AuthorSlice";
 import db from "./Firestore";
 import Book from "../utils/classes/Book";
 
@@ -13,8 +14,8 @@ export default class AuthorService extends DataService<AuthorPreviewInfo, Author
 
     override previewsRef: CollectionReference<FirestoreAuthor>;
 
-    constructor() {
-        super(FirestoreKeys.bios);
+    constructor(storeSlice: AuthorSlice) {
+        super(storeSlice, FirestoreKeys.bios);
         
         this.previewsRef = collection(db, FirestoreKeys.authors)
             .withConverter(DataService.makePreviewsConverter<AuthorPreviewInfo>())
