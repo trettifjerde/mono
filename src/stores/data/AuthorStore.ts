@@ -1,17 +1,17 @@
+import { AuthorPreviewInfo } from "../../utils/firestoreDbTypes";
+import Author, { AuthorDetailsInfo } from "../../utils/classes/Author";
 import RootStore from "../RootStore";
 import DataStore from "./DataStore";
-import AuthorService, { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
+import AuthorService from "../../services/AuthorService";
 import AuthorPreviewsView from "../previews/AuthorPreviewsView";
 import AuthorDetailsView from "../details/AuthorDetailsView";
-import Author from "../../utils/classes/Author";
 
-export default class AuthorStore extends DataStore<AuthorPreviewInfo, AuthorDetailsInfo> {
+export default class AuthorStore extends DataStore<AuthorPreviewInfo, AuthorDetailsInfo, Author> {
     override entityName = "Author";
+    override EntityConstructor = Author;
     override service : AuthorService;
     override previewsView: AuthorPreviewsView;
     override detailsView: AuthorDetailsView;
-
-    override EntityConstructor = Author; 
 
     constructor(rootStore: RootStore) {
         super(rootStore);

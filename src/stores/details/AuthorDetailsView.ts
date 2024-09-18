@@ -1,8 +1,8 @@
 import { computed, makeObservable } from "mobx";
-import { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
+import { AuthorPreviewInfo } from "../../utils/firestoreDbTypes";
+import Author, { AuthorDetailsInfo } from "../../utils/classes/Author";
 import AuthorStore from "../data/AuthorStore";
 import DetailsView from "./DetailsView";
-import Author from "../../utils/classes/Author";
 import DefaultBookImgSrc from '../../assets/800x800.webp';
 
 export default class AuthorDetailsView extends DetailsView<AuthorPreviewInfo, AuthorDetailsInfo> {

@@ -1,19 +1,19 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { QueryDocumentSnapshot } from "firebase/firestore/lite";
-import { DetailsConstraint, PreviewConstraint } from "../../../utils/firestoreDbTypes";
-import Entity from "../../../utils/classes/Entity";
 import PreviewsView from "../PreviewsView";
+import Entity from "../../../utils/classes/Entity";
+import { PreviewConstraint } from "../../../utils/firestoreDbTypes";
 
-export default abstract class GridView<P extends PreviewConstraint, D extends DetailsConstraint> {
+export default abstract class GridView<P, D> {
 
-    previewsView: PreviewsView<P,D>;
+    previewsView: PreviewsView<P, D>;
 
     storedItems: Entity<P,D>[] = [];
-    lastSnap : QueryDocumentSnapshot<P> | null = null;
+    lastSnap : QueryDocumentSnapshot<PreviewConstraint<P>> | null = null;
     pageN = 0;
     isFull = false;
 
-    constructor(previewsView: PreviewsView<P,D>) {
+    constructor(previewsView: PreviewsView<P, D>) {
         this.previewsView = previewsView;
 
         makeObservable(this, {
@@ -70,7 +70,7 @@ export default abstract class GridView<P extends PreviewConstraint, D extends De
             this.previewsView.loadPreviews();
     }
 
-    addItems(items: Entity<P,D>[], lastSnap: QueryDocumentSnapshot<P> | null) {
+    addItems(items: Entity<P,D>[], lastSnap: QueryDocumentSnapshot<PreviewConstraint<P>> | null) {
         this.storedItems.push(...items);
         this.lastSnap = lastSnap;
 

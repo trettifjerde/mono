@@ -1,16 +1,13 @@
 import { collection, CollectionReference } from "firebase/firestore/lite";
-import { DetailsConstraint, FirestoreAuthor, FirestoreKeys } from "../utils/firestoreDbTypes";
+import { AuthorPreviewInfo, FirestoreAuthor, FirestoreKeys, PreviewConstraint } from "../utils/firestoreDbTypes";
+import { AuthorDetailsInfo } from "../utils/classes/Author";
 import DataService from "./DataService";
 import AuthorStore from "../stores/data/AuthorStore";
-import Book from "../utils/classes/Book";
 import db from "./Firestore";
-
-export type AuthorPreviewInfo = FirestoreAuthor;
-export type AuthorDetailsInfo = DetailsConstraint & {books: Book[]}
 
 export default class AuthorService extends DataService<AuthorPreviewInfo, AuthorDetailsInfo> {
 
-    override previewsRef: CollectionReference<AuthorPreviewInfo>;
+    override previewsRef: CollectionReference<PreviewConstraint<AuthorPreviewInfo>>;
 
     constructor(store: AuthorStore) {
         super(store, FirestoreKeys.bios);
@@ -19,7 +16,7 @@ export default class AuthorService extends DataService<AuthorPreviewInfo, Author
             .withConverter(DataService.makePreviewsConverter<FirestoreAuthor>())
     }
 
-    override getDetails(id: string, allBooks=false) : Promise<AuthorDetailsInfo | null>{
+    override getDetails(id: string, allBooks=false) {
         return Promise.all([
             this.getDescription(id),
             this.store.rootStore.books.getAuthorBooks(id, allBooks)

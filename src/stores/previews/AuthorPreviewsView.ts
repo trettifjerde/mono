@@ -1,8 +1,8 @@
-import { AuthorDetailsInfo, AuthorPreviewInfo } from "../../services/AuthorService";
 import { Pathnames } from "../../utils/consts";
 import { makeAbsolutePath } from "../../utils/helpers";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
-import { FirestoreKeys } from "../../utils/firestoreDbTypes";
+import { AuthorPreviewInfo, FirestoreKeys } from "../../utils/firestoreDbTypes";
+import { AuthorDetailsInfo } from "../../utils/classes/Author";
 import PreviewsView, { BaseFilterTypes, NameFilterConfig } from "./PreviewsView";
 import AuthorStore from "../data/AuthorStore";
 import AuthorPreviewItem from "../../components/AuthorPreviewItem";

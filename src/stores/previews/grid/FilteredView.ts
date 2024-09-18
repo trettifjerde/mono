@@ -1,12 +1,11 @@
 import { action, makeObservable } from "mobx";
-import { DetailsConstraint, PreviewConstraint } from "../../../utils/firestoreDbTypes";
-import Entity from "../../../utils/classes/Entity";
 import PreviewsView from "../PreviewsView";
 import GridView from './GridView';
+import Entity from "../../../utils/classes/Entity";
 
-export default class FilteredView<P extends PreviewConstraint, D extends DetailsConstraint> extends GridView<P, D> {
+export default class FilteredView<P, D> extends GridView<P, D> {
 
-    constructor(previewsView: PreviewsView<P,D>) {
+    constructor(previewsView: PreviewsView<P, D>) {
         super(previewsView);
 
         makeObservable(this, {
@@ -14,7 +13,7 @@ export default class FilteredView<P extends PreviewConstraint, D extends Details
         })
     }
 
-    reset(filteredItems?: Entity<P,D>[]) {
+    reset(filteredItems?: Entity<P, D>[]) {
         this.storedItems = filteredItems || [];
         this.pageN = filteredItems ? 1 : 0;
         this.isFull = !!filteredItems;

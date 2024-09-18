@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
-import { DetailsConstraint, PreviewConstraint } from "../../../../utils/firestoreDbTypes";
 import PreviewGrid from "../../../../components/PreviewGrid";
 import PreviewsView from "../../../../stores/previews/PreviewsView";
 import PagButton from "./PagButton";
 import styles from './index.module.scss';
 
-function LoadedResults<P extends PreviewConstraint, D extends DetailsConstraint>(
+function LoadedResults<P, D>(
     {view}: {view: PreviewsView<P, D>}) 
     {
 

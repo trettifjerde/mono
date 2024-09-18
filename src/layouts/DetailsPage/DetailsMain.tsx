@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite"
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes'
 import { splitAndWrapInPs } from "../../utils/helpers"
 import { LinkButton } from "../../components/Buttons"
 import DetailsView from "../../stores/details/DetailsView"
 import DetailsReloader from "./DetailsReloader"
 
-function DetailsMain<P extends PC, D extends DC>({ view }: { view: DetailsView<P, D> }) {
+function DetailsMain<P, D>({ view }: { view: DetailsView<P, D> }) {
 
     const renderDescription = () => {
 

@@ -1,4 +1,5 @@
-import { BookDetailsInfo, BookPreviewInfo } from "../../services/BookService";
+import { BookPreviewInfo } from "../../utils/firestoreDbTypes";
+import { BookDetailsInfo } from "../../utils/classes/Book";
 import BookStore from "../data/BookStore";
 import DetailsView from "./DetailsView";
 import BookHeader from "../../pages/BookDetailsPage/BookHeader";

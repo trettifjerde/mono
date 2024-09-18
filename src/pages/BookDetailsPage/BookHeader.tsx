@@ -5,10 +5,10 @@ import Book from "../../utils/classes/Book";
 
 export default function BookHeader({item}: {item: Book | null}) {
 
-    const info = item?.preview;
+    const info = item?.authorInfo;
 
     return <h5>
-        {info && <Link 
+        {info &&  <Link 
             to={makeAbsolutePath(Pathnames.authors, info.authorId)} 
             relative="path"
             className="link"

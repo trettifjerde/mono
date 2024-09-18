@@ -1,13 +1,12 @@
 import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { PreviewConstraint } from '../../utils/firestoreDbTypes';
 import { InputWithIconButton } from '../Inputs';
 import SortSettings from '../../stores/previews/settings/SortSettings';
 import Dropdown from '../Dropdown';
 import styles from './index.module.scss';
 
-function Select<P extends PreviewConstraint>({sortSettings, id, label, placeholder, icon}: {
-    sortSettings: SortSettings<any, P, any>,
+function Select<P>({sortSettings, id, label, placeholder, icon}: {
+    sortSettings: SortSettings<any, P>,
     id: string,
     label: string,
     placeholder: string,

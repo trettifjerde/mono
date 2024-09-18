@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
 import { getSkeletonClassIfNeeded } from "../../utils/helpers";
 import { IconLinkButton } from "../../components/Buttons";
 import DetailsView from "../../stores/details/DetailsView";
@@ -8,7 +7,7 @@ import DetailsMain from "./DetailsMain";
 import DeleteButton from "./DeleteButton";
 import styles from './index.module.scss';
 
-function DetailsPage<P extends PC, D extends DC>(
+function DetailsPage<P, D>(
     { view, className, children }:
         {
             view: DetailsView<P, D>,

@@ -1,13 +1,15 @@
 import { ChangeEvent } from "react";
 import { action, makeObservable } from "mobx";
-import { FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
+import { BookPreviewInfo, FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
-import { BookDetailsInfo, BookPreviewInfo } from "../../services/BookService";
-import BookStore from "../data/BookStore";
+import { BookDetailsInfo } from "../../utils/classes/Book";
 import PreviewsView, { BaseFilterTypes, NameFilterConfig } from "./PreviewsView";
+import BookStore from "../data/BookStore";
 import BookPreviewItem from "../../components/BookPreviewItem";
 
-export default class BookPreviewsView extends PreviewsView<BookPreviewInfo, BookDetailsInfo, BookFilterTypes, BookSortTypes> {
+export default class BookPreviewsView extends PreviewsView<
+    BookPreviewInfo, BookDetailsInfo, BookFilterTypes, BookSortTypes
+> {
     override store: BookStore;
 
     override rootPath = "/";

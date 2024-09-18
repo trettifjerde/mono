@@ -11,7 +11,7 @@ function AuthorBookGrid({view}: {view: AuthorDetailsView}) {
 
     return <PreviewGrid
         previews={view.bookPreviews}
-        itemName={view.store.entityName}
+        itemName={view.store.rootStore.books.entityName}
         ItemPreview={BookPreviewItem} 
     />
 }

@@ -1,23 +1,23 @@
 import { action, makeObservable, observable } from "mobx";
-import { FirestoreQueryParams, PreviewConstraint, DetailsConstraint } from '../../utils/firestoreDbTypes';
 import { FETCH_BATCH_SIZE } from "../../utils/consts";
-import Entity, { EntityConstructor, EntityInitInfo, EntityUpdateInfo } from "../../utils/classes/Entity";
+import { FirestoreQueryParams } from "../../utils/dataTypes";
+import Entity, { EntityConstructor as EC, EntityInitInfo, EntityUpdateInfo } from "../../utils/classes/Entity";
 import RootStore from "../RootStore";
 import DataService from "../../services/DataService";
 import PreviewsView from "../previews/PreviewsView";
 import DetailsView from "../details/DetailsView";
 
-export default abstract class DataStore<P extends PreviewConstraint, D extends DetailsConstraint> {
+export default abstract class DataStore<P, D, E extends Entity<P,D>=any> {
 
     rootStore: RootStore;
+    abstract EntityConstructor : EC<P, D, E>;
     abstract entityName: string;
-    abstract EntityConstructor : EntityConstructor<P,D>;
-    abstract service : DataService<P,D>;
+    abstract service : DataService<P, D>;
     abstract previewsView: PreviewsView<P, D>;
-    abstract detailsView: DetailsView<P,D>;
+    abstract detailsView: DetailsView<P, D>;
     
     batchSize = FETCH_BATCH_SIZE;
-    items : Map<string, Entity<P, D>> = new Map();
+    items : Map<string, E> = new Map();
     isCacheFull = false;
 
     constructor (rootStore: RootStore) {
@@ -42,6 +42,8 @@ export default abstract class DataStore<P extends PreviewConstraint, D extends D
             const {previews, lastSnap} = await this.service.getPreviews(params);
 
             const items = this.add(...previews);
+
+            console.log(previews, lastSnap);
             
             return {
                 items,
@@ -82,9 +84,9 @@ export default abstract class DataStore<P extends PreviewConstraint, D extends D
         }
     }
 
-    add(...itemInits: EntityInitInfo<P,D>[]) {
+    add(...itemInits: EntityInitInfo<P, D>[]) {
 
-        const items : Entity<P,D>[] = [];
+        const items : E[] = [];
 
         itemInits.forEach(init => {
             const existingItem = this.items.get(init.id);
@@ -108,9 +110,9 @@ export default abstract class DataStore<P extends PreviewConstraint, D extends D
         return items;
     }
 
-    update(...itemInfos: EntityUpdateInfo<P,D>[]) {
+    update(...itemInfos: EntityUpdateInfo<P, D>[]) {
 
-        const updItems: Array<Entity<P,D>|null> = [];
+        const updItems: Array<E|null> = [];
 
         itemInfos.forEach(info => {
             const item = this.items.get(info.id);

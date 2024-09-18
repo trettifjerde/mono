@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes'
 import { IconButton } from "../../components/Buttons";
 import Entity from "../../utils/classes/Entity";
 import ConfirmationModal from "../../components/ConfirmationModal";
 
-const DeleteButton = observer(<P extends PC, D extends DC,>({item}: {item: Entity<P,D>}) => {
+const DeleteButton = observer(<P, D,>({item}: {item: Entity<P,D>}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {

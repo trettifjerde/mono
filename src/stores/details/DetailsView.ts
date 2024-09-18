@@ -1,18 +1,17 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { DetailsConstraint, PreviewConstraint } from "../../utils/firestoreDbTypes";
 import { LoadingState } from "../../utils/consts";
 import DataStore from "../data/DataStore";
 import Entity from "../../utils/classes/Entity";
 
-export default abstract class DetailsView<P extends PreviewConstraint, D extends DetailsConstraint> {
+export default abstract class DetailsView<P, D> {
     abstract store: DataStore<P, D>;
 
     state: LoadingState = LoadingState.idle;
     selectedId = '';
-    loadedItem: Entity<P, D> | null = null;
+    loadedItem: Entity<P,D> | null = null;
 
     abstract fallbackImg: string;
-    abstract HeaderComponent: ((props: {item: Entity<P,D> | null}) => JSX.Element) | null;
+    abstract HeaderComponent: any;
 
     constructor() {
 

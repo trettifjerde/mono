@@ -1,9 +1,8 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { DetailsConstraint, FirestoreQueryParams, PreviewConstraint } from "../../../utils/firestoreDbTypes";
-import { FilterConfig } from "../../../utils/dataTypes";
+import { FilterConfig, FirestoreQueryParams } from "../../../utils/dataTypes";
 import Entity from "../../../utils/classes/Entity";
 
-export default class FilterSettings<Keys extends string, P extends PreviewConstraint, D extends DetailsConstraint> {
+export default class FilterSettings<Keys extends string, P> {
 
     config: FilterConfig<Keys, P>;
     filters = new Map<Keys, string | boolean>();
@@ -49,8 +48,8 @@ export default class FilterSettings<Keys extends string, P extends PreviewConstr
         return {filters, sorts};
     }
 
-    castToFilterFn() : (ent: Entity<P,D>) => boolean {
-        const filterFns : Array<(ent: Entity<P,D>) => boolean> = [];
+    castToFilterFn() : (ent: Entity<P, any>) => boolean {
+        const filterFns : Array<(ent: Entity<P, any>) => boolean> = [];
 
         for (const filterType in this.config) {
             const enteredValue = this.filters.get(filterType);

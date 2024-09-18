@@ -1,18 +1,20 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import DataStore from "../../stores/data/DataStore";
 import { DetailsConstraint, PreviewConstraint } from "../firestoreDbTypes";
+import DataStore from "../../stores/data/DataStore";
 
-export default abstract class Entity<
-    P extends PreviewConstraint, 
-    D extends DetailsConstraint
->  {
+export default abstract class Entity<P, D>  {
 
     id: string;
-    previewInfo: P;
-    details: D | null;
-    store: DataStore<P, D>;
+    previewInfo: PreviewConstraint<P>;
+    details: DetailsConstraint<D> | null;
+    store: DataStore<P, D, any>;
 
-    constructor ({id, previewInfo, detailsInfo, store}: EntityInit<P, D>) {
+    constructor ({id, previewInfo, detailsInfo, store}: {
+        id: string,
+        previewInfo: PreviewConstraint<P>,
+        detailsInfo?: DetailsConstraint<D>,
+        store: DataStore<P, D, any>
+    }) {
 
         this.id = id;
         this.previewInfo = previewInfo;
@@ -54,29 +56,29 @@ export default abstract class Entity<
         } : null;
     }
 
-    setPreview(previewInfo: P) {
+    setPreview(previewInfo: PreviewConstraint<P>) {
         this.previewInfo = previewInfo;
     }
 
-    setDetails(detailsInfo: D) {
+    setDetails(detailsInfo: DetailsConstraint<D>) {
         this.details = detailsInfo;
     }
 }
 
-export type EntityInitInfo<P extends PreviewConstraint, D extends DetailsConstraint> = {
+export type EntityInitInfo<P, D> = {
     id: string,
-    previewInfo: P,
-    detailsInfo?: D,
+    previewInfo: PreviewConstraint<P>,
+    detailsInfo?: DetailsConstraint<D>,
 }
 
-export type EntityUpdateInfo<P extends PreviewConstraint, D extends DetailsConstraint> = {
+export type EntityUpdateInfo<P, D> = {
     id: string,
-    previewInfo?: P,
-    detailsInfo?: D
+    previewInfo?: PreviewConstraint<P>,
+    detailsInfo?: DetailsConstraint<D>
 }
 
-export type EntityInit<P extends PreviewConstraint, D extends DetailsConstraint> = EntityInitInfo<P,D> & {
-    store: DataStore<P, D>
+export type EntityInit<P, D, E extends Entity<P,D>> = EntityInitInfo<P, D> & {
+    store: DataStore<P, D, E>
 };
 
-export type EntityConstructor<P extends PreviewConstraint, D extends DetailsConstraint> = new (init: EntityInit<P,D>) => Entity<P,D>;
+export type EntityConstructor<P, D, E extends Entity<P,D>> = new (init: EntityInit<P, D, E>) => E;

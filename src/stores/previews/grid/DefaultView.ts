@@ -1,13 +1,13 @@
 import { action, makeObservable } from "mobx";
-import { QueryDocumentSnapshot, DocumentData } from "firebase/firestore/lite";
-import { DetailsConstraint, PreviewConstraint } from "../../../utils/firestoreDbTypes";
-import Entity from "../../../utils/classes/Entity";
+import { QueryDocumentSnapshot } from "firebase/firestore/lite";
 import PreviewsView from "../PreviewsView";
 import GridView  from "./GridView";
+import Entity from "../../../utils/classes/Entity";
+import { PreviewConstraint } from "../../../utils/firestoreDbTypes";
 
-export default class DefaultView<P extends PreviewConstraint, D extends DetailsConstraint> extends GridView<P, D> {
+export default class DefaultView<P, D> extends GridView<P, D> {
 
-    constructor(previewsView: PreviewsView<P,D>) {
+    constructor(previewsView: PreviewsView<P, D>) {
         super(previewsView);
 
         makeObservable(this, {
@@ -16,7 +16,7 @@ export default class DefaultView<P extends PreviewConstraint, D extends DetailsC
         })
     }
 
-    override addItems(items: Entity<P, D>[], lastSnap: QueryDocumentSnapshot<P, DocumentData> | null) {
+    override addItems(items: Entity<P,D>[], lastSnap: QueryDocumentSnapshot<PreviewConstraint<P>> | null) {
         super.addItems(items, lastSnap);
 
         if (this.isFull) 

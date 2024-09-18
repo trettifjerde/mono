@@ -1,15 +1,16 @@
 import { collection, CollectionReference, doc, FirestoreDataConverter, getDoc, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "firebase/firestore/lite";
-import { FirestoreKeys, FirestoreQueryParams, PreviewConstraint, DetailsConstraint } from "../utils/firestoreDbTypes";
+import { DetailsConstraint, FirestoreKeys, PreviewConstraint } from "../utils/firestoreDbTypes";
+import { FirestoreQueryParams } from "../utils/dataTypes";
 import { FETCH_BATCH_SIZE } from "../utils/consts";
 import DataStore from "../stores/data/DataStore";
 import db from "./Firestore";
 
-export default abstract class DataService<P extends PreviewConstraint, D extends DetailsConstraint> {
+export default abstract class DataService<P, D> {
 
     batchSize = FETCH_BATCH_SIZE;
 
-    store: DataStore<P,D>;
-    abstract previewsRef: CollectionReference<P>;
+    store: DataStore<P, D>;
+    abstract previewsRef: CollectionReference<PreviewConstraint<P>>;
     descriptionsRef: CollectionReference<string>;
 
     constructor(store: DataStore<P, D>, descriptionsKey: FirestoreKeys) {
@@ -45,7 +46,7 @@ export default abstract class DataService<P extends PreviewConstraint, D extends
         return snapshot.data() || '';
     }
 
-    abstract getDetails(id: string) : Promise<D | null>
+    abstract getDetails(id: string) : Promise<DetailsConstraint<D> | null>
 
     async getFullInfo(id: string) {
         return Promise.all([
@@ -108,6 +109,6 @@ export default abstract class DataService<P extends PreviewConstraint, D extends
 }
 
 type FetchPreviewsInit<T> = {
-    collectionRef: CollectionReference<T>,
+    collectionRef: CollectionReference<PreviewConstraint<T>>,
     params: FirestoreQueryParams<T>
 }

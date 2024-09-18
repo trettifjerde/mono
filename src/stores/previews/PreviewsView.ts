@@ -1,7 +1,7 @@
 import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
 import { WhereFilterOp } from "firebase/firestore/lite";
-import { DetailsConstraint, FirestoreKeys, FirestoreQueryParams, PreviewConstraint } from "../../utils/firestoreDbTypes";
-import { FilterConfig, SortConfig } from "../../utils/dataTypes";
+import { FirestoreKeys } from "../../utils/firestoreDbTypes";
+import { FilterConfig, FirestoreQueryParams, SortConfig } from "../../utils/dataTypes";
 import { EntityPreviewComponent } from "../../utils/uiTypes";
 import { LoadingState } from "../../utils/consts";
 import DataStore from "../data/DataStore";
@@ -12,8 +12,7 @@ import SortSettings from "./settings/SortSettings";
 import FilterSettings from "./settings/FilterSettings";
 
 export default abstract class PreviewsView<
-    P extends PreviewConstraint,
-    D extends DetailsConstraint,
+    P, D,
     FilterTypes extends string = any,
     SortTypes extends string = any
 > {
@@ -27,12 +26,15 @@ export default abstract class PreviewsView<
     filteredView: FilteredView<P, D>;
     currentView: GridView<P, D>;
 
-    sortSettings: SortSettings<SortTypes, P, D>;
-    filterSettings: FilterSettings<FilterTypes, P, D>;
+    sortSettings: SortSettings<SortTypes, P>;
+    filterSettings: FilterSettings<FilterTypes, P>;
 
-    abstract ItemPreview: EntityPreviewComponent<P, D>;
+    abstract ItemPreview: EntityPreviewComponent<any>;
 
-    constructor(filterConfig: FilterConfig<FilterTypes, P>, sortConfig: SortConfig<SortTypes, P>) {
+    constructor(
+        filterConfig: FilterConfig<FilterTypes, P>, 
+        sortConfig: SortConfig<SortTypes, P>
+    ) {
         this.defaultView = new DefaultView(this);
         this.filteredView = new FilteredView(this);
         this.currentView = this.defaultView;

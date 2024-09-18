@@ -1,10 +1,10 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { FirestoreQueryParams, PreviewConstraint as PC, DetailsConstraint as DC, FirestoreKeys as FK} from "../../../utils/firestoreDbTypes";
-import { SortConfig } from "../../../utils/dataTypes";
+import { FirestoreKeys as FK} from "../../../utils/firestoreDbTypes";
+import { FirestoreQueryParams, SortConfig } from "../../../utils/dataTypes";
 import { DropdownOption } from "../../../utils/uiTypes";
 import Entity from "../../../utils/classes/Entity";
 
-export default class SortSettings<Key extends string, P extends PC, D extends DC> {
+export default class SortSettings<Key extends string, P> {
     config: SortConfig<Key, P>;
     options: DropdownOption<Key>[];
     selectedOption: DropdownOption<Key> | null;
@@ -39,7 +39,7 @@ export default class SortSettings<Key extends string, P extends PC, D extends DC
             return [];
     }
     
-    castToSortFn() : (a: Entity<P,D>, b: Entity<P,D>) => number {
+    castToSortFn() : (a: Entity<P, any>, b: Entity<P, any>) => number {
         if (this.selectedType) {
             const {field, desc} = this.config[this.selectedType];
 

@@ -1,5 +1,4 @@
 import Entity from "./classes/Entity";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../utils/firestoreDbTypes';
 
 export type DropdownOption<T extends string> = {
     value: T,
@@ -9,6 +8,6 @@ export type DropdownOption<T extends string> = {
 
 export type DropdownOptionSelectHandler<T extends string> = (option: DropdownOption<T> | null) => void;
 
-export type EntityPreviewComponent<P extends PC, D extends DC> = (props: {
-    preview: Entity<P, D>['preview']
+export type EntityPreviewComponent<E extends Entity<any, any>> = (props: {
+    preview: E['preview']
 }) => JSX.Element;
