@@ -1,7 +1,7 @@
 import { useRouteError } from "react-router-dom";
+import { LinkButton } from "../../../components/Buttons";
 import RootWrapper from "../RootWrapper";
 import styles from './index.module.scss';
-import { LinkButton } from "../../../components/Buttons";
 
 export default function ErrorElement() {
     const error = useRouteError() as Error;

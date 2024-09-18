@@ -1,15 +1,16 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../utils/firestoreDbTypes";
-import { EntityPreview, EntityPreviewComponent } from "../../utils/uiTypes";
+import { DetailsConstraint, PreviewConstraint } from "../../utils/firestoreDbTypes";
+import { EntityPreviewComponent } from "../../utils/uiTypes";
+import Entity from "../../utils/classes/Entity";
 import PreviewGridWrapper from "./PreviewGridWrapper";
 
-function PreviewGrid<P extends PC, D extends DC>({
+function PreviewGrid<P extends PreviewConstraint, D extends DetailsConstraint>({
     previews, itemName, ItemPreview, children
 }: {
-    previews: EntityPreview<P, D>[],
+    previews: Entity<P,D>['preview'][],
     itemName: string,
-    ItemPreview: EntityPreviewComponent<P, D>,
+    ItemPreview: EntityPreviewComponent<P,D>,
     children?: ReactNode
 }) {
 

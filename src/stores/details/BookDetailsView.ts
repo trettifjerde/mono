@@ -1,17 +1,19 @@
-import BookSlice from "../slices/BookSlice";
 import { BookDetailsInfo, BookPreviewInfo } from "../../services/BookService";
+import BookStore from "../data/BookStore";
 import DetailsView from "./DetailsView";
 import BookHeader from "../../pages/BookDetailsPage/BookHeader";
 import DefaultBookImgSrc from '../../assets/800x800.webp';
 
 export default class BookDetailsView extends DetailsView<BookPreviewInfo, BookDetailsInfo> {
 
+    override store : BookStore;
     override fallbackImg = DefaultBookImgSrc;
     override HeaderComponent = BookHeader;
 
-    constructor(slice: BookSlice) {
-
-        super(slice);
+    constructor(store: BookStore) {
+        super();
+        
+        this.store = store;
     }
 
 }

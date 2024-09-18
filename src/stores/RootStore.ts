@@ -1,13 +1,13 @@
-import BookSlice from "./slices/BookSlice";
-import AuthorSlice from "./slices/AuthorSlice";
+import AuthorStore from "./data/AuthorStore";
+import BookStore from "./data/BookStore";
 
 export default class RootStore {
 
-    books: BookSlice;
-    authors: AuthorSlice
+    books: BookStore;
+    authors: AuthorStore
 
     constructor() {
-        this.books = new BookSlice(this);
-        this.authors = new AuthorSlice(this);
+        this.books = new BookStore(this);
+        this.authors = new AuthorStore(this);
     }
 }

@@ -14,7 +14,5 @@ export default class Author extends Entity<AuthorPreviewInfo, AuthorDetailsInfo>
 
     get books() {
         return this.details?.books || [];
-    }
-
-    
+    }   
 }

@@ -1,36 +1,36 @@
 import { observer } from "mobx-react-lite"
-import DetailsView from "../../stores/details/DetailsView"
 import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes'
 import { splitAndWrapInPs } from "../../utils/helpers"
-import DetailsReloader from "./DetailsReloader"
 import { LinkButton } from "../../components/Buttons"
+import DetailsView from "../../stores/details/DetailsView"
+import DetailsReloader from "./DetailsReloader"
 
-function DetailsMain<P extends PC, D extends DC>({ details }: { details: DetailsView<P, D> }) {
+function DetailsMain<P extends PC, D extends DC>({ view }: { view: DetailsView<P, D> }) {
 
     const renderDescription = () => {
 
-        if (details.isError)
-            return <DetailsReloader details={details} />
+        if (view.isError)
+            return <DetailsReloader view={view} />
 
-        if (details.isNotFound)
+        if (view.isNotFound)
             return (
                 <div style={{ textAlign: 'center' }}>
-                    <p>{details.slice.entityName} not found</p>
+                    <p>{view.store.entityName} not found</p>
 
                     <LinkButton
                         className="link-center"
-                        to={details.slice.grid.rootPath}
+                        to={view.store.previewsView.rootPath}
                         relative="path"
                     >
-                        Browse other {details.slice.entityName.toLowerCase() + 's'}
+                        Browse other {view.store.entityName.toLowerCase() + 's'}
                     </LinkButton>
                 </div>
             )
 
-        if (details.isLoading)
+        if (view.isLoading)
             return <p></p>;
 
-        const description = details.loadedItem?.details?.description;
+        const description = view.loadedItem?.details?.description;
 
         if (description)
             return splitAndWrapInPs(description);

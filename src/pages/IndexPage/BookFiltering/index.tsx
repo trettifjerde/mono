@@ -1,11 +1,9 @@
 // import { DropdownOptionSelectHandler } from '../../../utils/uiTypes';
 import { observer } from 'mobx-react-lite';
+import BookPreviewsView from '../../../stores/previews/BookPreviewsView';
 import styles from './index.module.scss';
-import BookGrid from '../../../stores/grid/BookGrid';
 
-function BookFiltering({grid}: {grid: BookGrid})  {
-
-    const {applyInStockFilter} = grid;
+function BookFiltering({view}: {view: BookPreviewsView})  {
 
     return (<>
         {/* <div>
@@ -28,7 +26,7 @@ function BookFiltering({grid}: {grid: BookGrid})  {
             <input 
                 id="inStock" type="checkbox" 
                 defaultChecked={false} 
-                onChange={applyInStockFilter}
+                onChange={view.setInStockFilter}
             />
         </div>
     </>

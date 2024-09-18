@@ -8,15 +8,15 @@ import styles from './index.module.scss';
 
 export default function BookDetailsPage() {
     const {[Pathnames.bookId]: bookId} = useParams() as {[Pathnames.bookId]: string};
-    const {details} = useContext(RootStoreContext).books;
+    const {detailsView} = useContext(RootStoreContext).books;
 
-    details.prepareItem(bookId);
+    detailsView.prepareItem(bookId);
     
     return <DetailsPage 
-        details={details}
+        view={detailsView}
         className={styles.book}
     >
-        <BookDetails details={details}/>
+        <BookDetails view={detailsView}/>
         
     </DetailsPage>
 };

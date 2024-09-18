@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes } from "react";
 import { Link, LinkProps } from "react-router-dom";
-import styles from './index.module.scss';
 import { getSkeletonClassIfNeeded } from "../../utils/helpers";
+import styles from './index.module.scss';
 
 export type ButtonColor = 'dark' | 'light' | 'blue' | 'black';
 export type ButtonShape = 'square' | 'rect';

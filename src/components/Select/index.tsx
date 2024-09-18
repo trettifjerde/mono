@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import SortSelect from '../../stores/grid/SortSelect';
 import { PreviewConstraint } from '../../utils/firestoreDbTypes';
 import { InputWithIconButton } from '../Inputs';
+import SortSettings from '../../stores/previews/settings/SortSettings';
 import Dropdown from '../Dropdown';
 import styles from './index.module.scss';
 
-function Select<P extends PreviewConstraint>({sortSelect, id, label, placeholder, icon}: {
-    sortSelect: SortSelect<P>,
+function Select<P extends PreviewConstraint>({sortSettings, id, label, placeholder, icon}: {
+    sortSettings: SortSettings<any, P, any>,
     id: string,
     label: string,
     placeholder: string,
@@ -17,7 +17,7 @@ function Select<P extends PreviewConstraint>({sortSelect, id, label, placeholder
     const [isDropdownVisible, setDropdownVisible] = useState(false);
     const ddOpenerRef = useRef<HTMLInputElement>(null);
 
-    const {options, selectType, selectedOption} = sortSelect;
+    const {options, selectOption, selectedOption} = sortSettings;
 
     return (<div>
         <label htmlFor={id}>
@@ -33,14 +33,14 @@ function Select<P extends PreviewConstraint>({sortSelect, id, label, placeholder
                 placeholder={placeholder}
                 color='dark'
                 ref={ddOpenerRef}
-                icon={sortSelect.selectedOption ? 'icon-cross' : 'icon-chevron-down'}
+                icon={selectedOption ? 'icon-cross' : 'icon-chevron-down'}
                 hiddenWhenBlurred={false}
                 readOnly={true}
                 value={selectedOption?.text || ''}
                 onClick={() => setDropdownVisible(true)}
                 onBtnClick={(e) => {
                     if (selectedOption) {
-                        selectType(null);
+                        selectOption(null);
                         e.stopPropagation();
                     }
                 }}
@@ -49,7 +49,7 @@ function Select<P extends PreviewConstraint>({sortSelect, id, label, placeholder
             {isDropdownVisible && <Dropdown
                 ddOpenerRef={ddOpenerRef}
                 countFromParent={true}
-                selectOption={selectType}
+                selectOption={selectOption}
                 closeDropdown={() => setDropdownVisible(false)}
                 options={options} 
             />}

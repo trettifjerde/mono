@@ -1,7 +1,6 @@
-import Book from "../utils/classes/Book";
 import { Pathnames } from "../utils/consts";
 import { makeAbsolutePath } from "../utils/helpers";
-
+import Book from "../utils/classes/Book";
 import PreviewItem from "./PreviewGrid/PreviewItem";
 
 export default function BookPreviewItem({preview}: {preview: Book['preview']}) {

@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
-import BookSlice from "../../../stores/slices/BookSlice";
 import { TextIconButton } from "../../../components/Buttons";
+import BookDetailsView from "../../../stores/details/BookDetailsView";
 import styles from './index.module.scss';
 
-function BookDetails({details}: {details: BookSlice['details']}) {
+function BookDetails({view}: {view: BookDetailsView}) {
     
-    const info = details.loadedItem?.fullInfo;
+    const info = view.loadedItem?.fullInfo;
 
     if (!info)
         return <></>

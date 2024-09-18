@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
-import DetailsView from "../../stores/details/DetailsView";
 import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
 import { Button } from "../../components/Buttons";
+import DetailsView from "../../stores/details/DetailsView";
 
-function DetailsReloader<P extends PC, D extends DC>({details}: {details: DetailsView<P,D>}) {
+function DetailsReloader<P extends PC, D extends DC>({view}: {view: DetailsView<P,D>}) {
 
     return <div style={{textAlign: 'center'}}>
-        <p>Failed to fetch the {details.slice.entityName.toLowerCase()}</p>
+        <p>Failed to fetch the {view.store.entityName.toLowerCase()}</p>
         <Button 
-            onClick={() => details.prepareItem()}
+            onClick={() => view.prepareItem()}
         >
             Try again
         </Button>

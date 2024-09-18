@@ -1,29 +1,29 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import DetailsView from "../../stores/details/DetailsView";
 import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../utils/firestoreDbTypes";
 import { getSkeletonClassIfNeeded } from "../../utils/helpers";
 import { IconLinkButton } from "../../components/Buttons";
+import DetailsView from "../../stores/details/DetailsView";
 import DetailsMain from "./DetailsMain";
 import DeleteButton from "./DeleteButton";
 import styles from './index.module.scss';
 
 function DetailsPage<P extends PC, D extends DC>(
-    { details, className, children }:
+    { view, className, children }:
         {
-            details: DetailsView<P, D>,
+            view: DetailsView<P, D>,
             className: string,
             children?: ReactNode
         }) {
 
-    const { isLoading, isFailure, loadedItem, HeaderComponent } = details;
+    const { isLoading, isFailure, loadedItem, HeaderComponent } = view;
 
     return <article className={`${styles.base} ${className} ${getSkeletonClassIfNeeded(isLoading)}`}>
 
         <header>
             <hgroup>
-                <h1>{details.headerContent}</h1>
-                {HeaderComponent && <HeaderComponent item={details.loadedItem} />}
+                <h1>{view.headerContent}</h1>
+                {HeaderComponent && <HeaderComponent item={view.loadedItem} />}
             </hgroup>        
         </header>
 
@@ -38,12 +38,12 @@ function DetailsPage<P extends PC, D extends DC>(
 
         <figure className={isFailure ? styles.bleak : ''}>
             <img 
-                src={loadedItem?.preview.img || details.fallbackImg} 
+                src={loadedItem?.preview.img || view.fallbackImg} 
                 alt="Decorative image"
             />
         </figure>
 
-        <DetailsMain details={details} />
+        <DetailsMain view={view} />
 
         <aside>
             {children}

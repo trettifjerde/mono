@@ -1,48 +1,28 @@
 import { observer } from "mobx-react-lite";
 import { PreviewConstraint as PC, DetailsConstraint as DC } from "../../../../utils/firestoreDbTypes";
-import GridStore from "../../../../stores/grid/GridStore";
+import PreviewsView from "../../../../stores/previews/PreviewsView";
 import PreviewGridSkeleton from "../../../../components/PreviewGrid/PreviewGridSkeleton";
 import Reloader from "./Reloader";
-import PreviewGrid from "../../../../components/PreviewGrid";
-import PagButton from "./PagButton";
+import LoadedResults from "./LoadedResults";
 import styles from './index.module.scss';
 
-function ResultsGrid<P extends PC, D extends DC>({grid}: {grid: GridStore<P, D>}) {
+function ResultsGrid<P extends PC, D extends DC>({view}: {view: PreviewsView<P, D>}) {
+    const { isError, isLoading, loadPreviews } = view;
 
-    const {entityName} = grid.slice;
-    const { currentView, loadPreviews, ItemPreview } = grid;
-    const { isError, isLoading } = currentView;
+    console.log('results grid', isError, isLoading)
 
     const renderGrid = () => {
         
         if (isError) 
             return <Reloader 
-                entityName={entityName}
+                entityName={view.store.entityName}
                 loadPreviews={loadPreviews} 
             />
 
         if (isLoading)
             return <PreviewGridSkeleton /> 
 
-        return <PreviewGrid 
-                previews={currentView.currentPagePreviews} 
-                itemName={entityName}
-                ItemPreview={ItemPreview}
-            >  
-            
-            <div className={styles.pag}>
-                <PagButton 
-                    icon="icon-arrow-left" 
-                    isVisible={currentView.isPrevBtnVisible}
-                    onClick={currentView.showPrev}
-                />
-                <PagButton 
-                    icon="icon-arrow-right" 
-                    isVisible={currentView.isNextBtnVisible}
-                    onClick={currentView.showNext}
-                />
-            </div>
-        </PreviewGrid>  
+        return <LoadedResults view={view} /> 
     }
 
     return <div className={styles.grid}>

@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import styles from './index.module.scss';
 import { Button } from "../Buttons";
+import styles from './index.module.scss';
 
 export default function ConfirmationModal({children, confirm, close}: {
     children: ReactNode,

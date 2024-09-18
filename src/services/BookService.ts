@@ -1,18 +1,21 @@
-import DataService from "./DataService";
-import BookSlice from "../stores/slices/BookSlice";
+import { collection, CollectionReference } from "firebase/firestore/lite";
 import { DetailsConstraint, FirestoreBook, FirestoreKeys } from "../utils/firestoreDbTypes";
-import { CollectionReference, DocumentData } from "firebase/firestore/lite";
+import BookStore from "../stores/data/BookStore";
+import DataService from "./DataService";
+import db from "./Firestore";
 
 export type BookPreviewInfo = FirestoreBook;
 export type BookDetailsInfo = DetailsConstraint;
 
-export default class BookService extends DataService<BookPreviewInfo, BookDetailsInfo> {
+export default class BookService extends DataService<BookPreviewInfo, DetailsConstraint> {
 
-    override previewsRef: CollectionReference<BookPreviewInfo, DocumentData>;
+    override previewsRef: CollectionReference<BookPreviewInfo>;
 
-    constructor(storeSlice: BookSlice) {
-        super(storeSlice, FirestoreKeys.descriptions);    
-        this.previewsRef = this.booksRef;
+    constructor(store: BookStore) {
+        super(store, FirestoreKeys.descriptions);    
+        
+        this.previewsRef = collection(db, FirestoreKeys.books)
+            .withConverter(DataService.makePreviewsConverter<FirestoreBook>())
     }
 
     override async getDetails(id: string) {

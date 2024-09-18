@@ -1,22 +1,22 @@
 import { observer } from "mobx-react-lite";
-import GridStore from "../../../stores/grid/GridStore"
 import { DetailsConstraint as DC, PreviewConstraint as PC } from "../../../utils/firestoreDbTypes"
+import PreviewsView from "../../../stores/previews/PreviewsView"
 import DebouncedChangeInput from "../../../components/Inputs/DebouncedChangeInput";
 import styles from './index.module.scss';
 
-function SearchBar<P extends PC, D extends DC>({grid}: {grid: GridStore<P, D>}) {
+function SearchBar<P extends PC, D extends DC>({view}: {view: PreviewsView<P, D>}) {
 
     return <div className={styles.search}>
         <label htmlFor="itemSearchBar">
             <i className="icon-search" />
-            <span>Search {grid.slice.entityName.toLowerCase() + 's'}</span>
+            <span>Search {view.store.entityName.toLowerCase() + 's'}</span>
         </label>
         
         <DebouncedChangeInput 
             id="itemSearchBar"
             className={styles.searchinp}
-            entityTitleName={grid.entityTitleName}
-            applyValue={grid.applyNameFilter}
+            entityTitleName={view.entityTitleName}
+            applyValue={view.setNameFilter}
         />
     </div>
 }

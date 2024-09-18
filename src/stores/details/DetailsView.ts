@@ -1,11 +1,11 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import StoreSlice from "../slices/StoreSlice";
-import { PreviewConstraint as PC, DetailsConstraint as DC } from '../../utils/firestoreDbTypes';
+import { DetailsConstraint, PreviewConstraint } from "../../utils/firestoreDbTypes";
 import { LoadingState } from "../../utils/consts";
+import DataStore from "../data/DataStore";
 import Entity from "../../utils/classes/Entity";
 
-export default abstract class DetailsView <P extends PC, D extends DC> {
-    slice: StoreSlice<P, D>;
+export default abstract class DetailsView<P extends PreviewConstraint, D extends DetailsConstraint> {
+    abstract store: DataStore<P, D>;
 
     state: LoadingState = LoadingState.idle;
     selectedId = '';
@@ -14,8 +14,7 @@ export default abstract class DetailsView <P extends PC, D extends DC> {
     abstract fallbackImg: string;
     abstract HeaderComponent: ((props: {item: Entity<P,D> | null}) => JSX.Element) | null;
 
-    constructor(slice: StoreSlice<P, D>) {
-        this.slice = slice;
+    constructor() {
 
         makeObservable(this, {
             state: observable,
@@ -60,16 +59,16 @@ export default abstract class DetailsView <P extends PC, D extends DC> {
         return this.state === LoadingState.loading;
     }
 
-    setLoadedItem(item: Entity<P,D>) {
-        this.selectedId = item.id;
-        this.loadedItem = item;
-        this.state = LoadingState.idle;
-    }
-
     setLoading(id: string) {
         this.selectedId = id;
         this.loadedItem = null;
         this.state = LoadingState.loading;
+    }
+
+    setLoadedItem(item: Entity<P,D>) {
+        this.selectedId = item.id;
+        this.loadedItem = item;
+        this.state = LoadingState.idle;
     }
 
     setFailure(state: LoadingState.notFound | LoadingState.error) {
@@ -85,48 +84,18 @@ export default abstract class DetailsView <P extends PC, D extends DC> {
         if (!id)
             id = this.selectedId;
         
-        const existingItem = this.slice.dataStore.items.get(id);
-        
-        if (existingItem && existingItem.details) {
-            this.setLoadedItem(existingItem);
-            return;
-        }
-
         this.setLoading(id);
 
         try {
-            const fetchInfoFn = existingItem ? this.fetchDetails : this.fetchFullInfo;
-            
-            const item = await fetchInfoFn.call(this, id);
+            const item = await this.store.getItemFullInfo(id);
 
             if (item)
                 this.setLoadedItem(item);
-
             else
                 this.setFailure(LoadingState.notFound);
         }
         catch (error) {
             this.setFailure(LoadingState.error);
         }
-    }
-
-    fetchFullInfo(id: string) {
-        return this.slice.service.getFullInfo(id)
-            .then(fullInfo => {
-                if (!fullInfo) 
-                    return null;
-
-                return this.slice.dataStore.add({id, ...fullInfo})[0];
-            })
-    }
-
-    fetchDetails(id: string) {
-        return this.slice.service.getDetails(id)
-            .then(detailsInfo => {
-                if (!detailsInfo) 
-                    return null;
-
-                return this.slice.dataStore.update({id, detailsInfo})[0]; 
-            })
     }
 }

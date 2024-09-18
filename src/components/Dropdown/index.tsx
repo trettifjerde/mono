@@ -2,7 +2,7 @@ import { MouseEventHandler, RefObject, useEffect } from 'react';
 import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes';
 import styles from './index.module.scss';
 
-export default function Dropdown<T>({
+export default function Dropdown<T extends string>({
     ddOpenerRef, selectOption, closeDropdown, options, countFromParent=false, isFetching=false
 }: {
     ddOpenerRef: RefObject<HTMLElement>,
@@ -24,13 +24,12 @@ export default function Dropdown<T>({
                 No results
             </li>
 
-        return options.map((option, i) => (
+        return options.map(option => (
             <li 
-                key={option.text + i} 
+                key={option.value} 
                 onClick={() => selectOption(option)}
             >
-                <span>{option.text}</span>
-                {option.icon && <i className={option.icon} />}
+                {option.element}
             </li>
         ));
     }();

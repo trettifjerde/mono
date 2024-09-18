@@ -1,55 +1,26 @@
 import { collection, CollectionReference, doc, FirestoreDataConverter, getDoc, getDocs, limit, orderBy, query, QueryConstraint, startAfter, where } from "firebase/firestore/lite";
-import { FirestoreKeys, PreviewConstraint as PC, DetailsConstraint as DC, FirestoreBook, PreviewsQueryParams } from "../utils/firestoreDbTypes";
-import StoreSlice from "../stores/slices/StoreSlice";
+import { FirestoreKeys, FirestoreQueryParams, PreviewConstraint, DetailsConstraint } from "../utils/firestoreDbTypes";
 import { FETCH_BATCH_SIZE } from "../utils/consts";
+import DataStore from "../stores/data/DataStore";
 import db from "./Firestore";
 
-export default abstract class DataService<P extends PC, D extends DC> {
+export default abstract class DataService<P extends PreviewConstraint, D extends DetailsConstraint> {
 
     batchSize = FETCH_BATCH_SIZE;
 
-    slice: StoreSlice<P,D>;
+    store: DataStore<P,D>;
     abstract previewsRef: CollectionReference<P>;
     descriptionsRef: CollectionReference<string>;
-    booksRef: CollectionReference<FirestoreBook>;
 
-    constructor(storeSlice: StoreSlice<P,D>, descriptionsKey: FirestoreKeys) {
+    constructor(store: DataStore<P, D>, descriptionsKey: FirestoreKeys) {
 
-        this.slice = storeSlice;
-
-        this.booksRef = collection(db, FirestoreKeys.books)
-            .withConverter(DataService.makePreviewsConverter<FirestoreBook>());
+        this.store = store;
 
         this.descriptionsRef = collection(db, descriptionsKey)
             .withConverter(DataService.descriptionConverter);
     }
 
-    protected async getPreviewSnapshots<AnyPreviewType extends PC>({
-        collectionRef, 
-        params
-    }: FetchPreviewsInit<AnyPreviewType>) {
-        
-        const constraints : QueryConstraint [] = [];
-
-        if (params) {
-            const {filters, sorts, lastSnap} = params;
-
-            filters.forEach((filter) => constraints.push(where(...filter)));
-
-            sorts.forEach(({dbKey, desc}) => constraints.push(orderBy(dbKey, desc)));
-
-            if (lastSnap) 
-                constraints.push(startAfter(lastSnap));
-        }
-
-        constraints.push(limit(this.batchSize));
-
-        const snapshot = await getDocs(query(collectionRef, ...constraints));
-
-        return snapshot.docs;
-    }
-
-    async getPreviews(params: PreviewsQueryParams) {
+    async getPreviews(params: FirestoreQueryParams<P>) {
         return this.getPreviewSnapshots({
             collectionRef: this.previewsRef,
             params
@@ -74,7 +45,7 @@ export default abstract class DataService<P extends PC, D extends DC> {
         return snapshot.data() || '';
     }
 
-    abstract getDetails(id: string) : Promise<D | null>;
+    abstract getDetails(id: string) : Promise<D | null>
 
     async getFullInfo(id: string) {
         return Promise.all([
@@ -92,12 +63,38 @@ export default abstract class DataService<P extends PC, D extends DC> {
         })
     }
 
-    static makePreviewsConverter<AppPreview extends PC>() {
+    private async getPreviewSnapshots<T>({
+        collectionRef, 
+        params,
+    }: FetchPreviewsInit<T>) {
+        
+        const constraints : QueryConstraint [] = [];
+
+        if (params) {
+            const {filters, sorts, lastSnap, unlimited} = params;
+
+            filters.forEach(({field, op, value}) => constraints.push(where(field as string, op, value)));
+                
+            sorts.forEach(({field, desc}) => constraints.push(orderBy(field as string, desc)));
+
+            if (lastSnap) 
+                constraints.push(startAfter(lastSnap));
+
+            if (!unlimited)
+                constraints.push(limit(this.batchSize));
+        }
+
+        const snapshot = await getDocs(query(collectionRef, ...constraints));
+
+        return snapshot.docs;
+    }
+
+    static makePreviewsConverter<T>() {
         return {
             toFirestore: (preview) => preview,
             fromFirestore: (snapshot) => ({
                 ...snapshot.data()})
-        } as FirestoreDataConverter<AppPreview>;
+        } as FirestoreDataConverter<T>;
     };
 
     static descriptionConverter : FirestoreDataConverter<string> = {
@@ -110,7 +107,7 @@ export default abstract class DataService<P extends PC, D extends DC> {
     };
 }
 
-type FetchPreviewsInit<T extends PC> = {
+type FetchPreviewsInit<T> = {
     collectionRef: CollectionReference<T>,
-    params?: PreviewsQueryParams, 
+    params: FirestoreQueryParams<T>
 }

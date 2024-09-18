@@ -1,27 +1,27 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import GridStore from "../../../stores/grid/GridStore";
 import { DetailsConstraint as DC, PreviewConstraint as PC } from '../../../utils/firestoreDbTypes';
-import SearchBar from "./SearchBar";
+import PreviewsView from "../../../stores/previews/PreviewsView";
 import Select from "../../../components/Select";
+import SearchBar from "./SearchBar";
 import ResultsGrid from "./ResultsGrid";
 import styles from './index.module.scss';
 
-function IndexView<P extends PC, D extends DC>({grid, children}: {
-    grid: GridStore<P, D>,
+function IndexView<P extends PC, D extends DC>({view, children}: {
+    view: PreviewsView<P, D>,
     children?: ReactNode
 }) {
 
-    const {initialiseStore} = grid;
+    const {initialiseView} = view;
 
-    initialiseStore();
+    initialiseView();
 
     return <>
         <div className={styles.panel}>
-            <SearchBar grid={grid}/>
+            <SearchBar view={view}/>
 
             <Select 
-                sortSelect={grid.sortSelect}
+                sortSettings={view.sortSettings}
                 id="sortSelect"
                 label="Sort by"
                 icon="icon-arrows-v"
@@ -31,7 +31,7 @@ function IndexView<P extends PC, D extends DC>({grid, children}: {
             {children}
         </div>
 
-        <ResultsGrid grid={grid} />
+        <ResultsGrid view={view} />
     </>
 }
 

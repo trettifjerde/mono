@@ -1,19 +1,17 @@
 import { observer } from "mobx-react-lite";
-import PreviewGridList from "../../components/PreviewGrid";
+import AuthorDetailsView from "../../stores/details/AuthorDetailsView";
+import PreviewGrid from "../../components/PreviewGrid";
 import PreviewGridSkeleton from "../../components/PreviewGrid/PreviewGridSkeleton";
 import BookPreviewItem from "../../components/BookPreviewItem";
-import AuthorDetailsView from "../../stores/details/AuthorDetailsView";
 
-function AuthorBookGrid({details}: {details: AuthorDetailsView}) {
+function AuthorBookGrid({view}: {view: AuthorDetailsView}) {
 
-    if (details.isLoading) 
+    if (view.isLoading) 
         return <PreviewGridSkeleton />
-    
-    const previews = details.books;
 
-    return <PreviewGridList
-        previews={previews}
-        itemName={details.slice.entityName}
+    return <PreviewGrid
+        previews={view.bookPreviews}
+        itemName={view.store.entityName}
         ItemPreview={BookPreviewItem} 
     />
 }

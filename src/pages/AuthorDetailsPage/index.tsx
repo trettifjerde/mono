@@ -8,15 +8,15 @@ import styles from './index.module.scss';
 
 export default function AuthorDetailsPage() {
     const {[Pathnames.authorId]: authorId} = useParams() as {[Pathnames.authorId]: string};
-    const {details} = useContext(RootStoreContext).authors;
+    const {detailsView} = useContext(RootStoreContext).authors;
 
-    details.prepareItem(authorId);
+    detailsView.prepareItem(authorId);
     
     return <DetailsPage 
-        details={details}
+        view={detailsView}
         className={styles.author}
     >
-        <AuthorBookGrid details={details}/>
+        <AuthorBookGrid view={detailsView}/>
         
     </DetailsPage>
 }
