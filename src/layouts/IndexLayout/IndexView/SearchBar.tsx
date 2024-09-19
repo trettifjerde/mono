@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import PreviewsView from "../../../stores/previews/PreviewsView"
-import DebouncedChangeInput from "../../../components/Inputs/DebouncedChangeInput";
+import PreviewsView from "../../../stores/PreviewsView/PreviewsView"
+import DebouncedInput from "../../../components/Inputs/DebouncedInput";
 import styles from './index.module.scss';
 
 function SearchBar<P, D>({view}: {view: PreviewsView<P, D>}) {
@@ -11,7 +11,7 @@ function SearchBar<P, D>({view}: {view: PreviewsView<P, D>}) {
             <span>Search {view.store.entityName.toLowerCase() + 's'}</span>
         </label>
         
-        <DebouncedChangeInput 
+        <DebouncedInput 
             id="itemSearchBar"
             className={styles.searchinp}
             entityTitleName={view.entityTitleName}

@@ -1,5 +1,5 @@
-import AuthorStore from "./data/AuthorStore";
-import BookStore from "./data/BookStore";
+import AuthorStore from "./DataStore/AuthorStore";
+import BookStore from "./DataStore/BookStore";
 
 export default class RootStore {
 

@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { DetailsConstraint, PreviewConstraint } from "../firestoreDbTypes";
-import DataStore from "../../stores/data/DataStore";
+import DataStore from "../../stores/DataStore/DataStore";
 
 export default abstract class Entity<P, D>  {
 

@@ -1,6 +1,9 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
-import PreviewsView from "../../../stores/previews/PreviewsView";
+import { Pathnames } from "../../../utils/consts";
+import { makeAbsolutePath } from "../../../utils/helpers";
+import { LinkButton } from "../../../components/Buttons";
+import PreviewsView from "../../../stores/PreviewsView/PreviewsView";
 import Select from "../../../components/Select";
 import SearchBar from "./SearchBar";
 import ResultsGrid from "./ResultsGrid";
@@ -28,6 +31,15 @@ function IndexView<P, D>({view, children}: {
             />
             
             {children}
+
+            <div className={styles.addBtn}>
+                <LinkButton 
+                    to={makeAbsolutePath(view.pathname, Pathnames.new)}
+                    relative="path"
+                >
+                    Add new {view.store.entityName.toLowerCase()}
+                </LinkButton>
+            </div>
         </div>
 
         <ResultsGrid view={view} />

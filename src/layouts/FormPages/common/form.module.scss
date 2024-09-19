@@ -1,0 +1,65 @@
+@use '../../../styles/variables' as *;
+
+.cont {
+    h1 {
+        text-align: right;
+        margin-block: $double-gap * 2;
+    }
+}
+
+.group {
+    margin-block: $gap;
+    padding: $gap;
+    border-radius: $border-radius;
+    background-color: $dark6;
+    display: grid;
+    align-items: center;
+    grid-template-columns: auto 1fr;
+    gap: .5rem;
+
+    label span {
+        display: inline-block;
+        margin-right: .25rem;
+        vertical-align: middle;
+    }
+
+    input,
+    textarea {
+        grid-column: 1/-1;
+    }
+
+    p {
+        color: $light4;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    @include screen-large {
+        padding: $double-gap;
+    }
+}
+
+.btns {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: $double-gap;
+    margin-block: $double-gap;   
+}
+
+.gray {
+    font-size: .75rem;
+    color: $dark1;
+}
+
+.invalid {
+    background-color: $light3 !important;
+    border-color: $light1;
+}
+
+.error {
+    line-height: 2;
+    text-align: center;
+    color: $light1;
+}

@@ -49,53 +49,58 @@ span + i {
   margin-left: 0.5rem;
 }
 
-input {
+input,
+textarea {
   @extend %input-btn-clear;
 
   width: 100%;
   outline: $outline-width solid transparent;
   line-height: $input-line-height;
   padding: $input-padding;
-  background-color: $dark3;
+  background-color: $dark4;
 
   &:focus {
     outline-color: $light1;
-    background-color: $dark2;
+    background-color: $dark3;
   }
 
   &::placeholder {
     color: $dark6;
   }
 
-  &[type=checkbox] {
-      appearance: none;
-      font-family: $icon-font;
-      font-size: .75rem;
-      line-height: 1;
-      width: fit-content;
-      aspect-ratio: 1/1;
-      padding: .25rem;
-      cursor: pointer;
-      color: $light3;
-    
-      &::after {
-        content: $check-icon;
-        transition-property: visibility, opacity;
-        transition-duration: $trans-dur;
-        transition-timing-function: $trans-fn;
-        visibility: hidden;
-        opacity: 0;
-      }
-    
-      &:checked::after {
-        visibility: visible;
-        opacity: 1;
-      }
+  @include hover {
+    background-color: $dark3;
+  }
+}
+
+input[type=checkbox] {
+  appearance: none;
+  font-family: $icon-font;
+  font-size: .75rem;
+  line-height: 1;
+  width: fit-content;
+  aspect-ratio: 1/1;
+  padding: .25rem;
+  cursor: pointer;
+  color: $light3;
+
+  &::after {
+    content: $check-icon;
+    transition-property: visibility, opacity;
+    transition-duration: $trans-dur;
+    transition-timing-function: $trans-fn;
+    visibility: hidden;
+    opacity: 0;
   }
 
-  @include hover {
-    background-color: $dark2;
+  &:checked::after {
+    visibility: visible;
+    opacity: 1;
   }
+}
+
+textarea {
+  min-height: 12rem;
 }
 
 button {
@@ -114,48 +119,6 @@ label {
   font-weight: 400;
 }
 
-.shimmer {
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(90deg, transparent 33%, $light-trans 50%, transparent 67%);
-    background-size: 300% 100%;
-    border-radius: inherit;
-    animation: shimmer 1s ease-in-out infinite;
-  }
-}
-
-.link {
-    color: $light2;
-
-  @include hover {
-      color: $light1;
-  }
-}
-
-.link-btn {
-  @extend %input-btn-clear;
-  display: inline-block;
-}
-
-.link-center {
-  display: block;
-  width: fit-content;
-  margin-inline: auto;
-}
-
-@keyframes shimmer {
-  from {
-    background-position-x: 100%;
-  }
-  to {
-    background-position-x: 0%;
-  }
-}
-
 @keyframes fade-in {
   from {opacity: 0%;}
   to {opacity: 100%;}
@@ -168,13 +131,4 @@ label {
   to {
     transform: translate(0%);
   }
-}
-
-%input-btn-clear {
-  color: inherit;
-  border: $border-width solid transparent;
-  border-radius: $border-radius;
-  font-family: inherit;
-  font-size: inherit;
-  transition: all $trans-dur $trans-fn;
 }

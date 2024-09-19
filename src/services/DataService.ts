@@ -2,7 +2,7 @@ import { collection, CollectionReference, doc, FirestoreDataConverter, getDoc, g
 import { DetailsConstraint, FirestoreKeys, PreviewConstraint } from "../utils/firestoreDbTypes";
 import { FirestoreQueryParams } from "../utils/dataTypes";
 import { FETCH_BATCH_SIZE } from "../utils/consts";
-import DataStore from "../stores/data/DataStore";
+import DataStore from "../stores/DataStore/DataStore";
 import db from "./Firestore";
 
 export default abstract class DataService<P, D> {
@@ -43,6 +43,7 @@ export default abstract class DataService<P, D> {
 
     protected async getDescription(id: string) {
         const snapshot = await getDoc(doc(this.descriptionsRef, id));
+
         return snapshot.data() || '';
     }
 
@@ -72,16 +73,19 @@ export default abstract class DataService<P, D> {
         const constraints : QueryConstraint [] = [];
 
         if (params) {
-            const {filters, sorts, lastSnap, unlimited} = params;
+            const {filters, sorts, lastSnap, clip} = params;
 
-            filters.forEach(({field, op, value}) => constraints.push(where(field as string, op, value)));
-                
-            sorts.forEach(({field, desc}) => constraints.push(orderBy(field as string, desc)));
+            filters.forEach(({field, op, value}) => constraints.push(
+                where(field as string, op, value))
+            );
+            sorts.forEach(({field, desc}) => constraints.push(
+                orderBy(field as string, desc))
+            );
 
             if (lastSnap) 
                 constraints.push(startAfter(lastSnap));
 
-            if (!unlimited)
+            if (clip)
                 constraints.push(limit(this.batchSize));
         }
 

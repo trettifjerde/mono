@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { InputWithIconButton } from '../Inputs';
-import SortSettings from '../../stores/previews/settings/SortSettings';
+import SortSettings from '../../stores/PreviewsView/settings/SortSettings';
 import Dropdown from '../Dropdown';
 import styles from './index.module.scss';
 

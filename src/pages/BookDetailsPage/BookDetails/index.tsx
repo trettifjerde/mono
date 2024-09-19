@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { TextIconButton } from "../../../components/Buttons";
-import BookDetailsView from "../../../stores/details/BookDetailsView";
+import BookDetailsView from "../../../stores/DetailsView/BookDetailsView";
 import styles from './index.module.scss';
 
 function BookDetails({view}: {view: BookDetailsView}) {

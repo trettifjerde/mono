@@ -1,7 +1,7 @@
 import { collection, CollectionReference } from "firebase/firestore/lite";
 import { BookPreviewInfo, FirestoreBook, FirestoreKeys, PreviewConstraint } from "../utils/firestoreDbTypes";
 import { BookDetailsInfo } from "../utils/classes/Book";
-import BookStore from "../stores/data/BookStore";
+import BookStore from "../stores/DataStore/BookStore";
 import DataService from "./DataService";
 import db from "./Firestore";
 

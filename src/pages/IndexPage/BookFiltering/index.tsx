@@ -1,21 +1,19 @@
 // import { DropdownOptionSelectHandler } from '../../../utils/uiTypes';
 import { observer } from 'mobx-react-lite';
-import BookPreviewsView from '../../../stores/previews/BookPreviewsView';
+import BookPreviewsView from '../../../stores/PreviewsView/BookPreviewsView';
 import styles from './index.module.scss';
+import DynamicSelect from '../../../components/DynamicSelect';
 
 function BookFiltering({view}: {view: BookPreviewsView})  {
 
     return (<>
-        {/* <div>
-            <Select 
-                id="authorFilter" 
-                placeholder="Type author's name"
-                label="Only by selected author"
-                options={[]}
-                selectOption={() => {}}
-             />
-        </div> */}
-
+        <DynamicSelect 
+            id="authorName"
+            icon='icon-author'
+            label="Filter by author"
+            entityTitleName="author name"
+            settings={view.authorSettings}
+        />
         <div className={styles.chbx}>
             <label htmlFor="inStock">
                 <i className='icon-basket' />

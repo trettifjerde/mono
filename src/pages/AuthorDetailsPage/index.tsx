@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { RootStoreContext } from "../../stores/StoreContext";
 import { Pathnames } from "../../utils/consts";
-import DetailsPage from "../../layouts/DetailsPage";
+import DetailsPage from "../../layouts/DetailsPages";
 import AuthorBookGrid from "./AuthorBookGrid";
 import styles from './index.module.scss';
 

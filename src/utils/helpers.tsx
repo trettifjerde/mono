@@ -1,9 +1,9 @@
+import { FirestoreQueryParams } from "./dataTypes";
+import { FirestoreKeys } from "./firestoreDbTypes";
+import { NAME_FILTER_CONSTRAINTS_PARTS } from "./consts";
+
 export function makeAbsolutePath(...keys: string[]) {
     return encodeURI(`/${keys.join('/')}`);
-}
-
-export function getSkeletonClassIfNeeded(skeleton: boolean) {
-    return skeleton ? 'shimmer' : '';
 }
 
 export function splitAndWrapInPs(str: string) {
@@ -26,11 +26,11 @@ export function updateSearchParams(params: URLSearchParams, key: string, value?:
     return updParams;
 }
 
-export function decrementStr(str: string) {
-    const decrementedLastChar = String.fromCharCode(str.charCodeAt(str.length - 1) - 1);
-    return str.slice(0, -1) + decrementedLastChar;
-}
-
-export function incrementStr(str: string) {
-    return `${str} `
+export function makeNameFilter<P>(value: string) : FirestoreQueryParams<P>['filters'] {
+    return NAME_FILTER_CONSTRAINTS_PARTS
+    .map(({op, makeValue}) => ({
+        field: FirestoreKeys.name_lowercase,
+        op,
+        value: makeValue(value)
+    }))
 }

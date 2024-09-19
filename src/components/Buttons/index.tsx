@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes } from "react";
 import { Link, LinkProps } from "react-router-dom";
-import { getSkeletonClassIfNeeded } from "../../utils/helpers";
 import styles from './index.module.scss';
+import common from '../../styles/common.module.scss';
 
 export type ButtonColor = 'dark' | 'light' | 'blue' | 'black';
 export type ButtonShape = 'square' | 'rect';
@@ -31,19 +31,19 @@ export function Button({
 
     const cls = `${styles.btn} ${styles[shape]} ${styles[color]} ${className}`;
 
-    return <button className={cls} {...props}>
+    return <button {...props} className={cls}>
         {children}
     </button>
 }
 
 export function LoadingButton({loading, ...props}: ButtonProps & {loading: boolean}) {
-    return <div className={getSkeletonClassIfNeeded(loading)}>
+    return <div className={loading ? common.shimmer : ''}>
         <Button {...props} />
     </div>
 }
 
 export function IconButton({icon, ...props}: IconButtonProps) {
-    return <Button shape="square"
+    return <Button shape="square" type="button"
         {...props}
     >
         <i className={icon}/>
@@ -61,7 +61,7 @@ export function TextIconButton({icon, text, ...props}: TextIconButtonProps) {
 
 export function LinkButton({children, color="dark", shape="rect", className="", ...props}: LinkButtonProps) {
     return <Link 
-        className={`link-btn ${styles.btn} ${styles[color]} ${styles[shape]} ${className}`} 
+        className={`${common.linkBtn} ${styles.btn} ${styles[color]} ${styles[shape]} ${className}`} 
         {...props}
     >
         {children}

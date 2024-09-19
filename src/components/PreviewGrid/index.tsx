@@ -5,17 +5,21 @@ import Entity from "../../utils/classes/Entity";
 import PreviewGridWrapper from "./PreviewGridWrapper";
 
 function PreviewGrid<E extends Entity<any, any>>({
-    previews, itemName, ItemPreview, children
+    previews, itemName, ItemPreview, className, children
 }: {
     previews: E['preview'][],
     itemName: string,
     ItemPreview: EntityPreviewComponent<E>,
+    className?: string,
     children?: ReactNode
 }) {
 
     const isEmpty = !previews.length;
 
-    return <PreviewGridWrapper type={isEmpty ? 'empty' : 'grid'}>
+    return <PreviewGridWrapper 
+        type={isEmpty ? 'empty' : 'grid'}
+        className={className || ''}
+    >
 
         {previews.map(preview => (
             <ItemPreview 

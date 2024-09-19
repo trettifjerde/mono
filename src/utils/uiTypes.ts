@@ -1,9 +1,12 @@
 import Entity from "./classes/Entity";
 
-export type DropdownOption<T extends string> = {
-    value: T,
+export type Suggestion<Key extends string> = {
     text: string,
-    element: JSX.Element
+    value: Key
+};
+
+export type DropdownOption<T extends string> = Suggestion<T> & {
+    renderElement: () => JSX.Element
 }
 
 export type DropdownOptionSelectHandler<T extends string> = (option: DropdownOption<T> | null) => void;

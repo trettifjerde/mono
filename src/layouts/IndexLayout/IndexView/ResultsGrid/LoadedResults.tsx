@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import PreviewGrid from "../../../../components/PreviewGrid";
-import PreviewsView from "../../../../stores/previews/PreviewsView";
+import PreviewsView from "../../../../stores/PreviewsView/PreviewsView";
 import PagButton from "./PagButton";
 import styles from './index.module.scss';
 

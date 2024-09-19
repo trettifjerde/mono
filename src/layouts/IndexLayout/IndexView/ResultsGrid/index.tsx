@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import PreviewsView from "../../../../stores/previews/PreviewsView";
+import PreviewsView from "../../../../stores/PreviewsView/PreviewsView";
 import PreviewGridSkeleton from "../../../../components/PreviewGrid/PreviewGridSkeleton";
 import Reloader from "./Reloader";
 import LoadedResults from "./LoadedResults";

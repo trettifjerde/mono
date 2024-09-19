@@ -1,6 +1,7 @@
 @use '../../styles/variables' as *;
 
 .btn {
+    font-weight: 500;
     padding-block: $input-padding;
     padding-inline: $input-padding;
 
@@ -12,7 +13,7 @@
     }
     
     &.dark {
-        background-color: $dark3;
+        background-color: $dark4;
         color: $light4;
     
         &:disabled {
@@ -23,15 +24,14 @@
     
         @include hover {
             &:not(:disabled) {
-                background-color: $dark4;
-                color: $light1;
+                background-color: $dark3;
             }
         }
     }
     
     &.light {
         background-color: $light1;
-        color: $dark3;
+        color: $dark1;
     
         @include hover {
             &:not(:disabled) {
@@ -46,7 +46,6 @@
     
         @include hover {
             background-color: $dark2;
-            color: $light1;
         }
     }
     
@@ -55,8 +54,7 @@
         color: $dark1;
     
         @include hover {
-            color: $light4;
-            background-color: $light1;;
+            background-color: $light1;
         }
     }
 }

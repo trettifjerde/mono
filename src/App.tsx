@@ -12,6 +12,7 @@ import AuthorDetailsPage from "./pages/AuthorDetailsPage";
 
 import { useContext } from "react";
 import { RootStoreContext } from "./stores/StoreContext";
+import NewAuthorPage from "./pages/NewAuthorPage";
 
 export default function App() {
 
@@ -41,8 +42,8 @@ const router = createBrowserRouter([
         ]
       },
       {
-        // Details routes - no shared layout
-        // But they share rendering logic and wrapper components from layouts/Details
+        // Routes below do not share layouts,
+        // but they share rendering logic and wrapper components from layouts/[...]Pages
         children: [
           {
             path: Pathnames.books,
@@ -57,11 +58,14 @@ const router = createBrowserRouter([
             path: Pathnames.authors,
             children: [
               {
+                path: 'new',
+                element: <NewAuthorPage />
+              },
+              {
                 path: `:${Pathnames.authorId}`,
                 element: <AuthorDetailsPage />,
-              }
+              },
             ]
-
           }
         ]
       }

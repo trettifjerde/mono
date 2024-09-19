@@ -12,7 +12,8 @@ $dark2: #404258;
 $dark3: #474E68;
 $dark4: #4d5570;
 $dark5: #50577A;
-$dark6: #6B728E;
+// $dark6: #6B728E;
+$dark6: #7c839c;
 // $light1: #7e849e;
 // $light2: #b8b5d8;
 // $light3: #d7d4ee;
@@ -49,6 +50,15 @@ $breakpoint-xl: 80rem;
 
 $trans-dur: .2s;
 $trans-fn: ease-in-out;
+
+%input-btn-clear {
+    color: inherit;
+    border: $border-width solid transparent;
+    border-radius: $border-radius;
+    font-family: inherit;
+    font-size: inherit;
+    transition: all $trans-dur $trans-fn;
+}
 
 @mixin hover {
     @media (hover: hover) {

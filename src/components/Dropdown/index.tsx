@@ -1,37 +1,48 @@
 import { MouseEventHandler, RefObject, useEffect } from 'react';
 import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes';
+import { LoadingState } from '../../utils/consts';
 import styles from './index.module.scss';
 
 export default function Dropdown<T extends string>({
-    ddOpenerRef, selectOption, closeDropdown, options, countFromParent=false, isFetching=false
+    ddOpenerRef, selectOption, closeDropdown, options, countFromParent=false, state=LoadingState.idle
 }: {
     ddOpenerRef: RefObject<HTMLElement>,
     options: DropdownOption<T>[],
     selectOption: DropdownOptionSelectHandler<T>,
     closeDropdown: MouseEventHandler,
+    state?: LoadingState
     countFromParent?: boolean,
-    isFetching?: boolean,
 }) {
 
     const dropdownList = function(){
-        if (isFetching)
-            return <li className={styles.loading}>
-                Loading...
-            </li>
 
-        if (!options.length)
-            return <li className={styles.empty}>
-                No results
-            </li>
+        switch (state) {
+            case LoadingState.loading:
+                return <li className={styles.loading}>
+                    Loading...
+                </li>
 
-        return options.map(option => (
-            <li 
-                key={option.value} 
-                onClick={() => selectOption(option)}
-            >
-                {option.element}
-            </li>
-        ));
+            case LoadingState.error:
+                return <li className={styles.loading}>
+                    An error occurred. Try again
+                </li>
+
+            default: 
+
+                if (!options.length)
+                    return <li className={styles.empty}>
+                        No results
+                    </li>
+
+                return options.map(option => (
+                    <li 
+                        key={option.value} 
+                        onClick={() => selectOption(option)}
+                    >
+                        {option.renderElement()}
+                    </li>
+                ));
+        }
     }();
 
     useEffect(() => {
@@ -44,7 +55,6 @@ export default function Dropdown<T extends string>({
                 if (opener.contains(clickTarget))
                     e.stopPropagation();
             }
-            
             setTimeout(closeDropdown, 0);
         }
 
@@ -62,5 +72,5 @@ export default function Dropdown<T extends string>({
 
     return <menu className={styles.dd}> 
         {dropdownList} 
-    </menu>;
+    </menu>
 }
