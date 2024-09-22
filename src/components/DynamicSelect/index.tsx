@@ -1,42 +1,73 @@
-import { useRef} from 'react';
+import { ChangeEventHandler, MouseEventHandler, useRef} from 'react';
 import { observer } from 'mobx-react-lite';
-import { DropdownOption } from '../../utils/uiTypes';
+import { getCleanLCValue } from '../../utils/helpers';
 import DynamicSelectSettings from './DynamicSelectSettings';
-import DebouncedInput from '../Inputs/DebouncedInput';
+import DebouncedInputWithButton from '../Inputs/DebouncedInputWithButton';
 import Dropdown from '../Dropdown';
 
 const DynamicDropdown = observer(Dropdown);
 
-function DynamicSelect<P extends string>({settings, id, label, icon, entityTitleName}: {
-    settings: DynamicSelectSettings<P>,
+function DynamicSelect<P extends string>({id, label, entityTitleName, settings, icon, className}: {
     id: string,
     label: string,
     entityTitleName: string,
+    settings: DynamicSelectSettings<P>,
     icon?: string,
+    className?: string
 }) {
     const ddOpenerRef = useRef<HTMLInputElement>(null);
 
-    const {isDropdownVisible, toggleDropdown, openDropdown, selectOption, updateFilterStr} = settings;
+    const {
+        isDropdownVisible, 
+        lastSelectedOptionText,
+        selectNullOptionOnEmptyFilter,
+        clearFilterOnOptionSelect,
+        openDropdown, 
+        toggleDropdown, 
+        selectOption, 
+        filterOptions
+    } = settings;
 
-    const setSelectedOption = (option: DropdownOption<P> | null) => {
-        selectOption(option);
-        if (ddOpenerRef.current) 
-            ddOpenerRef.current.value = option ? option.text : '';
+    const updateOptions : ChangeEventHandler<HTMLInputElement> = (e) => {
+        filterOptions(getCleanLCValue(e.target));
     }
 
-    return (<div>
+    const setSelectedOption : typeof settings.selectOption = (option) => {
+        selectOption(option);
+        
+        if (ddOpenerRef.current) {
+            if (clearFilterOnOptionSelect)
+                ddOpenerRef.current.value = '';
+            else 
+                ddOpenerRef.current.value = option?.text || '';
+        }
+    }
+
+    const clearSelection : MouseEventHandler<HTMLButtonElement> = () => {
+        if (ddOpenerRef.current) 
+            ddOpenerRef.current.value = '';
+        
+        if (selectNullOptionOnEmptyFilter)
+            selectOption(null);
+
+        filterOptions('');
+    }
+
+    return (<div className={className}>
         <label htmlFor={id}>
             {icon && <i className={icon} />}
             <span>{label}</span>
         </label>
         
         <div style={{position: 'relative'}}>
-            <DebouncedInput 
+            <DebouncedInputWithButton 
                 ref={ddOpenerRef}
                 id={id}
-                onClick={openDropdown}
-                applyValue={updateFilterStr}
+                defaultValue={lastSelectedOptionText}
                 entityTitleName={entityTitleName}
+                onChange={updateOptions}
+                onBtnClick={clearSelection}
+                onClick={openDropdown}
             />
 
             {isDropdownVisible && <DynamicDropdown

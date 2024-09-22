@@ -3,35 +3,62 @@ import { observer } from "mobx-react-lite";
 import { EntityPreviewComponent } from "../../utils/uiTypes";
 import Entity from "../../utils/classes/Entity";
 import PreviewGridWrapper from "./PreviewGridWrapper";
+import PreviewItemWrapper from "./PreviewItemWrapper";
 
-function PreviewGrid<E extends Entity<any, any>>({
-    previews, itemName, ItemPreview, className, children
+function PreviewGrid<E extends Entity>({
+    items, isLoading, itemName, ItemPreview, onItemClick, children, className
 }: {
-    previews: E['preview'][],
+    items: E[],
+    isLoading: boolean,
     itemName: string,
     ItemPreview: EntityPreviewComponent<E>,
-    className?: string,
-    children?: ReactNode
+    onItemClick?: (item: E) => void,
+    children?: ReactNode,
+    className?: string
 }) {
 
-    const isEmpty = !previews.length;
+    if (isLoading)
+
+        return <PreviewGridWrapper 
+            type="skeleton" 
+            className={className}
+        >
+
+            <PreviewItemWrapper isLoading />
+            <PreviewItemWrapper isLoading />
+            <PreviewItemWrapper isLoading />
+            <PreviewItemWrapper isLoading />
+
+        </PreviewGridWrapper>
+
+    if (!items.length)
+
+        return <PreviewGridWrapper 
+            type="empty" 
+            className={className}
+        >
+
+            <span>No {itemName.toLowerCase() + 's'}</span>
+            {children}
+
+        </PreviewGridWrapper>
+
 
     return <PreviewGridWrapper 
-        type={isEmpty ? 'empty' : 'grid'}
-        className={className || ''}
+        type="grid" 
+        className={className}
     >
 
-        {previews.map(preview => (
-            <ItemPreview 
-                key={preview.id} 
-                preview={preview} 
+        {items.map(item => (
+            <ItemPreview
+                key={item.id}
+                item={item}
+                onItemClick={onItemClick}
             />))
         }
-
-        {isEmpty && <span>No {itemName.toLowerCase() + 's'}</span>}
-
         {children}
-        
+
     </PreviewGridWrapper>
 }
+
 export default observer(PreviewGrid);

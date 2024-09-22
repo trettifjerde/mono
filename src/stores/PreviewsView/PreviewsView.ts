@@ -1,80 +1,81 @@
 import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
-import { FirestoreKeys } from "../../utils/firestoreDbTypes";
 import { FirestoreQueryParams } from "../../utils/dataTypes";
 import { EntityPreviewComponent } from "../../utils/uiTypes";
-import { LoadingState, NAME_FILTER_CONSTRAINTS_PARTS } from "../../utils/consts";
+import { LoadingState } from "../../utils/consts";
+import Entity from "../../utils/classes/Entity";
 import DataStore from "../DataStore/DataStore";
 import GridView from "./grid/GridView";
 import DefaultView from "./grid/DefaultView";
 import FilteredView from "./grid/FilteredView";
-import SortSettings, { SortConfig } from "./settings/SortSettings";
-import FilterSettings, { FilterConfig } from "./settings/FilterSettings";
+import SortSettings from "./settings/SortSettings";
+import FilterSettings from "./settings/FilterSettings";
 
 export default abstract class PreviewsView<
-    P, D,
+    E extends Entity,
     FilterTypes extends string = any,
     SortTypes extends string = any
 > {
 
-    abstract store: DataStore<P, D>;
     abstract pathname: string;
     abstract entityTitleName: string;
+    
+    store: DataStore<E>;
+
+    defaultView: DefaultView<E>;
+    filteredView: FilteredView<E>;
+    sortSettings: SortSettings<SortTypes, E>;
+    filterSettings: FilterSettings<FilterTypes, E>;
 
     loadingState: LoadingState = LoadingState.idle;
-    defaultView: DefaultView<P, D>;
-    filteredView: FilteredView<P, D>;
-    currentView: GridView<P, D>;
-
-    sortSettings: SortSettings<SortTypes, P>;
-    filterSettings: FilterSettings<FilterTypes, P>;
+    currentView: GridView<E>;
 
     abstract ItemPreview: EntityPreviewComponent<any>;
 
-    constructor(
-        filterConfig: FilterConfig<FilterTypes, P>, 
-        sortConfig: SortConfig<SortTypes, P>
-    ) {
+    constructor(store: DataStore<E>) {
+        this.store = store;
+
         this.defaultView = new DefaultView(this);
         this.filteredView = new FilteredView(this);
-        this.currentView = this.defaultView;
+        this.sortSettings = new SortSettings(store.sortConfig);
+        this.filterSettings = new FilterSettings(store.filterConfig);
 
-        this.sortSettings = new SortSettings(sortConfig);
-        this.filterSettings = new FilterSettings(filterConfig);
+        this.currentView = this.defaultView;
 
         makeObservable(this, {
             loadingState: observable,
-            defaultView: observable,
-            filteredView: observable,
             currentView: observable,
-            sortSettings: observable,
-            filterSettings: observable,
             isIdle: computed,
-            isLoading: computed,
+            isPending: computed,
             isError: computed,
-            initialiseView: action.bound,
+            nameFilter: computed,
             setNameFilter: action.bound,
-            loadPreviews: flow.bound,
+            initialiseView: action.bound,
+            clearFilters: action,
+            loadPreviews: flow.bound
         });
 
         reaction(
+            // react when any filter/sort setting have changed
             () => ({
                 filters: this.filterSettings.allFilterValues,
                 sort: this.sortSettings.selectedType
             }),
             ({ filters, sort }) => {
-                
+                // if any filter/sort options are applied
                 if (sort || filters.reduce((acc, v) => acc || !!v, false)) {
                     this.currentView = this.filteredView;
-
-                    if (this.defaultView.isFull) 
-                        this.filteredView.reset(this.getLocallyFilteredItems())
+                    
+                    if (this.defaultView.isFull) {
+                        const items = this.filterItemsLocally();
+                        this.filteredView.reset(items);
+                    }
 
                     else {
                         this.filteredView.reset();
                         this.loadPreviews();
                     }
                 }
-                
+                // no options applied -> restoring default view
                 else {
                     this.defaultView.resetPagination();
                     this.currentView = this.defaultView;
@@ -87,12 +88,21 @@ export default abstract class PreviewsView<
         return this.loadingState === LoadingState.idle;
     }
 
-    get isLoading() {
-        return this.loadingState === LoadingState.loading;
+    get isPending() {
+        return this.loadingState === LoadingState.pending;
     }
 
     get isError() {
         return this.loadingState === LoadingState.error;
+    }
+
+    abstract get nameFilter() : string;
+
+    abstract setNameFilter(filterStr: string): void;
+
+    clearFilters() {
+        this.filterSettings.setToDefault()
+        this.sortSettings.selectOption(null);
     }
 
     initialiseView() {
@@ -101,29 +111,29 @@ export default abstract class PreviewsView<
     }
 
     *loadPreviews() {
-        this.loadingState = LoadingState.loading;
+        this.loadingState = LoadingState.pending;
 
-        const fetchedItems: Awaited<ReturnType<typeof this.store.fetchAndCachePreviews>> = (
-            yield this.store.fetchAndCachePreviews(this.getQueryParams())
-        );
-
-        if (fetchedItems) {
-            const { items, lastSnap } = fetchedItems;
+        try {
+            const { items, lastSnap }: Awaited<ReturnType<typeof this.store.fetchAndCachePreviews>> = (
+                yield this.store.fetchAndCachePreviews(this.getQueryParams())
+            );
             this.currentView.addItems(items, lastSnap);
             this.loadingState = LoadingState.idle;
         }
-        else {
+        catch (error) {
+            console.log(error);
             this.loadingState = LoadingState.error;
         }
     }
 
-    getQueryParams() {
-        const params: FirestoreQueryParams<P> = this.filterSettings.castToFirestoreParams();
+    private getQueryParams() {
+        const params: FirestoreQueryParams<E> = this.filterSettings.castToFirestoreParams();
 
+        // ordering from sort option must come first in order for Firestore to order results properly
         params.sorts = [
             ...this.sortSettings.castToFirestoreParams(),
             ...params.sorts
-        ]
+        ];
 
         if (this.currentView.lastSnap)
             params.lastSnap = this.currentView.lastSnap;
@@ -131,7 +141,7 @@ export default abstract class PreviewsView<
         return params;
     }
 
-    getLocallyFilteredItems() {
+    private filterItemsLocally() {
         const filterFn = this.filterSettings.castToFilterFn();
         const sortFn = this.sortSettings.castToSortFn();
 
@@ -139,17 +149,5 @@ export default abstract class PreviewsView<
             .filter(filterFn)
             .sort(sortFn);
     }
-
-    abstract setNameFilter(value: string) : void;
-}
-
-export enum BaseFilterTypes {
-    name = "name"
-}
-
-export const NameFilterConfig = {
-    field: FirestoreKeys.name_lowercase as FirestoreKeys.name_lowercase,
-    initialValue: '',
-    constraints: NAME_FILTER_CONSTRAINTS_PARTS
 }
 

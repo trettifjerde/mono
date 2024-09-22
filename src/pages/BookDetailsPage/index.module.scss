@@ -19,6 +19,7 @@ $main-height: 10rem;
     }
 
     aside {
+        padding: var(--inline-indent);
         background-color: $dark2;
         display: flex;
         align-items: center;

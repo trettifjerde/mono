@@ -1,19 +1,18 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { QueryDocumentSnapshot } from "firebase/firestore/lite";
-import PreviewsView from "../PreviewsView";
+import { PreviewShapshot } from "../../../utils/dataTypes";
 import Entity from "../../../utils/classes/Entity";
-import { PreviewConstraint } from "../../../utils/firestoreDbTypes";
+import PreviewsView from "../PreviewsView";
 
-export default abstract class GridView<P, D> {
+export default abstract class GridView<E extends Entity> {
 
-    previewsView: PreviewsView<P, D>;
+    previewsView: PreviewsView<E>;
 
-    storedItems: Entity<P,D>[] = [];
-    lastSnap : QueryDocumentSnapshot<PreviewConstraint<P>> | null = null;
+    storedItems: E[] = [];
+    lastSnap : PreviewShapshot<E> | null = null;
     pageN = 0;
     isFull = false;
 
-    constructor(previewsView: PreviewsView<P, D>) {
+    constructor(previewsView: PreviewsView<E>) {
         this.previewsView = previewsView;
 
         makeObservable(this, {
@@ -25,10 +24,10 @@ export default abstract class GridView<P, D> {
             isLastPage: computed,
             isPrevBtnVisible: computed,
             isNextBtnVisible: computed,
-            pagePreviews: computed,
+            pageItems: computed,
             showPrev: action.bound,
             showNext: action.bound,
-            addItems: action,
+            addItems: action
         })
     }
 
@@ -48,14 +47,12 @@ export default abstract class GridView<P, D> {
         return !this.isLastPage || !this.isFull;
     }
 
-    get pagePreviews() {
+    get pageItems() {
         const batchSize = this.previewsView.store.batchSize;
         const startIndex = (this.pageN - 1) * batchSize;
         const endIndex = startIndex + batchSize;
 
-        return this.storedItems
-            .slice(startIndex, endIndex)
-            .map(item => item.preview);
+        return this.storedItems.slice(startIndex, endIndex);
     }
 
     showPrev() {
@@ -70,11 +67,11 @@ export default abstract class GridView<P, D> {
             this.previewsView.loadPreviews();
     }
 
-    addItems(items: Entity<P,D>[], lastSnap: QueryDocumentSnapshot<PreviewConstraint<P>> | null) {
+    addItems(items: E[], lastSnap: PreviewShapshot<E> | null) {
         this.storedItems.push(...items);
         this.lastSnap = lastSnap;
 
-        if (items.length) 
+        if (items.length || !this.pageN) 
             this.pageN++;
 
         if (items.length < this.previewsView.store.batchSize)

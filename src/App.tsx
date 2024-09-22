@@ -1,18 +1,19 @@
+import { useContext } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Pathnames } from "./utils/consts";
+import { RootStoreContext } from "./stores/StoreContext";
 
 import RootLayout from "./layouts/RootLayout";
 import RootError from "./layouts/RootLayout/RootError";
-import IndexLayout from "./layouts/IndexLayout";
+import PreviewsLayout from "./layouts/PreviewsLayout";
 
-import IndexPage from "./pages/IndexPage";
-import AuthorsPage from "./pages/AuthorsPage";
+import BookPreviewsPage from "./pages/BookPreviewsPage";
 import BookDetailsPage from "./pages/BookDetailsPage";
-import AuthorDetailsPage from "./pages/AuthorDetailsPage";
 
-import { useContext } from "react";
-import { RootStoreContext } from "./stores/StoreContext";
-import NewAuthorPage from "./pages/NewAuthorPage";
+import AuthorPreviewsPage from "./pages/AuthorPreviewsPage";
+import AuthorDetailsPage from "./pages/AuthorDetailsPage";
+import AuthorNewPage from "./pages/AuthorNewPage";
+import AuthorEditPage from "./pages/AuthorEditPage";
 
 export default function App() {
 
@@ -29,21 +30,21 @@ const router = createBrowserRouter([
     errorElement: <RootError />,
     children: [
       {
-        element: <IndexLayout />,
+        element: <PreviewsLayout />,
         children: [
           {
             index: true,
-            element: <IndexPage />
+            element: <BookPreviewsPage />
           },
           {
             path: Pathnames.authors,
-            element: <AuthorsPage />
+            element: <AuthorPreviewsPage />
           },
         ]
       },
       {
         // Routes below do not share layouts,
-        // but they share rendering logic and wrapper components from layouts/[...]Pages
+        // but they share rendering logic and wrapper components from layouts/[...]Page
         children: [
           {
             path: Pathnames.books,
@@ -59,11 +60,20 @@ const router = createBrowserRouter([
             children: [
               {
                 path: 'new',
-                element: <NewAuthorPage />
+                element: <AuthorNewPage />
               },
               {
                 path: `:${Pathnames.authorId}`,
-                element: <AuthorDetailsPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <AuthorDetailsPage />
+                  },
+                  {
+                    path: 'edit',
+                    element: <AuthorEditPage />
+                  }
+                ]
               },
             ]
           }

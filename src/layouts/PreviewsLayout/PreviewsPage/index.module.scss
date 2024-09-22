@@ -1,0 +1,29 @@
+@use '../../../styles/variables' as *;
+
+.panel {
+    --col-n: 1;
+
+    display: grid;
+    grid-template-columns: repeat(var(--col-n), 1fr);
+    gap: $gap;
+    padding: 3rem;
+    border-radius: 0 0 $border-radius $border-radius;
+    background-color: $dark6;
+
+    @include screen-medium {
+        --col-n: 2
+    }
+
+    @include screen-large {
+        --col-n: 3;
+    }
+}
+
+.search,
+.addBtn {
+    grid-column: 1 / -1;
+}
+
+.addBtn {
+    text-align: center;
+}

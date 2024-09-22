@@ -1,22 +1,21 @@
 import { action, makeObservable } from "mobx";
-import { QueryDocumentSnapshot } from "firebase/firestore/lite";
+import { PreviewShapshot } from "../../../utils/dataTypes";
+import Entity from "../../../utils/classes/Entity";
 import PreviewsView from "../PreviewsView";
 import GridView  from "./GridView";
-import Entity from "../../../utils/classes/Entity";
-import { PreviewConstraint } from "../../../utils/firestoreDbTypes";
 
-export default class DefaultView<P, D> extends GridView<P, D> {
+export default class DefaultView<E extends Entity> extends GridView<E> {
 
-    constructor(previewsView: PreviewsView<P, D>) {
+    constructor(previewsView: PreviewsView<E>) {
         super(previewsView);
 
         makeObservable(this, {
             resetPagination: action,
-            clearFromCache: action
+            clearItemFromCache: action
         })
     }
 
-    override addItems(items: Entity<P,D>[], lastSnap: QueryDocumentSnapshot<PreviewConstraint<P>> | null) {
+    override addItems(items: E[], lastSnap: PreviewShapshot<E> | null) {
         super.addItems(items, lastSnap);
 
         if (this.isFull) 
@@ -27,7 +26,7 @@ export default class DefaultView<P, D> extends GridView<P, D> {
         this.pageN = 1;
     }
 
-    clearFromCache(id: string) {
+    clearItemFromCache(id: string) {
         const index = this.storedItems.findIndex(item => item.id === id);
         if (index >= 0) 
             this.storedItems.splice(index, 1);

@@ -6,16 +6,15 @@ import common from '../../styles/common.module.scss';
 
 export default function BookHeader({item}: {item: Book | null}) {
 
-    const info = item?.authorInfo;
-
     return <h5>
-        {info &&  <Link 
-            to={makeAbsolutePath(Pathnames.authors, info.authorId)} 
+        {item && item.authorInfo &&  <Link 
+            to={makeAbsolutePath(Pathnames.authors, item.authorInfo.id)} 
             relative="path"
             className={common.link}
         >
-            {info.authorName}
-            
+            {item.authorInfo.name}
         </Link>}
+
+        {item && !item.authorInfo && 'unknown author'}
     </h5>
 };

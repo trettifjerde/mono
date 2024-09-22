@@ -11,10 +11,6 @@ $main-height: 10rem;
     grid-auto-rows: auto auto minmax($main-height, auto) 1fr;
     row-gap: var(--inline-indent);
 
-    aside {
-        background-color: $dark2;
-    }
-
     @include screen-medium {
         grid-template-areas:    'head head menu'
                                 'img main main'

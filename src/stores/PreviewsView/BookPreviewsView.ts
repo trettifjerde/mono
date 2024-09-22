@@ -1,109 +1,72 @@
 import { ChangeEvent } from "react";
-import { action, makeObservable, observable, reaction } from "mobx";
-import { BookPreviewInfo, FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
+import { action, computed, makeObservable } from "mobx";
 import { Pathnames } from "../../utils/consts";
-import { BookDetailsInfo } from "../../utils/classes/Book";
-import { SortConfig } from "./settings/SortSettings";
-import { FilterConfig } from "./settings/FilterSettings";
-import BookStore from "../DataStore/BookStore";
-import PreviewsView, { BaseFilterTypes, NameFilterConfig } from "./PreviewsView";
-import BookPreviewItem from "../../components/PreviewGrid/BookPreviewItem";
+import { DropdownOption } from "../../utils/uiTypes";
+import Book from "../../utils/classes/Book";
+import BookStore, { BookFilterTypes, BookSortTypes } from "../DataStore/BookStore";
+import PreviewsView from "./PreviewsView";
 import DynamicSelectSettings from "../../components/DynamicSelect/DynamicSelectSettings";
+import BookPreview from "../../components/BookPreview";
 
-export default class BookPreviewsView extends PreviewsView<
-    BookPreviewInfo, BookDetailsInfo, BookFilterTypes, BookSortTypes
+export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes, BookSortTypes
 > {
-    override store: BookStore;
-
     override pathname = Pathnames.books;
     override entityTitleName = "book title";
-    override ItemPreview = BookPreviewItem;
+    override ItemPreview = BookPreview;
 
     authorSettings : DynamicSelectSettings<string>;
 
     constructor(store: BookStore) {
-        super(BookFilterConfig, BookSortConfig);
-
-        this.store = store;
-        this.authorSettings = new DynamicSelectSettings<string>(this.fetchAuthorSuggestions.bind(this));
-
-        makeObservable(this, {
-            authorSettings: observable,
-            setInStockFilter: action.bound,
-            fetchAuthorSuggestions: action.bound
+        super(store);
+        
+        this.authorSettings = new DynamicSelectSettings<string>({
+            fetchFn: this.fetchAuthorSuggestions.bind(this),
+            onSelect: this.setAuthorFilter.bind(this),
+            selectNull: true,
+            clearFilter: false
         });
 
-        reaction(
-            () => this.authorSettings.selectedOption,
-            (option) => {
-                this.filterSettings.setFilter(BookFilterTypes.author, option?.value || '')
-            }
-        )
+        makeObservable(this, {
+            inStockFilter: computed,
+            setInStockFilter: action.bound,
+            setAuthorFilter: action.bound
+        });
+    }
+
+    override get nameFilter() {
+        return this.filterSettings.filters.get(BookFilterTypes.title)?.toString() || '';
     }
 
     override setNameFilter(value: string): void {
         this.filterSettings.setFilter(BookFilterTypes.title, value);
     }
 
+    override clearFilters() {
+        super.clearFilters();
+        this.authorSettings.clear();
+    }
+
+    get inStockFilter() {
+        return !!this.filterSettings.filters.get(BookFilterTypes.inStock);
+    }
+
     setInStockFilter(e: ChangeEvent<HTMLInputElement>) {
         this.filterSettings.setFilter(BookFilterTypes.inStock, e.target.checked);
     }
 
+    setAuthorFilter(option: DropdownOption<string> | null) {
+        this.filterSettings.setFilter(BookFilterTypes.author, option?.value || '')
+    }
+
     async fetchAuthorSuggestions(nameStart: string) {
-        return this.store.rootStore.authors
-            .getAuthorsByName(nameStart)
-            .then(res => {
-                if (res)
-                    return {
-                        suggestions: res.items.map(author => ({
-                            text: author.previewInfo[FK.name],
-                            value: author.id
-                        })),
-                        fromCache: res.fromCache
-                    }
-                return null;
-            })
+        return this.store.rootStore.authors.getAuthorsByName(nameStart)
+            .then(({items, fromDataStoreCache}) => ({
+                suggestions: items.map(author => ({
+                    text: author.name,
+                    value: author.id
+                })),
+                fromDataStoreCache
+            }))
+            .catch(() => null)
     }
 }
-
-export enum BookSortTypes {
-    priceHigh = "high",
-    priceLow = "low"
-};
-
-export enum BookFilterTypes {
-    title = BaseFilterTypes.name,
-    inStock = "inStock",
-    author = "author"
-}
-
-export const BookSortConfig: SortConfig<BookSortTypes, BookPreviewInfo> = {
-    [BookSortTypes.priceLow]: {
-        field: FK.price,
-        text: 'Lowest price',
-    },
-    [BookSortTypes.priceHigh]: {
-        field: FK.price,
-        text: 'Highest price',
-        desc: 'desc'
-    }
-};
-
-export const BookFilterConfig: FilterConfig<BookFilterTypes, BookPreviewInfo> = {
-    [BookFilterTypes.author]: {
-        field: FK.authorId,
-        initialValue: '',
-        constraints: [
-            { op: '==', makeValue: (v: string) => v }
-        ]
-    },
-    [BookFilterTypes.title]: NameFilterConfig,
-    [BookFilterTypes.inStock]: {
-        field: FK.inStock,
-        desc: 'desc',
-        initialValue: false,
-        constraints: [
-            { op: '>', makeValue: () => 0 }
-        ]
-    }
-};

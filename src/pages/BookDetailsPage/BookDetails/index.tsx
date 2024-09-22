@@ -5,7 +5,7 @@ import styles from './index.module.scss';
 
 function BookDetails({view}: {view: BookDetailsView}) {
     
-    const info = view.loadedItem?.fullInfo;
+    const info = view.loadedItem?.preview || null;
 
     if (!info)
         return <></>

@@ -7,7 +7,10 @@ export default function PreviewGridWrapper({type='grid', className, children}: {
     children: ReactNode
 }) {
 
-    return <div className={`${styles[type]} ${className}`}>
-        {children}
+    return <div className={`${styles.cont} ${className || ''}`}>
+        <div className={styles[type]}>
+            {children}
+        </div>
     </div>
+    
 }

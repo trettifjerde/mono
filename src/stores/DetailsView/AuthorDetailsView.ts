@@ -1,14 +1,12 @@
 import { computed, makeObservable } from "mobx";
-import { AuthorPreviewInfo } from "../../utils/firestoreDbTypes";
-import Author, { AuthorDetailsInfo } from "../../utils/classes/Author";
+import Author from "../../utils/classes/Author";
 import AuthorStore from "../DataStore/AuthorStore";
 import DetailsView from "./DetailsView";
 import DefaultBookImgSrc from '../../assets/800x800.webp';
 
-export default class AuthorDetailsView extends DetailsView<AuthorPreviewInfo, AuthorDetailsInfo> {
+export default class AuthorDetailsView extends DetailsView<Author> {
 
     override store: AuthorStore;
-    override loadedItem: Author | null = null;
     override HeaderComponent = null;
 
     constructor(store: AuthorStore) {
@@ -16,11 +14,11 @@ export default class AuthorDetailsView extends DetailsView<AuthorPreviewInfo, Au
         this.store = store;
 
         makeObservable(this, {
-            bookPreviews: computed
+            books: computed
         })
     }
 
-    get bookPreviews() {
-        return this.loadedItem?.books.map(book => book.preview) || [];
+    get books() {
+        return this.loadedItem?.books || [];
     }  
 }

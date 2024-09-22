@@ -4,94 +4,64 @@ import { LoadingState } from "../../utils/consts";
 
 export type SuggestionsFetcherFn<K extends string> = (filterSt: string) => Promise<{
     suggestions: Suggestion<K>[],
-    fromCache: boolean
+    fromDataStoreCache: boolean
  } | null>
+
+type FetcherResponse<Key extends string> = Awaited<ReturnType<SuggestionsFetcherFn<Key>>>;
 
 export default class DynamicSelectSettings<Key extends string> {
 
+    //observables
     state: LoadingState = LoadingState.idle;
     isDropdownVisible = false;
     options: DropdownOption<Key>[] = [];
     cache: Map<string, DropdownOption<Key>[]> = new Map();
-    selectedOption: DropdownOption<Key> | null = null;
+    lastSelectedOptionText = '';
 
-    constructor(public fetchSuggestions: SuggestionsFetcherFn<Key>, public queryEmptyString=false){
+    //config
+    selectNullOptionOnEmptyFilter: boolean;
+    clearFilterOnOptionSelect: boolean;
+    fetchSuggestions: SuggestionsFetcherFn<Key>;
+    onOptionSelect: (option: DropdownOption<Key> | null) => void;
+
+    constructor(config: {
+        fetchFn: SuggestionsFetcherFn<Key>,
+        onSelect: (option: DropdownOption<Key> | null) => void,
+        selectNull: boolean,
+        clearFilter: boolean
+    }) {
+
+        this.selectNullOptionOnEmptyFilter = config.selectNull;
+        this.clearFilterOnOptionSelect = config.clearFilter;
+        this.fetchSuggestions = config.fetchFn;
+        this.onOptionSelect = config.onSelect;
 
         makeObservable(this, {
             state: observable,
-            cache: observable,
-            options: observable,
             isDropdownVisible: observable,
-            selectedOption: observable,
-            isLoading: computed,
+            options: observable,
+            cache: observable,
+            lastSelectedOptionText: observable,
+            isPending: computed,
             isError: computed,
-            selectedType: computed,
             openDropdown: action.bound,
             toggleDropdown: action.bound,
             selectOption: action.bound,
-            clearCache: action,
-            updateFilterStr: flow.bound,
+            clear: action.bound,
+            filterOptions: flow.bound
         });
     }
 
-    get isLoading() {
-        return this.state === LoadingState.loading;
+    get isPending() {
+        return this.state === LoadingState.pending;
     }
 
     get isError() {
         return this.state === LoadingState.error;
     }
 
-    get selectedType() {
-        return this.selectedOption && (this.selectedOption.value || null);
-    }
-
-    *updateFilterStr(filterStr: string) {
-
-        if (!filterStr) {
-            if(!this.queryEmptyString) {
-                this.options = [];
-                this.isDropdownVisible = false;
-                this.selectedOption = null;
-                return;
-            }
-            else {
-                filterStr = 'ALL';
-            }
-        }
-
-        const cachedOptions = this.cache.get(filterStr);
-
-        if (cachedOptions) {
-            this.options = cachedOptions;
-            this.isDropdownVisible = true;
-            return;
-        }
-
-        this.state = LoadingState.loading;
-        this.isDropdownVisible = true;
-
-        const response : Awaited<ReturnType<SuggestionsFetcherFn<Key>>> = yield this.fetchSuggestions(filterStr);
-
-        if (response) {
-            const {suggestions, fromCache} = response;
-
-            const options = this.makeOptions(suggestions);
-            if (!fromCache)
-                this.cache.set(filterStr, options);
-            
-            this.options = options;
-            this.state = LoadingState.idle;
-        }
-        else {
-            this.state = LoadingState.error;
-            this.options = [];
-        }
-        this.isDropdownVisible = true;
-    }
-
     openDropdown() {
-        if (this.options.length || this.queryEmptyString) 
+        if (this.options.length) 
             this.isDropdownVisible = true;
     }
 
@@ -99,20 +69,70 @@ export default class DynamicSelectSettings<Key extends string> {
         this.isDropdownVisible = flag;
     }
 
-    selectOption(option: typeof this.selectedOption) {
-        this.selectedOption = option;
+    selectOption(option: typeof this.options[0] | null) {
         this.options = [];
+        this.lastSelectedOptionText = option?.text || '';
+        this.onOptionSelect(option);
     };
 
-    clearCache() {
+    clear() {
+        this.state = LoadingState.idle;
+        this.isDropdownVisible = false;
+        this.options = [];
         this.cache = new Map();
+        this.lastSelectedOptionText = '';
     }
 
-    makeOptions(suggestions: Suggestion<Key>[]) : DropdownOption<Key>[]{
-        return suggestions.map(s => ({
-            ...s,
+    *filterOptions(filterStr: string) {
+
+        let cacheKey = filterStr || 'ALL';
+
+        if (!filterStr) {
+            if (this.selectNullOptionOnEmptyFilter) {
+                this.state = LoadingState.idle;
+                this.isDropdownVisible = false;
+                this.selectOption(null);
+                return;
+            }
+        } 
+
+        const cachedOptions = this.cache.get(cacheKey);
+
+        if (cachedOptions) {
+            this.state = LoadingState.idle;
+            this.isDropdownVisible = true;
+            this.options = cachedOptions;
+            return;
+        }
+
+        this.state = LoadingState.pending;
+        this.isDropdownVisible = true;
+
+        const response : FetcherResponse<Key> = yield this.fetchSuggestions(filterStr);
+
+        if (response) {
+            const {suggestions, fromDataStoreCache} = response;
+
+            const options = this.makeOptions(suggestions);
+            if (!fromDataStoreCache)
+                this.cache.set(cacheKey, options);
+            
+            this.state = LoadingState.idle;
+            this.isDropdownVisible = true;
+            this.options = options;
+        }
+        else {
+            this.state = LoadingState.error;
+            this.isDropdownVisible = true;
+            this.options = [];
+        }
+    }
+
+    private makeOptions(suggestions: Suggestion<Key>[]) : DropdownOption<Key>[]{
+        return suggestions.map(suggestion => ({
+            ...suggestion,
             renderElement: () => <>
-                <span>{s.text}</span>
+                <span>{suggestion.text}</span>
             </>
         }))
     }

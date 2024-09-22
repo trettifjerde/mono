@@ -1,9 +1,26 @@
-import { FieldPath, QueryDocumentSnapshot, WhereFilterOp } from "firebase/firestore/lite";
-import { PreviewConstraint } from "./firestoreDbTypes";
+import { QueryDocumentSnapshot, QueryFieldFilterConstraint, QueryOrderByConstraint } from "firebase/firestore/lite";
+import Entity from "./classes/Entity";
 
-export type FirestoreQueryParams<P> = {
-    filters: Array<{field: keyof PreviewConstraint<P> | FieldPath, op: WhereFilterOp, value: string | number | null}>,
-    sorts: Array<{field: keyof PreviewConstraint<P>, desc?: 'desc'}>,
-    clip?: boolean,
-    lastSnap?: QueryDocumentSnapshot<PreviewConstraint<P>>,
+export type PreviewShapshot<E extends Entity> = QueryDocumentSnapshot<E['previewInfo']>
+
+export type FirestoreQueryParams<E extends Entity> = {
+    filters: QueryFieldFilterConstraint[],
+    sorts: QueryOrderByConstraint[],
+    unlimited?: boolean,
+    lastSnap?: PreviewShapshot<E>,
 };
+
+export type FilterConfig<Keys extends string, E extends Entity> = Record<Keys, {
+    makeConstraints: (value: any) => {
+        filters: QueryFieldFilterConstraint[], 
+        sort: QueryOrderByConstraint
+    },
+    makeFilterFn: (value: any) => (e: E) => boolean, 
+    initialValue: any,
+}>;
+
+export type SortConfig<Keys extends string, E extends Entity> = Record<Keys,{
+    field: keyof E['previewInfo'],
+    text: string,
+    desc?: 'desc'
+}>

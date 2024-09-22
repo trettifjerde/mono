@@ -1,0 +1,17 @@
+@use '../../../../styles/variables' as *;
+
+.grid {
+    margin-top: $double-gap;
+    padding-bottom: calc(2 * $main-inline-padding + $btn-std);
+}
+
+.pag {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: $main-inline-padding;
+    display: flex;
+    justify-content: center;
+    gap: $double-gap;
+    animation: var(--anim-fade-in);
+}

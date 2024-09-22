@@ -4,20 +4,19 @@ import { LoadingState } from '../../utils/consts';
 import styles from './index.module.scss';
 
 export default function Dropdown<T extends string>({
-    ddOpenerRef, selectOption, closeDropdown, options, countFromParent=false, state=LoadingState.idle
+    ddOpenerRef, selectOption, closeDropdown, options, state=LoadingState.idle
 }: {
     ddOpenerRef: RefObject<HTMLElement>,
     options: DropdownOption<T>[],
     selectOption: DropdownOptionSelectHandler<T>,
     closeDropdown: MouseEventHandler,
     state?: LoadingState
-    countFromParent?: boolean,
 }) {
 
     const dropdownList = function(){
 
         switch (state) {
-            case LoadingState.loading:
+            case LoadingState.pending:
                 return <li className={styles.loading}>
                     Loading...
                 </li>
@@ -49,10 +48,8 @@ export default function Dropdown<T extends string>({
         function triggerCloseDropdown(e: Event) {
             const clickTarget = e.target as Element | null;
 
-            if (ddOpenerRef.current) { 
-                const opener = countFromParent ? ddOpenerRef.current.parentElement! : ddOpenerRef.current;
-                
-                if (opener.contains(clickTarget))
+            if (ddOpenerRef.current) {                
+                if (ddOpenerRef.current.contains(clickTarget))
                     e.stopPropagation();
             }
             setTimeout(closeDropdown, 0);

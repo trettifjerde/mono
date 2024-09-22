@@ -32,6 +32,11 @@
     &.light {
         background-color: $light1;
         color: $dark1;
+
+        &:disabled {
+            background-color: $dark6;
+            color: $dark4;
+        }
     
         @include hover {
             &:not(:disabled) {

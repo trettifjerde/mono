@@ -1,48 +1,25 @@
 import { Pathnames } from "../../utils/consts";
-import { AuthorPreviewInfo, FirestoreKeys } from "../../utils/firestoreDbTypes";
-import { AuthorDetailsInfo } from "../../utils/classes/Author";
-import { SortConfig } from "./settings/SortSettings";
-import { FilterConfig } from "./settings/FilterSettings";
-import PreviewsView, { BaseFilterTypes, NameFilterConfig } from "./PreviewsView";
-import AuthorStore from "../DataStore/AuthorStore";
-import AuthorPreviewItem from "../../components/PreviewGrid/AuthorPreviewItem";
+import Author from "../../utils/classes/Author";
+import AuthorStore, { AuthorFilterTypes, AuthorSortTypes } from "../DataStore/AuthorStore";
+import PreviewsView from "./PreviewsView";
+import AuthorPreview from "../../components/AuthorPreview";
 
-export default class AuthorPreviewsView extends PreviewsView<
-    AuthorPreviewInfo, AuthorDetailsInfo, AuthorFilterTypes, AuthorSortTypes
+export default class AuthorPreviewsView extends PreviewsView<Author, AuthorFilterTypes, AuthorSortTypes
 > {
-
-    override store: AuthorStore;
+    
     override pathname = Pathnames.authors;
     override entityTitleName = "author name";
-    override ItemPreview = AuthorPreviewItem;
+    override ItemPreview = AuthorPreview;
 
     constructor(store: AuthorStore) {
-        super(AuthorFilterConfig, AuthorSortConfig);
+        super(store);
+    }
 
-        this.store = store;
+    override get nameFilter() {
+        return this.filterSettings.filters.get(AuthorFilterTypes.name)?.toString() || '';
     }
 
     override setNameFilter(value: string) {
         this.filterSettings.setFilter(AuthorFilterTypes.name, value);
     }
-}
-
-export enum AuthorSortTypes {
-    books = "books"
-};
-
-export enum AuthorFilterTypes {
-    name = BaseFilterTypes.name
-}
-
-export const AuthorSortConfig: SortConfig<AuthorSortTypes, AuthorPreviewInfo> = {
-    [AuthorSortTypes.books]: {
-        field: FirestoreKeys.bookN,
-        text: 'Number of published books',
-        desc: 'desc'
-    }
-}
-
-const AuthorFilterConfig : FilterConfig<AuthorFilterTypes, AuthorPreviewInfo> = {
-    [AuthorFilterTypes.name]: NameFilterConfig
 }

@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import Entity from "./classes/Entity";
 
 export type Suggestion<Key extends string> = {
@@ -11,6 +12,10 @@ export type DropdownOption<T extends string> = Suggestion<T> & {
 
 export type DropdownOptionSelectHandler<T extends string> = (option: DropdownOption<T> | null) => void;
 
-export type EntityPreviewComponent<E extends Entity<any, any>> = (props: {
-    preview: E['preview']
+export type EntityPreviewComponent<E extends Entity> = (props: {
+    item: E,
+    isLink?: boolean,
+    className?: string,
+    onItemClick?: (item: E) => void,
+    children?: ReactNode
 }) => JSX.Element;

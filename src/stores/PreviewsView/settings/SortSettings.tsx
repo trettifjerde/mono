@@ -1,21 +1,18 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { orderBy } from "firebase/firestore/lite";
 import { FirestoreKeys as FK} from "../../../utils/firestoreDbTypes";
-import { FirestoreQueryParams } from "../../../utils/dataTypes";
+import { FirestoreQueryParams, SortConfig } from "../../../utils/dataTypes";
 import { DropdownOption } from "../../../utils/uiTypes";
 import Entity from "../../../utils/classes/Entity";
 
-export type SortConfig<Keys extends string, P> = Record<Keys,{
-    field: keyof Entity<P, any>['previewInfo'],
-    text: string,
-    desc?: 'desc'
-}>
-
-export default class SortSettings<Key extends string, P> {
-    config: SortConfig<Key, P>;
+export default class SortSettings<Key extends string, E extends Entity> {
+    
+    config: SortConfig<Key, E>;
+    
     options: DropdownOption<Key>[];
     selectedOption: DropdownOption<Key> | null;
 
-    constructor(config: SortConfig<Key, P>){
+    constructor(config: SortConfig<Key, E>){
         this.config = config;
         this.options = this.initialiseOptions();
         this.selectedOption = null;
@@ -29,23 +26,23 @@ export default class SortSettings<Key extends string, P> {
     }
 
     get selectedType() {
-        return this.selectedOption && (this.selectedOption.value || null);
+        return this.selectedOption?.value || null;
     }
 
-    selectOption(option: typeof this.options[0] | null) {
+    selectOption(option: typeof this.selectedOption) {
         this.selectedOption = option;
     };
 
-    castToFirestoreParams() : FirestoreQueryParams<P>['sorts'] {
+    castToFirestoreParams() : FirestoreQueryParams<E>['sorts'] {
         if (this.selectedType) {
             const {field, desc} = this.config[this.selectedType];
-            return [{field, desc}];
+            return [orderBy(field as string, desc)];
         }
         else 
             return [];
     }
     
-    castToSortFn() : (a: Entity<P, any>, b: Entity<P, any>) => number {
+    castToSortFn() : (a: E, b: E) => number {
         if (this.selectedType) {
             const {field, desc} = this.config[this.selectedType];
 

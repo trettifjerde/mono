@@ -1,108 +1,71 @@
-import { computed, flow, makeObservable, observable, reaction } from "mobx";
+import { action, flow, makeObservable, reaction } from "mobx";
 import { LoadingState, Pathnames } from "../../utils/consts";
 import { makeAbsolutePath } from "../../utils/helpers";
-import { AuthorFieldNames, AuthorFormShape } from "./configs/authorConfig";
-import { AuthorPreviewInfo, FirestoreAuthor, FirestoreKeys } from "../../utils/firestoreDbTypes";
-import { AuthorDetailsInfo } from "../../utils/classes/Author";
+import Author from "../../utils/classes/Author";
+import AuthorForm, { AuthorFieldNames as AFN, AuthorFormShape } from "./forms/AuthorForm";
 import AuthorStore from "../DataStore/AuthorStore";
-import AuthorForm from "./forms/AuthorForm";
-import ItemLoaderView from "../ItemLoaderView";
-import DynamicSelectSettings from "../../components/DynamicSelect/DynamicSelectSettings";
-import Book from "../../utils/classes/Book";
+import ItemLoader from "../ItemLoader";
 import DefaultBookImgSrc from '../../assets/800x800.webp';
 
-export default class AuthorFormView extends ItemLoaderView<AuthorPreviewInfo, AuthorDetailsInfo> {
+export default class AuthorFormView extends ItemLoader<Author> {
 
-    override store : AuthorStore;
-
-    books: Book[] = [];
-    bookSearchSettings: DynamicSelectSettings<string>;
-    form : AuthorForm;
-    submittedItemPath: string | null = null;
+    override store: AuthorStore;
+    form: AuthorForm;
 
     constructor(store: AuthorStore) {
         super(DefaultBookImgSrc);
 
         this.store = store;
         this.form = new AuthorForm(this);
-        this.bookSearchSettings = new DynamicSelectSettings(
-            this.fetchBooksWithoutAuthor.bind(this),
-            true
-        );
 
         makeObservable(this, {
-            books: observable,
-            bookSearchSettings: observable,
-            form: observable,
-            submittedItemPath: observable,
-            bookPreviews: computed,
-            submit: flow.bound
+            submit: flow.bound,
+            updateFields: action
         });
 
         reaction(
-            () => this.bookSearchSettings.selectedOption,
-            (option) => {
-                if (option) {
-                    const book = this.store.rootStore.books.items.get(option.value);
-                    if (book) {
-                        this.books.push(book);
-                        this.form.$(AuthorFieldNames.books).add(book.id);
-                    }
-                }
+            () => ({initing: this.isInitialising, item: this.loadedItem}),
+            ({initing, item}) => {
+                if (!initing)
+                    this.updateFields(item)
             }
         )
     }
 
-    get bookPreviews() {
-        return this.books.map(b => b.preview);
+    updateFields(author: Author | null) {
+        const defaults = new Map<AFN, string | string[]>([
+            [AFN.name, ''],
+            [AFN.bio, '',],
+            [AFN.img, '',],
+            [AFN.bookIds, []],
+        ]);
+
+        if (author) {
+            defaults.set(AFN.name, author.name);
+            defaults.set(AFN.bio, author.description);
+            defaults.set(AFN.img, author.img);
+            defaults.set(AFN.bookIds, author.books.map(b => b.id));
+        }
+
+        defaults.forEach((value, key) => this.form.$(key).set('default', value));
+
+        this.form.reset();
     }
 
-    *submit(values: AuthorFormShape) {
-        const {name, books, bio, img} = values;
-        const bookIds = typeof books === 'string' ? [] : books;
+    *submit(formData: AuthorFormShape) {
 
-        const previewInfo : FirestoreAuthor = {
-            [FirestoreKeys.name]: name,
-            [FirestoreKeys.name_lowercase]: name.toLowerCase(),
-            [FirestoreKeys.bookN]: bookIds.length,
-            [FirestoreKeys.img]: img
-        };
-        const description = bio;
-
-        this.state = LoadingState.loading;
+        this.state = LoadingState.pending;
 
         try {
-            const authorId : string | null = yield this.store.postAuthor({ previewInfo, description, bookIds});
+            const authorId : string = yield this.loadedItem ?
+                this.store.updateAuthor(this.loadedItem, formData) :
+                this.store.postAuthor(formData)
 
-            if (authorId) {
-                this.submittedItemPath = makeAbsolutePath(Pathnames.authors, authorId);
-                this.state = LoadingState.idle;
-            }
-            else 
-                throw authorId;
-
+            this.redirectPath = makeAbsolutePath(Pathnames.authors, authorId);
+            this.state = LoadingState.idle;
         }
         catch (error) {
             this.state = LoadingState.error;
         }
-    }
-
-    async fetchBooksWithoutAuthor(nameStart: string) {
-        const excludeIds = this.books.map(b => b.id);
-        
-        return this.store.rootStore.books.getBooksWithoutAuthor(nameStart, excludeIds)
-            .then(res => {
-                if (!res) 
-                    return null;
-
-                const {books, fromCache} = res;
-                return {
-                    suggestions: books.map(b => ({
-                        text: b.previewInfo[FirestoreKeys.name],
-                        value: b.id
-                    })),
-                    fromCache
-                }
-            })
     }
 }

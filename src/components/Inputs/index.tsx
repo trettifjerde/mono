@@ -5,10 +5,10 @@ import styles from './index.module.scss';
 type InputProps<T> = InputHTMLAttributes<HTMLInputElement> & { id: string } & T;
 
 export type InputWithIconButtonProps = InputProps<{
+    onBtnClick: MouseEventHandler<HTMLButtonElement>
+    hiddenWhenBlurred?: boolean,
     icon?: string,
     color?: ButtonColor,
-    hiddenWhenBlurred?: boolean,
-    onBtnClick: MouseEventHandler<HTMLButtonElement>
 }>;
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
@@ -25,6 +25,11 @@ export const InputWithIconButton = forwardRef<HTMLInputElement, InputWithIconBut
 
     let cls = `${styles.btninp} ${className || ''}`;
 
+    const noPropagationOnBtnClick : MouseEventHandler<HTMLButtonElement> = (e) => {
+        e.stopPropagation();
+        onBtnClick(e);
+    }
+
     return <div className={cls}
         onClick={onClick}
     >
@@ -33,7 +38,7 @@ export const InputWithIconButton = forwardRef<HTMLInputElement, InputWithIconBut
             icon={icon}
             color={color}
             className={hiddenWhenBlurred ? styles.hwb : ''}
-            onClick={onBtnClick}
+            onClick={noPropagationOnBtnClick}
         />
     </div>;
 });

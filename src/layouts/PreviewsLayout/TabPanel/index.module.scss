@@ -1,0 +1,38 @@
+@use '../../../styles/variables' as *;
+
+.panel {
+    display: flex;
+    margin-top: 3rem;
+
+    a {
+        flex-grow: 1;
+        padding: 1.25 * $input-padding $input-padding;
+        background-color: $dark4;
+        border-radius: $border-radius $border-radius 0 0;
+        text-align: center;
+        transition-duration: $trans-dur;
+        transition-timing-function: $trans-fn;
+        transition-property: color, background-color;
+
+        h2 {
+            font-size: 1.375rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        &.active {
+            background-color: $dark6;
+            margin-bottom: -1 * $border-width;
+            cursor: default;
+        }
+
+        @include hover {
+            &:not(.active) {
+                background-color: $dark5;
+                color: $light1;
+            }
+        }
+    }
+
+}

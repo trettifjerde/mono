@@ -1,0 +1,23 @@
+@use '../../../styles/variables' as *;
+
+.base {
+    background-color: $dark4;
+    border-radius: $border-radius;
+    overflow: hidden;
+}
+
+.item {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    padding: 1rem;
+    transition: background-color $trans-dur $trans-fn;
+    animation: var(--anim-fade-in);
+
+    @include hover {
+        background-color: $light2;
+        color: $dark1;
+    }
+}

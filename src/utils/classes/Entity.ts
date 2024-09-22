@@ -1,35 +1,28 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { DetailsConstraint, PreviewConstraint } from "../firestoreDbTypes";
-import DataStore from "../../stores/DataStore/DataStore";
+import { DetailsConstraint, FirestoreKeys, PreviewConstraint } from "../firestoreDbTypes";
 
-export default abstract class Entity<P, D>  {
+export default abstract class Entity<P=any, D=any>  {
 
     id: string;
     previewInfo: PreviewConstraint<P>;
-    details: DetailsConstraint<D> | null;
-    store: DataStore<P, D, any>;
+    detailsInfo: DetailsConstraint<D> | null;
 
-    constructor ({id, previewInfo, detailsInfo, store}: {
-        id: string,
-        previewInfo: PreviewConstraint<P>,
-        detailsInfo?: DetailsConstraint<D>,
-        store: DataStore<P, D, any>
-    }) {
+    constructor ({id, previewInfo, detailsInfo}: EntityInitInfo<Entity<P,D>>) {
 
         this.id = id;
         this.previewInfo = previewInfo;
-        this.details = detailsInfo || null;
-        this.store = store;
+        this.detailsInfo = detailsInfo || null;
 
         makeObservable(this, {
             previewInfo: observable,
-            details: observable,
+            detailsInfo: observable,
             preview: computed,
+            name: computed,
+            img: computed,
             description: computed,
-            fullInfo: computed,
-            isFullyLoaded: computed,
+            hasFullInfo: computed, 
             setPreview: action,
-            setDetails: action,
+            setDetails: action
         });
     }
 
@@ -40,20 +33,20 @@ export default abstract class Entity<P, D>  {
         };
     }
 
-    get isFullyLoaded() {
-        return !!this.details;
+    get name() {
+        return this.previewInfo[FirestoreKeys.name];
+    }
+
+    get img() {
+        return this.previewInfo[FirestoreKeys.img] || '';
     }
 
     get description() {
-        return this.details?.description || '';
+        return this.detailsInfo?.description || '';
     }
 
-    get fullInfo() {
-        return this.details ? {
-            id: this.id,
-            ...this.previewInfo,
-            ...this.details
-        } : null;
+    get hasFullInfo() {
+        return !!this.detailsInfo;
     }
 
     setPreview(previewInfo: PreviewConstraint<P>) {
@@ -61,24 +54,20 @@ export default abstract class Entity<P, D>  {
     }
 
     setDetails(detailsInfo: DetailsConstraint<D>) {
-        this.details = detailsInfo;
+        this.detailsInfo = detailsInfo;
     }
 }
 
-export type EntityInitInfo<P, D> = {
+export type EntityInitInfo<E extends Entity> = {
     id: string,
-    previewInfo: PreviewConstraint<P>,
-    detailsInfo?: DetailsConstraint<D>,
+    previewInfo: E['previewInfo'],
+    detailsInfo?: E['detailsInfo']
 }
 
-export type EntityUpdateInfo<P, D> = {
+export type EntityUpdateInfo<E extends Entity> = {
     id: string,
-    previewInfo?: PreviewConstraint<P>,
-    detailsInfo?: DetailsConstraint<D>
+    previewInfo?: E['previewInfo'],
+    detailsInfo?: E['detailsInfo']
 }
 
-export type EntityInit<P, D, E extends Entity<P,D>> = EntityInitInfo<P, D> & {
-    store: DataStore<P, D, E>
-};
-
-export type EntityConstructor<P, D, E extends Entity<P,D>> = new (init: EntityInit<P, D, E>) => E;
+export type EntityConstructor<E extends Entity> = new (init: EntityInitInfo<E>) => E;

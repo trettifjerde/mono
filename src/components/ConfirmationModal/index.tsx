@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "../Buttons";
+import { Button, LoadingButton } from "../Buttons";
 import styles from './index.module.scss';
+import { observer } from "mobx-react-lite";
 
-export default function ConfirmationModal({children, confirm, close}: {
+function ConfirmationModal({ isPending, children, confirm, close}: {
+    isPending: boolean,
     children: ReactNode,
     confirm: () => void,
     close: () => void
@@ -16,10 +18,20 @@ export default function ConfirmationModal({children, confirm, close}: {
                 {children}
             </div>
             <div className={styles.btns}>
-                <Button color="blue" onClick={confirm}>Yes, I am</Button>
-                <Button color="black" onClick={close}>Cancel</Button>
+                <LoadingButton 
+                    type="button"
+                    color="blue" 
+                    disabled={isPending}
+                    loading={isPending}
+                    onClick={confirm}
+                >
+                    Yes, I am
+                </LoadingButton>
+                <Button type="button" color="black" onClick={close}>Cancel</Button>
             </div>
         </div>
     </div>, 
     document.body);
 }
+
+export default observer(ConfirmationModal);

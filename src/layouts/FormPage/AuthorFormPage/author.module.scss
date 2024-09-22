@@ -1,0 +1,34 @@
+@use '../../../styles/variables' as *;
+
+.span {
+    grid-column: 1/-1;
+}
+
+.preview {
+    position: relative;
+
+    .dltBtn {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+        background-color: $light-trans;
+        cursor: pointer;
+        font-size: 2rem;
+    }
+
+    @include hover {
+        .dltBtn {
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility $trans-dur $trans-fn, opacity $trans-dur $trans-fn;
+        }
+
+        &:hover .dltBtn {
+            visibility: visible;
+            opacity: 1;
+        }
+    }
+}

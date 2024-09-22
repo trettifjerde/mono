@@ -1,9 +1,10 @@
 import { computed, makeObservable } from "mobx";
 import { LoadingState } from "../../utils/consts";
-import ItemLoaderView from "../ItemLoaderView";
+import ItemLoader from "../ItemLoader";
+import Entity from "../../utils/classes/Entity";
 
-export default abstract class DetailsView<P, D> extends ItemLoaderView<P, D> {
-    abstract HeaderComponent: any;
+export default abstract class DetailsView<E extends Entity> extends ItemLoader<E> {
+    abstract HeaderComponent: ((props: {item: E | null}) => JSX.Element) | null;
 
     constructor(fallbackImg: string) {
         super(fallbackImg);
@@ -22,5 +23,9 @@ export default abstract class DetailsView<P, D> extends ItemLoaderView<P, D> {
             default:
                 return this.loadedItem?.preview.name || '';
         }
+    }
+
+    deleteItem() {
+        
     }
 }

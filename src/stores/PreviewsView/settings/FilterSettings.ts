@@ -1,21 +1,22 @@
 import { action, computed, makeObservable, observable } from "mobx";
-import { WhereFilterOp } from "firebase/firestore/lite";
-import { FirestoreQueryParams } from "../../../utils/dataTypes";
+import { FilterConfig, FirestoreQueryParams } from "../../../utils/dataTypes";
 import Entity from "../../../utils/classes/Entity";
 
-export default class FilterSettings<Keys extends string, P> {
+export default class FilterSettings<Keys extends string, E extends Entity=any> {
 
-    config: FilterConfig<Keys, P>;
-    filters = new Map<Keys, string | boolean>();
+    config: FilterConfig<Keys, E>;
+    
+    filters = new Map<Keys, any>();
 
-    constructor(filterConfig: FilterConfig<Keys, P>) {
+    constructor(filterConfig: FilterConfig<Keys, E>) {
         this.config = filterConfig;
         this.initialiseFilters();
 
         makeObservable(this, {
             filters: observable,
             allFilterValues: computed,
-            setFilter: action.bound
+            setFilter: action.bound,
+            setToDefault: action
         })
     }
 
@@ -28,62 +29,35 @@ export default class FilterSettings<Keys extends string, P> {
     }
 
     castToFirestoreParams() {
-        const filters : FirestoreQueryParams<P>['filters'] = [];
-        const sorts: FirestoreQueryParams<P>['sorts'] = [];
+        const filters : FirestoreQueryParams<E>['filters'] = [];
+        const sorts: FirestoreQueryParams<E>['sorts'] = [];
 
-        for (const filterType in this.config) {
-            const value = this.filters.get(filterType);
+        this.filters.forEach((selectedValue, filterType) => {
 
-            if (value) {
-
-                const {field, constraints, desc} = this.config[filterType];
-
-                sorts.push({field, desc});
-                
-                for (const constr of constraints) {
-                    const {op, makeValue} = constr;
-                    filters.push({field, op, value: makeValue(value)})
-                }
+            if (selectedValue) {
+                const cons = this.config[filterType].makeConstraints(selectedValue);
+                filters.push(...cons.filters);
+                sorts.push(cons.sort)
             }
-        }
+
+        });
+
         return {filters, sorts};
     }
 
-    castToFilterFn() : (ent: Entity<P, any>) => boolean {
-        const filterFns : Array<(ent: Entity<P, any>) => boolean> = [];
+    castToFilterFn() : (ent: E) => boolean {
+        const filterFns : Array<(ent: E) => boolean> = [];
 
-        for (const filterType in this.config) {
-            const enteredValue = this.filters.get(filterType);
-
-            if (enteredValue) {
-                const {field, constraints} = this.config[filterType];
-
-                for (const constr of constraints) {
-                    const {op, makeValue} = constr;
-                    const filterValue = makeValue(enteredValue);
-
-                    switch (op) {
-                        case '==':
-                            filterFns.push(a => a.previewInfo[field] === filterValue);
-                            break;
-
-                        case '>':
-                            filterFns.push(a => a.previewInfo[field] > filterValue);
-                            break;
-                        
-                        case '>=':
-                            filterFns.push(a => a.previewInfo[field] >= filterValue);
-                            break;
-
-                        case '<=':
-                            filterFns.push(a => a.previewInfo[field] <= filterValue);
-                            break;
-                    }
-                }
-            }
-        }
+        this.filters.forEach((selectedValue, filterType) => {
+            if (selectedValue) 
+                filterFns.push(this.config[filterType].makeFilterFn(selectedValue))
+        })
 
         return (ent) => filterFns.reduce((acc, v) => acc && v(ent), true);
+    }
+
+    setToDefault() {
+        this.initialiseFilters();
     }
 
     private initialiseFilters() {
@@ -91,14 +65,3 @@ export default class FilterSettings<Keys extends string, P> {
             this.filters.set(filterType, this.config[filterType].initialValue)
     }
 }
-
-export type FilterConfig<Keys extends string, P> = Record<Keys, {
-    field: keyof Entity<P, any>['previewInfo'],
-    initialValue: any,
-    desc?: 'desc',
-    constraints: Array<
-    {
-        op: WhereFilterOp, 
-        makeValue(v: any) : string | number
-    }>
-}>;

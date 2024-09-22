@@ -3,6 +3,13 @@
 $item-grid-dimens: 16rem;
 $scrollbar-extra: 1rem;
 
+.cont {
+    position: relative;
+    background-color: $dark2;
+    border-radius: $border-radius;
+    padding: $main-inline-padding;
+}
+
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, $item-grid-dimens);
