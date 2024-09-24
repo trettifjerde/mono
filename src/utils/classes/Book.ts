@@ -1,5 +1,6 @@
 import { action, computed, makeObservable } from "mobx";
-import { BookPreviewInfo, FirestoreKeys as FK } from "../firestoreDbTypes";
+import { BookPreviewInfo, FirestoreBook, FirestoreKeys as FK } from "../firestoreDbTypes";
+import { BookFormFields as BFF, BookFormShape } from "../../stores/FormView/forms/BookForm";
 import Entity, { EntityInitInfo } from "./Entity";
 
 export type BookDetailsInfo = undefined;
@@ -33,5 +34,25 @@ export default class Book extends Entity<BookPreviewInfo, BookDetailsInfo> {
     setAuthorInfo(info: BookAuthorInfo | null) {
         this.previewInfo[FK.authorId] = info?.id || null;
         this.previewInfo[FK.authorName] = info?.name || null;
+    }
+
+    static formDataToFirestore(formData: BookFormShape) {
+
+        const previewInfo : FirestoreBook = {
+            [FK.name]: formData[BFF.title],
+            [FK.name_lowercase]: formData[BFF.title].toLowerCase(),
+            [FK.authorName]: formData[BFF.author]?.name || null,
+            [FK.authorId]: formData[BFF.author]?.id || null,
+            [FK.price]: formData[BFF.price],
+            [FK.inStock]: formData[BFF.inStock],
+        };
+        
+        if (formData[BFF.img]) 
+            previewInfo[FK.img] = formData[BFF.img];
+
+        return {
+            previewInfo,
+            description: formData[BFF.description]
+        }
     }
 }

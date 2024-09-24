@@ -1,0 +1,11 @@
+@use '../../styles/variables' as *;
+
+.numbers {
+    display: flex;
+    flex-flow: row wrap;
+    gap: $gap;
+
+    & > * { 
+        flex: 1 0 20rem;
+    }
+}

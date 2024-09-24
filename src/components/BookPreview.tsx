@@ -8,9 +8,9 @@ const BookPreview : EntityPreviewComponent<Book> = ({item, isLink=true, classNam
 
     const preview = item.preview;
 
-    return <PreviewItemWrapper
+    return <PreviewItemWrapper 
         className={className}
-        url={isLink ? makeAbsolutePath(Pathnames.books, item.id) : ''}
+        url={isLink && makeAbsolutePath(Pathnames.books, item.id)}
     >
         <h3>
             {preview.name}

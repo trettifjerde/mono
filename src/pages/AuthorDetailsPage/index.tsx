@@ -7,15 +7,13 @@ import AuthorBookGrid from "./AuthorBookGrid";
 import styles from './index.module.scss';
 
 export default function AuthorDetailsPage() {
-    const {[Pathnames.authorId]: authorId} = useParams() as {[Pathnames.authorId]: string};
+    const {[Pathnames.id]: id} = useParams() as {[Pathnames.id]: string};
     const {detailsView} = useContext(RootStoreContext).authors;
 
-    detailsView.prepareItem(authorId);
+    detailsView.prepareItem(id);
     
-    return <DetailsPage 
-        view={detailsView}
-        className={styles.author}
-    >
+    return <DetailsPage view={detailsView} className={styles.author}>
+
         <AuthorBookGrid view={detailsView}/>
         
     </DetailsPage>

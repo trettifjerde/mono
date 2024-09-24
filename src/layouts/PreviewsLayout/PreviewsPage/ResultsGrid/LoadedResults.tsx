@@ -10,7 +10,7 @@ function LoadedResults<E extends Entity>({ view }: { view: PreviewsView<E> }) {
     const { currentView, ItemPreview } = view;
 
     return <PreviewGrid
-        isLoading={view.isPending}
+        isLoading={view.isInitialising}
         items={currentView.pageItems}
         itemName={view.store.entityName}
         ItemPreview={ItemPreview}
@@ -24,6 +24,7 @@ function LoadedResults<E extends Entity>({ view }: { view: PreviewsView<E> }) {
                 onClick={currentView.showPrev}
             />
             <PagButton
+                isLoading={view.isPending}
                 icon="icon-arrow-right"
                 isVisible={currentView.isNextBtnVisible}
                 onClick={currentView.showNext}

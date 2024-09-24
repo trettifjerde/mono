@@ -7,16 +7,12 @@ import BookDetails from "./BookDetails";
 import styles from './index.module.scss';
 
 export default function BookDetailsPage() {
-    const {[Pathnames.bookId]: bookId} = useParams() as {[Pathnames.bookId]: string};
+    const {[Pathnames.id]: id} = useParams() as {[Pathnames.id]: string};
     const {detailsView} = useContext(RootStoreContext).books;
 
-    detailsView.prepareItem(bookId);
+    detailsView.prepareItem(id);
     
-    return <DetailsPage 
-        view={detailsView}
-        className={styles.book}
-    >
+    return <DetailsPage view={detailsView} className={styles.book}>
         <BookDetails view={detailsView}/>
-        
     </DetailsPage>
 };

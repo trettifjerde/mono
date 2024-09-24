@@ -14,8 +14,9 @@
 }
 
 .main {
-    padding-inline: $main-inline-padding;
+    padding-inline: $gap;
     width: 100%;
     max-width: $max-width;
     margin-inline: auto;
+    margin-block: 2 * $double-gap;
 }

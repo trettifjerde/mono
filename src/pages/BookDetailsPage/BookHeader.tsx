@@ -9,7 +9,6 @@ export default function BookHeader({item}: {item: Book | null}) {
     return <h5>
         {item && item.authorInfo &&  <Link 
             to={makeAbsolutePath(Pathnames.authors, item.authorInfo.id)} 
-            relative="path"
             className={common.link}
         >
             {item.authorInfo.name}

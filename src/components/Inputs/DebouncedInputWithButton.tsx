@@ -3,17 +3,20 @@ import { InputWithIconButton } from ".";
 
 type DebouncedInputProps = {
     id: string,
-    entityTitleName: string,
+    placeholderWord: string,
+    readOnly?: boolean,
+    defaultValue?: string,
+    className?: string,
     onChange: ChangeEventHandler<HTMLInputElement>,
     onBtnClick: MouseEventHandler<HTMLButtonElement>,
-    defaultValue?: string,
     onClick?: MouseEventHandler<HTMLInputElement>,
-    className?: string,
     timeout?: number,
 };
 
 const DebouncedInputWithButton = forwardRef<HTMLInputElement, DebouncedInputProps>(({
-    id, onChange, onBtnClick, onClick, defaultValue, entityTitleName, className, timeout=350
+    id, placeholderWord, readOnly, defaultValue,
+    onChange, onBtnClick, onClick, 
+    className, timeout=350
 }, ref) => {  
     
     const timer = useRef<any>(null);
@@ -37,7 +40,8 @@ const DebouncedInputWithButton = forwardRef<HTMLInputElement, DebouncedInputProp
         id={id}
         ref={ref}
         className={className}
-        placeholder={`Start typing ${entityTitleName}...`}
+        placeholder={`Start typing ${placeholderWord}...`}
+        readOnly={readOnly}
         defaultValue={defaultValue}
         onChange={debouncedOnChange}
         onBtnClick={debouncedOnBtnClick}

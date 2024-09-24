@@ -9,21 +9,20 @@ $main-height: 10rem;
                             'main main';
     grid-auto-columns: 1fr auto;
     grid-auto-rows: auto auto minmax($main-height, 1fr) minmax($main-height, auto);
-    row-gap: var(--inline-indent);
+    row-gap: var(--main-padding);
         
     h5 {
         font-size: 1rem;
         color: $light3;
         min-height: 1lh;
-        margin-bottom: 0.5em;
     }
 
     aside {
-        padding: var(--inline-indent);
-        background-color: $dark2;
         display: flex;
         align-items: center;
         justify-content: flex-end;
+        padding: var(--main-padding);
+        background-color: $dark2;
     }
 
     @include screen-medium {
@@ -33,14 +32,19 @@ $main-height: 10rem;
         grid-auto-columns: 2fr auto 1fr auto;
         grid-auto-rows: auto minmax($main-height, 1fr);
 
+        header {
+            border-radius: $border-radius 0 0 $border-radius;
+        }
+
         aside {
             background-color: $dark4;
             margin-inline: 0;
             padding-block: 0;
+            border-radius: 0 $border-radius $border-radius 0;
         }
 
         figure {
-            margin-right: var(--inline-indent);
+            margin-right: var(--main-padding);
             margin-left: 0;
         }
         

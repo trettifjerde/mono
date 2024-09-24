@@ -21,6 +21,7 @@ function InputComponent({ field, isTextarea, isRequired }: {
             {...field.bind()} 
             className={className}
         />}
+
         {!isTextarea && <input
             {...field.bind()}
             className={className} 

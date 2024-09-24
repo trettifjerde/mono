@@ -1,4 +1,4 @@
-import { collection, CollectionReference, doc, FirestoreDataConverter, getDoc, getDocs, limit, query, QueryConstraint, startAfter } from "firebase/firestore/lite";
+import { collection, CollectionReference, deleteField, doc, FirestoreDataConverter, getDoc, getDocs, limit, query, QueryConstraint, runTransaction, startAfter, Transaction, UpdateData, writeBatch } from "firebase/firestore/lite";
 import { FirestoreKeys } from "../utils/firestoreDbTypes";
 import { FirestoreQueryParams } from "../utils/dataTypes";
 import { FETCH_BATCH_SIZE } from "../utils/consts";
@@ -17,10 +17,8 @@ export default abstract class DataService<E extends Entity> {
     constructor(store: DataStore<E>, previewsKey: FirestoreKeys, descriptionsKey: FirestoreKeys) {
 
         this.store = store;
-        this.previewsRef = collection(db, previewsKey)
-            .withConverter(this.previewsConverter);
-        this.descriptionsRef = collection(db, descriptionsKey)
-            .withConverter(DataService.descriptionConverter);
+        this.previewsRef = collection(db, previewsKey).withConverter(this.previewsConverter);
+        this.descriptionsRef = collection(db, descriptionsKey).withConverter(DataService.descriptionConverter);
     }
 
     async fetchPreviews(params: FirestoreQueryParams<E>) {
@@ -62,6 +60,61 @@ export default abstract class DataService<E extends Entity> {
     }
 
     abstract fetchDetails(id: string) : Promise<E['detailsInfo']>;
+    
+    abstract postItem(formData: any) : Promise<any>;
+    abstract updateItem(initial: E, formData: any) : Promise<ChangeLog<E> & Record<string, any>>;
+    
+    protected writePostBatch({previewInfo, description}: {
+        previewInfo: E['previewInfo'], 
+        description?: string
+    }) {
+
+        const batch = writeBatch(db);
+        const previewDoc = doc(this.previewsRef)
+        batch.set(previewDoc, previewInfo);
+
+        if (description)
+            batch.set(doc(this.descriptionsRef), description);
+
+        return {batch, previewDoc};
+    }
+
+    protected async runItemUpdate({initial, previewInfo, description, extraActions}: {
+        initial: E, 
+        previewInfo: E['previewInfo'], 
+        description?: string,
+        extraActions?: (t: Transaction) => Promise<void>
+    }) {
+        return runTransaction(db, async(transaction) => {
+
+            if (extraActions)
+                await extraActions(transaction);
+
+            const changeLog : ChangeLog<E> = {};
+
+            const previewUpdate = this.makePreviewUpdateData(initial, previewInfo);
+
+            if (previewUpdate) {
+                const previewDoc = doc(this.previewsRef, initial.id);
+
+                transaction.update(previewDoc, previewUpdate);
+                changeLog.previewInfo = previewInfo;
+            }
+    
+            if (description !== initial.description) {
+                const descRef = doc(this.descriptionsRef, initial.id);
+                
+                if (description)
+                    transaction.set(descRef, description);
+                else 
+                    transaction.delete(descRef);
+
+                changeLog.description = description;
+            }
+
+            return changeLog;
+        })
+    }
 
     protected async fetchDescription(id: string) {
         const snapshot = await getDoc(doc(this.descriptionsRef, id));
@@ -71,6 +124,19 @@ export default abstract class DataService<E extends Entity> {
     private async fetchPreview(id: string) {
         const snapshot = await getDoc(doc(this.previewsRef, id))
         return snapshot.data();
+    }
+
+    private makePreviewUpdateData(initial: E, previewInfo: E['previewInfo']) {
+        const previewUpdate = Object.entries(previewInfo).reduce((acc, [k, newValue]) => {
+            const key = k as keyof E['previewInfo'];
+
+            if (newValue !== initial.previewInfo[key]) 
+                acc[key] = newValue === undefined ? deleteField() : newValue as any;
+            return acc;
+
+        }, {} as UpdateData<E['previewInfo']>);
+
+        return Object.keys(previewUpdate).length ? previewUpdate : null;
     }
 
     private previewsConverter : FirestoreDataConverter<E['previewInfo']> = {
@@ -89,3 +155,8 @@ export default abstract class DataService<E extends Entity> {
         }
     };
 }
+
+export type ChangeLog<E extends Entity> =  {
+    previewInfo?: E['previewInfo']
+    description?: string
+};

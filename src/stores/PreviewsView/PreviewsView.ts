@@ -16,11 +16,9 @@ export default abstract class PreviewsView<
     SortTypes extends string = any
 > {
 
-    abstract pathname: string;
     abstract entityTitleName: string;
     
     store: DataStore<E>;
-
     defaultView: DefaultView<E>;
     filteredView: FilteredView<E>;
     sortSettings: SortSettings<SortTypes, E>;
@@ -33,7 +31,6 @@ export default abstract class PreviewsView<
 
     constructor(store: DataStore<E>) {
         this.store = store;
-
         this.defaultView = new DefaultView(this);
         this.filteredView = new FilteredView(this);
         this.sortSettings = new SortSettings(store.sortConfig);
@@ -44,13 +41,12 @@ export default abstract class PreviewsView<
         makeObservable(this, {
             loadingState: observable,
             currentView: observable,
+            isInitialising: computed,
             isIdle: computed,
             isPending: computed,
             isError: computed,
             nameFilter: computed,
             setNameFilter: action.bound,
-            initialiseView: action.bound,
-            clearFilters: action,
             loadPreviews: flow.bound
         });
 
@@ -61,7 +57,7 @@ export default abstract class PreviewsView<
                 sort: this.sortSettings.selectedType
             }),
             ({ filters, sort }) => {
-                // if any filter/sort options are applied
+                // if any filter/sort options are applied, set filter view as current and apply filters
                 if (sort || filters.reduce((acc, v) => acc || !!v, false)) {
                     this.currentView = this.filteredView;
                     
@@ -75,13 +71,17 @@ export default abstract class PreviewsView<
                         this.loadPreviews();
                     }
                 }
-                // no options applied -> restoring default view
+                // no options applied -> restore default view
                 else {
                     this.defaultView.resetPagination();
                     this.currentView = this.defaultView;
                 }
             }
         )
+    }
+
+    get isInitialising() {
+        return this.loadingState === LoadingState.initialising;
     }
 
     get isIdle() {
@@ -100,18 +100,8 @@ export default abstract class PreviewsView<
 
     abstract setNameFilter(filterStr: string): void;
 
-    clearFilters() {
-        this.filterSettings.setToDefault()
-        this.sortSettings.selectOption(null);
-    }
-
-    initialiseView() {
-        if (this.currentView.isNotInitialised && this.isIdle)
-            this.loadPreviews();
-    }
-
     *loadPreviews() {
-        this.loadingState = LoadingState.pending;
+        this.loadingState = this.currentView.isNotInitialised ? LoadingState.initialising : LoadingState.pending;
 
         try {
             const { items, lastSnap }: Awaited<ReturnType<typeof this.store.fetchAndCachePreviews>> = (
@@ -124,6 +114,21 @@ export default abstract class PreviewsView<
             console.log(error);
             this.loadingState = LoadingState.error;
         }
+    }
+
+    initialiseView() {
+        if (this.currentView.isNotInitialised && this.isIdle)
+            this.loadPreviews();
+    }
+
+    resetSettings() {
+        this.filterSettings.setToDefault()
+        this.sortSettings.selectOption(null);
+    }
+
+    addPostedItem(item: E) {
+        if (this.defaultView.isFull) 
+            this.defaultView.addItems([item], null);
     }
 
     private getQueryParams() {

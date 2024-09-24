@@ -6,13 +6,18 @@ import styles from './index.module.scss';
 function BookFiltering({view}: {view: BookPreviewsView})  {
 
     return (<>
-        <DynamicSelect 
-            id="authorName"
-            icon='icon-author'
-            label="Filter by author"
-            entityTitleName="author name"
-            settings={view.authorSettings}
-        />
+        <div>
+            <label htmlFor="inStock">
+                <i className='icon-author' />
+                <span>Filter by author</span>
+            </label>
+            
+            <DynamicSelect 
+                id="authorName"
+                placeholderWord="author name"
+                settings={view.authorSettings}
+            />
+        </div>
 
         <div className={styles.chbx}>
             <label htmlFor="inStock">
@@ -22,7 +27,7 @@ function BookFiltering({view}: {view: BookPreviewsView})  {
             <input 
                 id="inStock" type="checkbox" 
                 defaultChecked={view.inStockFilter} 
-                onChange={view.setInStockFilter}
+                onChange={e => view.setInStockFilter(e)}
             />
         </div>
     </>

@@ -2,9 +2,9 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { Field } from "mobx-react-form";
 import { FieldConstructor } from "mobx-react-form/lib/models/FieldInterface";
 import { DropdownOption } from "../../../utils/uiTypes";
+import Book from "../../../utils/classes/Book";
 import AuthorForm from "../forms/AuthorForm";
 import DynamicSelectSettings from "../../../components/DynamicSelect/DynamicSelectSettings";
-import Book from "../../../utils/classes/Book";
 
 export default class BooksField extends Field {
 
@@ -17,8 +17,7 @@ export default class BooksField extends Field {
         this.bookSearchSettings = new DynamicSelectSettings({
             fetchFn: this.fetchBooksWithoutAuthor.bind(this),
             onSelect: this.addBook.bind(this),
-            selectNull: false,
-            clearFilter: true
+            resetOnSelect: true
         });
 
         makeObservable(this, {
@@ -45,20 +44,17 @@ export default class BooksField extends Field {
     }
 
     addBook(option: DropdownOption<string> | null) {
-        if (option) {
+        if (option) 
             this.value = [...this.value, option.value];
-            this.bookSearchSettings.clear();
-        }
-    }
-
-    confirmDelete(item: Book | null) {
-        this.bookIdToDelete = item?.id || null;
     }
 
     removeBook(id: string) {
         this.value = this.value.filter((bookId : string) => bookId !== id);
         this.bookIdToDelete = null;
-        this.bookSearchSettings.clear();
+    }
+
+    confirmDelete(item: Book | null) {
+        this.bookIdToDelete = item?.id || null;
     }
 
     async fetchBooksWithoutAuthor(titleStart: string) {
@@ -67,7 +63,7 @@ export default class BooksField extends Field {
             titleStart, 
             excludeBookIds: this.value
         })
-        .then(({items, fromDataStoreCache}) => {
+        .then(suggestionBooks => {
             const author = this.view.loadedItem;
             if (author) {
                 // if user has removed any current author books from the form, 
@@ -75,16 +71,13 @@ export default class BooksField extends Field {
                 const formBookSet = new Set(this.value);
                 author.books.forEach(book => {
                     if (!formBookSet.has(book.id) && book.name.toLowerCase().startsWith(titleStart))
-                        items.push(book)
+                        suggestionBooks.push(book)
                 });
             }
-            return {
-                suggestions: items.map(book => ({
+            return suggestionBooks.map(book => ({
                     text: book.name,
                     value: book.id
-                })),
-                fromDataStoreCache
-            }
+            }))
         })
         .catch((error) => {
             console.log(error);

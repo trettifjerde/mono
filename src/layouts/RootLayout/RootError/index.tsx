@@ -11,7 +11,7 @@ export default function ErrorElement() {
             <section>
                 <h1>Oops!</h1>
                 <p>{error.message || 'An error has occurred'}</p>
-                <LinkButton to="/" relative="path" color="dark">
+                <LinkButton to="/" color="dark">
                     Back to main page
                 </LinkButton>
             </section>

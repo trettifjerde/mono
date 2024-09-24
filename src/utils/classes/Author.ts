@@ -1,4 +1,4 @@
-import { computed, makeObservable } from "mobx";
+import { action, computed, makeObservable } from "mobx";
 import { AuthorPreviewInfo, FirestoreAuthor, FirestoreKeys } from "../firestoreDbTypes";
 import { AuthorFormShape } from "../../stores/FormView/forms/AuthorForm";
 import Entity, { EntityInitInfo } from "./Entity";
@@ -14,13 +14,26 @@ export default class Author extends Entity<AuthorPreviewInfo, AuthorDetailsInfo>
         super({id, previewInfo, detailsInfo});
 
         makeObservable(this, {
-            books: computed
+            books: computed,
+            addBook: action,
+            removeBook: action
         })
     }
 
     get books() {
         return this.detailsInfo?.books || [];
     }   
+
+    addBook(book: Book) {
+        this.previewInfo[FirestoreKeys.bookN] += 1;
+        this.detailsInfo?.books.push(book);
+    }
+
+    removeBook(bookId: string) {
+        this.previewInfo[FirestoreKeys.bookN] -= 1;
+        if (this.detailsInfo)
+            this.detailsInfo.books = this.detailsInfo.books.filter(b => b.id !== bookId);
+    }
 
     static formDataToFirestore(formData: AuthorFormShape) {
         const {name, bookIds, bio, img} = formData;
@@ -29,8 +42,11 @@ export default class Author extends Entity<AuthorPreviewInfo, AuthorDetailsInfo>
             [FirestoreKeys.name]: name,
             [FirestoreKeys.name_lowercase]: name.toLowerCase(),
             [FirestoreKeys.bookN]: bookIds.length,
-            [FirestoreKeys.img]: img || undefined
         };
+
+        if (img)
+            previewInfo[FirestoreKeys.img] = img;
+
         const description = bio;
 
         return {previewInfo, description, bookIds}

@@ -10,7 +10,7 @@ export type DropdownOption<T extends string> = Suggestion<T> & {
     renderElement: () => JSX.Element
 }
 
-export type DropdownOptionSelectHandler<T extends string> = (option: DropdownOption<T> | null) => void;
+export type DropdownOptionSelectHandler<T extends string> = (option: DropdownOption<T>) => void;
 
 export type EntityPreviewComponent<E extends Entity> = (props: {
     item: E,

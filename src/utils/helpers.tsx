@@ -39,21 +39,3 @@ export function getNameFilterConfig<E extends Entity>() {
         makeFilterFn: (nameStart: string) => (ent: E) => ent.previewInfo[FK.name_lowercase].startsWith(nameStart)
     }
 }
-
-export function compareBookIds(initialIds: string[], newIds: string[]) {
-    const oldIdSet = new Set(initialIds);
-    const newIdSet = new Set(newIds);
-
-    const booksRemoved : string[] = [];
-    const booksKept : string[] = [];
-
-    initialIds.forEach(id => {
-        if (newIdSet.has(id))
-            booksKept.push(id)
-        else
-            booksRemoved.push(id)
-    });
-    const booksAdded = newIds.filter(id => !oldIdSet.has(id));
-
-    return {booksRemoved, booksKept, booksAdded}
-}

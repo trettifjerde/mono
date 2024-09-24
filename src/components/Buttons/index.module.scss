@@ -5,11 +5,22 @@
     padding-block: $input-padding;
     padding-inline: $input-padding;
 
+    &:disabled {
+        cursor: not-allowed;
+    }
+
     &.square {
         display: flex;
         justify-content: center;
         align-items: center;
         aspect-ratio: 1/1;
+    }
+
+    &.trans {
+        &:disabled {
+            background-color: $dark3;
+            color: $dark4;
+        }
     }
     
     &.dark {
@@ -19,17 +30,17 @@
         &:disabled {
             background-color: $dark6;
             color: $light3;
-            cursor: not-allowed;
         }
     
         @include hover {
             &:not(:disabled) {
-                background-color: $dark3;
+                background-color: $dark5;
+                color: $light1;
             }
         }
     }
     
-    &.light {
+    &.purple {
         background-color: $light1;
         color: $dark1;
 
@@ -51,6 +62,7 @@
     
         @include hover {
             background-color: $dark2;
+            color: $light1;
         }
     }
     

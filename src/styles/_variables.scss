@@ -36,7 +36,6 @@ $border-radius: 4px;
 $gap: 1rem;
 $double-gap: 2 * $gap;
 $input-padding: .75em;
-$main-inline-padding: 1rem;
 
 $p-margin: .75rem;
 
@@ -53,7 +52,6 @@ $trans-fn: ease-in-out;
 
 %input-btn-clear {
     color: inherit;
-    border: $border-width solid transparent;
     border-radius: $border-radius;
     font-family: inherit;
     font-size: inherit;

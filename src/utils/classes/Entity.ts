@@ -69,5 +69,3 @@ export type EntityUpdateInfo<E extends Entity> = {
     previewInfo?: E['previewInfo'],
     detailsInfo?: E['detailsInfo']
 }
-
-export type EntityConstructor<E extends Entity> = new (init: EntityInitInfo<E>) => E;

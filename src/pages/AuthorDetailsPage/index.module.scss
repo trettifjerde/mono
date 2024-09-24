@@ -9,7 +9,7 @@ $main-height: 10rem;
                             'aside aside';
     grid-auto-columns: 1fr auto;
     grid-auto-rows: auto auto minmax($main-height, auto) 1fr;
-    row-gap: var(--inline-indent);
+    row-gap: var(--main-padding);
 
     @include screen-medium {
         grid-template-areas:    'head head menu'
@@ -30,7 +30,7 @@ $main-height: 10rem;
 
         header,
         main {
-            margin-left: var(--inline-indent);
+            margin-left: var(--main-padding);
         }
     }
 }

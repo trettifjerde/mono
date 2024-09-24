@@ -2,14 +2,14 @@
 
 .grid {
     margin-top: $double-gap;
-    padding-bottom: calc(2 * $main-inline-padding + $btn-std);
+    padding-bottom: calc(2 * var(--main-padding) + $btn-std);
 }
 
 .pag {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: $main-inline-padding;
+    bottom: var(--main-padding);
     display: flex;
     justify-content: center;
     gap: $double-gap;

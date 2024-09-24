@@ -1,17 +1,20 @@
 import {FirestoreKeys } from "../../utils/firestoreDbTypes";
+import { Pathnames } from "../../utils/consts";
 import { getNameFilterConfig } from "../../utils/helpers";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
-import { AuthorFormShape } from "../FormView/forms/AuthorForm";
+import Book, { BookAuthorInfo } from "../../utils/classes/Book";
 import Author from "../../utils/classes/Author";
 import RootStore from "../RootStore";
 import DataStore from "./DataStore";
 import AuthorService from "../../services/AuthorService";
 import AuthorPreviewsView from "../PreviewsView/AuthorPreviewsView";
 import AuthorDetailsView from "../DetailsView/AuthorDetailsView";
-import AuthorFormView from "../FormView/AuthorFormView";
+import AuthorForm, { AuthorFormShape } from "../FormView/forms/AuthorForm";
+import FormView from "../FormView/FormView";
 
 export default class AuthorStore extends DataStore<Author> {
     override entityName = "Author";
+    override pathname = Pathnames.authors;
     override EntityConstructor = Author;
     override sortConfig = AuthorSortConfig;
     override filterConfig = AuthorFilterConfig
@@ -19,8 +22,7 @@ export default class AuthorStore extends DataStore<Author> {
     override service: AuthorService;
     override previewsView: AuthorPreviewsView;
     override detailsView: AuthorDetailsView;
-
-    formView: AuthorFormView;
+    override formView: FormView<Author, AuthorForm>;
 
     constructor(rootStore: RootStore) {
         super(rootStore);
@@ -28,68 +30,27 @@ export default class AuthorStore extends DataStore<Author> {
         this.service = new AuthorService(this);
         this.previewsView = new AuthorPreviewsView(this);
         this.detailsView = new AuthorDetailsView(this);
-        this.formView = new AuthorFormView(this);
+        this.formView = new FormView(this, AuthorForm);
     }
 
-    async updateAuthor(initialItem: Author, formData: AuthorFormShape) {
+    override async postItem(formData: AuthorFormShape) {
         try {
-            const {previewInfo, description, booksAdded, booksKept, booksRemoved} = await this.service
-                .updateAuthor(initialItem, formData);
-            
-            const id = initialItem.id;
-            const { name } = previewInfo || initialItem;
+            const { id, previewInfo, description, bookIds } = await this.service.postItem(formData);
 
-            const bookStore = this.rootStore.books;
-
-            const updAuthor = this.updateCache({
-                id,
-                previewInfo,
-                detailsInfo: {
-                    description,
-                    books: bookStore.updateCachedAuthorInfo(
-                        [...booksAdded, ...booksKept],
-                        {name, id}
-                    )
-                }
-            })[0];
-
-            if (!updAuthor)
-                throw 'Updated author in the database, but failed to update the cache';
-
-            this.previewsView.clearFilters();
-            bookStore.previewsView.clearFilters();
-            bookStore.updateCachedAuthorInfo(booksRemoved, null);
-
-            return updAuthor.id;
-        }
-        catch (error) {
-            throw error;
-        }
-    }
-
-    async postAuthor(formData: AuthorFormShape) {
-
-        try {
-            const { id, previewInfo, description, bookIds } = await this.service.postAuthor(formData);
-            const bookStore = this.rootStore.books;
-
-            const books = bookStore.updateCachedAuthorInfo(bookIds, { 
-                    id,
-                    name: previewInfo.name
-                })
-                .filter(book => !!book);
-
-            this.addToCache({
+            const author = this.addToCache({
                 id, 
                 previewInfo, 
                 detailsInfo: {
                     description,
-                    books
+                    books: this.updateCachedAuthorInfo(bookIds, { 
+                        id,
+                        name: previewInfo.name
+                    })
                 }
-            });
+            })[0];
 
-            this.previewsView.clearFilters();
-            bookStore.previewsView.clearFilters();
+            this.previewsView.addPostedItem(author);
+            this.rootStore.resetPreviewsViews();
 
             return id;
         }
@@ -98,36 +59,109 @@ export default class AuthorStore extends DataStore<Author> {
         }
     }
 
-    async getAuthorsByName(nameStart: string) {
-
-        const nameConfig = this.filterConfig.name;
-
-        if (this.isCacheFull) {
-            const nameFilterFn = nameConfig.makeFilterFn(nameStart);
-
-            return {
-                items: Array.from(this.items.values())
-                    .filter(nameFilterFn)
-                    .slice(0, this.batchSize),
-                fromDataStoreCache: true
-            }
-        }
-
+    override async updateItem(initialItem: Author, formData: AuthorFormShape) {
         try {
-            const {filters, sort} = nameConfig.makeConstraints(nameStart);
-            const { items } = await this.fetchAndCachePreviews({
-                filters,
-                sorts: [sort]
-            });
+            const {previewInfo, description, bookChangeLog} = await this.service
+                .updateItem(initialItem, formData);
+            
+            const id = initialItem.id;
+            const {name} = previewInfo || initialItem;
 
-            return {
-                items,
-                fromDataStoreCache: false
-            }
+            const updAuthor = this.updateCache({
+                id,
+                previewInfo,
+                detailsInfo: {
+                    description,
+                    books: this.updateCachedAuthorInfo(
+                        [...bookChangeLog.added, ...bookChangeLog.kept],
+                        { id, name }
+                    )
+                }
+            })[0];
+
+            if (!updAuthor)
+                throw 'Updated author in the database, but failed to update the cache';
+
+            this.updateCachedAuthorInfo(bookChangeLog.removed, null);
+            this.rootStore.resetPreviewsViews();
+
+            return updAuthor.id;
         }
         catch (error) {
-            throw error
+            throw error;
         }
+    }
+
+    override deleteItem(id: string): Promise<void> {
+        return new Promise(res => {
+            console.log(id);
+            res()
+        })
+    }
+
+    async getAuthorSuggestionsByName(nameStart: string) {
+
+        return new Promise<Author[]>(async (resolve, reject) => {
+
+            const nameConfig = this.filterConfig.name;
+
+            if (this.isCacheFull) {
+                const nameFilterFn = nameConfig.makeFilterFn(nameStart);
+
+                const items : Author[] = [];
+
+                for (const author of this.items.values()) {
+                    if (nameFilterFn(author)) {
+
+                        items.push(author);
+
+                        if (items.length >= this.batchSize)
+                            break;
+                    }
+                }
+                resolve(items);
+                return;
+            }
+
+            try {
+                const { filters, sort } = nameConfig.makeConstraints(nameStart);
+                const { items } = await this.fetchAndCachePreviews({
+                    filters,
+                    sorts: [sort]
+                });
+
+                resolve(items);
+            }
+            catch (error) {
+                console.log(error);
+                reject('Author fetch by name failed');
+            }
+        })
+        .then(items => items.map(author => ({
+            text: author.name,
+            value: author.id
+        })))
+        .catch(error => {
+            console.log(error);
+            return null;
+        })
+    }
+
+    addToCachedAuthorBooks(authorId: string, book: Book) {
+        const author = this.items.get(authorId);
+        if (author) 
+            author.addBook(book);
+    }
+    removeFromCachedAuthorBooks(authorId: string, bookId: string) {
+        const author = this.items.get(authorId);
+        if (author) 
+            author.removeBook(bookId)
+    }
+
+    updateCachedAuthorInfo(bookIds: string[], authorInfo: BookAuthorInfo | null) {
+        const books = this.rootStore.books.getCachedItemsById(bookIds);
+        books.forEach(book => book.setAuthorInfo(authorInfo));
+        return books;
     }
 }
 

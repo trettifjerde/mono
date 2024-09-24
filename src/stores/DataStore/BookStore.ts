@@ -2,16 +2,20 @@ import { documentId, orderBy, where } from "firebase/firestore/lite";
 import { FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
 import { getNameFilterConfig } from "../../utils/helpers";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
-import Book, { BookAuthorInfo } from "../../utils/classes/Book";
+import { Pathnames } from "../../utils/consts";
+import Book from "../../utils/classes/Book";
 import RootStore from "../RootStore";
 import DataStore from "./DataStore";
 import BookService from "../../services/BookService";
 import BookPreviewsView from "../PreviewsView/BookPreviewsView";
 import BookDetailsView from "../DetailsView/BookDetailsView";
+import FormView from "../FormView/FormView";
+import BookForm, { BookFormShape } from "../FormView/forms/BookForm";
 
 export default class BookStore extends DataStore<Book> {
 
     override entityName = "Book";
+    override pathname = Pathnames.books;
     override EntityConstructor = Book;
     override sortConfig = BookSortConfig;
     override filterConfig = BookFilterConfig;
@@ -19,6 +23,7 @@ export default class BookStore extends DataStore<Book> {
     override service: BookService;
     override previewsView: BookPreviewsView;
     override detailsView: BookDetailsView;
+    override formView: FormView<Book, BookForm>;
 
     constructor(rootStore: RootStore) {
         super(rootStore);
@@ -26,12 +31,63 @@ export default class BookStore extends DataStore<Book> {
         this.service = new BookService(this);
         this.previewsView = new BookPreviewsView(this);
         this.detailsView = new BookDetailsView(this);
+        this.formView = new FormView(this, BookForm);
     }
 
-    updateCachedAuthorInfo(bookIds: string[], authorInfo: BookAuthorInfo | null) {
-        const books = this.getCachedItemsById(bookIds);
-        books.forEach(book => book.setAuthorInfo(authorInfo));
-        return books;
+    override async postItem(formData: BookFormShape) {
+        try {
+            const {id, previewInfo, description, author} = await this.service.postItem(formData);
+
+            const book = this.addToCache({id, previewInfo, detailsInfo: {description}})[0];
+
+            if (author)
+                author.addBook(book);
+
+            this.previewsView.addPostedItem(book);
+            this.rootStore.resetPreviewsViews();
+
+            return id;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    override async updateItem(initialItem: Book, formData: BookFormShape) {
+        try {
+            const id = initialItem.id;
+            const {previewInfo, description, authorLog} = await this.service.updateItem(initialItem, formData);
+
+            const updBook = this.updateCache({
+                id, 
+                previewInfo, 
+                detailsInfo: {
+                    description
+                }})[0];
+
+            if (!updBook)
+                throw 'Book updated in DB, but not found in cache';
+
+            if (authorLog.addedId)
+                this.rootStore.authors.addToCachedAuthorBooks(authorLog.addedId, updBook);
+
+            if (authorLog.removedId)
+                this.rootStore.authors.removeFromCachedAuthorBooks(authorLog.removedId, id);
+            
+            this.rootStore.resetPreviewsViews();
+
+            return id;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    override async deleteItem(id: string) {
+        return new Promise<void>(res => {
+            console.log(id);
+            res()
+        })
     }
 
     async getBooksByAuthorId(authorId: string) {
@@ -63,14 +119,11 @@ export default class BookStore extends DataStore<Book> {
             const filterTitle = titleConfig.makeFilterFn(titleStart);
             const excludeSet = new Set(excludeBookIds);
 
-            return {
-                items: this.filterFromCache(b => (
-                    filterTitle(b) &&
-                    !b.authorInfo &&
-                    !excludeSet.has(b.id)
-                )),
-                fromDataStoreCache: true
-            }
+            return this.filterFromCache(b => (
+                filterTitle(b) &&
+                !b.authorInfo &&
+                !excludeSet.has(b.id)
+            ));
         }
 
         try {
@@ -92,10 +145,7 @@ export default class BookStore extends DataStore<Book> {
                 ]
             });
 
-            return {
-                items,
-                fromDataStoreCache: false
-            }
+            return items;
         }
         catch (error) {
             throw error;
@@ -108,6 +158,11 @@ export enum BookFilterTypes {
     inStock = "inStock",
     author = "author"
 }
+
+export enum BookSortTypes {
+    priceHigh = "high",
+    priceLow = "low"
+};
 
 const BookFilterConfig: FilterConfig<BookFilterTypes, Book> = {
     [BookFilterTypes.author]: {
@@ -129,11 +184,6 @@ const BookFilterConfig: FilterConfig<BookFilterTypes, Book> = {
             sort: orderBy(FK.inStock, 'desc')
         })
     }
-};
-
-export enum BookSortTypes {
-    priceHigh = "high",
-    priceLow = "low"
 };
 
 export const BookSortConfig: SortConfig<BookSortTypes, Book> = {

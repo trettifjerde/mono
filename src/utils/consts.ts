@@ -3,8 +3,7 @@ export enum Pathnames {
     authors = "authors",
     books = "books",
     new = "new",
-    bookId = "bookId",
-    authorId = "authorId"
+    id = "id"
 };
 
 export enum LoadingState {

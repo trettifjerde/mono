@@ -7,9 +7,8 @@ function DetailsReloader<E extends Entity>({view}: {view: DetailsView<E>}) {
 
     return <div style={{textAlign: 'center'}}>
         <p>Failed to fetch the {view.store.entityName.toLowerCase()}</p>
-        <Button 
-            onClick={view.reloadItem}
-        >
+
+        <Button color="dark" onClick={() => view.reloadItem()}>
             Try again
         </Button>
     </div>

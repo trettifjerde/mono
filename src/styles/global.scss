@@ -3,11 +3,9 @@
 :root {
   --fade-in: fade-in;
   --slide-down: slide-down;
-
   --anim-fade-in: var(--fade-in) #{$trans-dur} #{$trans-fn};
 
   line-height: $line-hight;
-
   font-weight: 400;
   font-family: $main-font;
   font-synthesis: none;
@@ -23,6 +21,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+body {
+  --main-padding: 1rem;
+
+  @include screen-large {
+    --main-padding: 2rem;
+  }
 }
 
 h1,
@@ -53,8 +59,9 @@ input,
 textarea {
   @extend %input-btn-clear;
 
-  width: 100%;
+  border: $border-width solid transparent;
   outline: $outline-width solid transparent;
+  width: 100%;
   line-height: $input-line-height;
   padding: $input-padding;
   background-color: $dark4;
@@ -106,6 +113,7 @@ textarea {
 button {
   @extend %input-btn-clear;
 
+  border: none;
   background-color: transparent;
 }
 

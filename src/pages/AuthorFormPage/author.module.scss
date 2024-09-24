@@ -1,8 +1,4 @@
-@use '../../../styles/variables' as *;
-
-.span {
-    grid-column: 1/-1;
-}
+@use '../../styles/variables' as *;
 
 .preview {
     position: relative;

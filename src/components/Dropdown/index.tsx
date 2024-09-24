@@ -1,15 +1,14 @@
-import { MouseEventHandler, RefObject, useEffect } from 'react';
+import { useEffect } from 'react';
 import { DropdownOption, DropdownOptionSelectHandler } from '../../utils/uiTypes';
 import { LoadingState } from '../../utils/consts';
 import styles from './index.module.scss';
 
 export default function Dropdown<T extends string>({
-    ddOpenerRef, selectOption, closeDropdown, options, state=LoadingState.idle
+    selectOption, closeDropdown, options, state=LoadingState.idle
 }: {
-    ddOpenerRef: RefObject<HTMLElement>,
     options: DropdownOption<T>[],
     selectOption: DropdownOptionSelectHandler<T>,
-    closeDropdown: MouseEventHandler,
+    closeDropdown: () => void,
     state?: LoadingState
 }) {
 
@@ -46,24 +45,13 @@ export default function Dropdown<T extends string>({
 
     useEffect(() => {
         function triggerCloseDropdown(e: Event) {
-            const clickTarget = e.target as Element | null;
-
-            if (ddOpenerRef.current) {                
-                if (ddOpenerRef.current.contains(clickTarget))
-                    e.stopPropagation();
-            }
-            setTimeout(closeDropdown, 0);
+            closeDropdown();
+            e.stopPropagation();
         }
 
-        document.addEventListener('click', 
-            triggerCloseDropdown, 
-            {capture: true}
-        );
+        document.addEventListener('click', triggerCloseDropdown);
 
-        return () => document.removeEventListener('click', 
-            triggerCloseDropdown, 
-            {capture: true}
-        );
+        return () => document.removeEventListener('click', triggerCloseDropdown);
 
     }, [closeDropdown]);
 

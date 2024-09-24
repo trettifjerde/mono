@@ -7,7 +7,7 @@ $manage-btn-dimens: 4rem;
 }
 
 %margined {
-    margin-inline: var(--inline-indent);
+    margin-inline: var(--main-padding);
 
     @include screen-large {
         margin: 0;
@@ -19,15 +19,14 @@ $manage-btn-dimens: 4rem;
 }
 
 .base {
-    --inline-indent: #{$gap};
     --manage-btn-dimens: #{$manage-btn-dimens};
 
     @extend %border;
 
     display: grid;
     align-content: flex-start;
-    background-color: $dark3;
-    padding-bottom: var(--inline-indent);
+    background-color: $dark2;
+    padding-bottom: var(--main-padding);
 
     h1 {
         min-height: 1lh;
@@ -43,14 +42,16 @@ $manage-btn-dimens: 4rem;
         flex-direction: column;
         justify-content: center;
         background-color: $dark4;
+        padding-block: calc(var(--main-padding) * 1.5);
+        padding-inline: var(--main-padding);
         
         hgroup {
             @extend %fade-in;
-            padding: var(--inline-indent);
         }
     }
 
     menu {
+        @extend %border;
         grid-area: menu;
         list-style-type: none;
         display: grid;
@@ -94,7 +95,7 @@ $manage-btn-dimens: 4rem;
         display: flex;
         align-items: center;
         background-color: $dark5;
-        padding: var(--inline-indent);
+        padding: var(--main-padding);
 
         section {
             width: 100%;
@@ -117,7 +118,7 @@ $manage-btn-dimens: 4rem;
     }
 
     @include screen-large {
-        padding: var(--inline-indent);
+        padding: var(--main-padding);
     }
 }
 

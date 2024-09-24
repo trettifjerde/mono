@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import styles from './index.module.scss';
 import common from '../../../styles/common.module.scss';
 
-export default function PreviewItemWrapper({url, className, isLoading, children}: {
-    url?: string,
+export default function PreviewItemWrapper({url=false, className, isLoading, children}: {
+    url?: string | false,
     isLoading?: boolean,
     className?: string,
     children?: ReactNode

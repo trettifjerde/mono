@@ -1,104 +1,75 @@
 import z from "zod";
-import zod from 'mobx-react-form/lib/validators/ZOD';
-import {Field, Form} from "mobx-react-form";
+import { Field } from "mobx-react-form";
 import { FieldConstructor } from "mobx-react-form/lib/models/FieldInterface";
 import { FirestoreKeys } from "../../../utils/firestoreDbTypes";
-import AuthorFormView from "../AuthorFormView";
+import Author from "../../../utils/classes/Author";
+import CustomForm, { FieldsConfig } from "./CustomForm";
+import FormView from "../FormView";
 import ImageField from "../fields/ImageField";
 import BooksField from "../fields/BooksField";
 
-export default class AuthorForm extends Form {
+export default class AuthorForm extends CustomForm<Author> {
 
-    view : AuthorFormView;
-
-    constructor(view: AuthorFormView) {
-        super();
-        this.view = view;
+    constructor(view: FormView<Author, AuthorForm>) {
+        super({view, config: AuthorFieldsConfig, schema: $authorSchema});
     }
 
     override makeField(data: FieldConstructor) {
         
         switch (data.key) {
-            case AuthorFieldNames.img:
+            case AuthorFormFields.img:
                 return new ImageField(data);
 
-            case AuthorFieldNames.bookIds:
+            case AuthorFormFields.bookIds:
                 return new BooksField(data);
 
             default:
                 return new Field(data);
         }
     } 
-
-    plugins() {
-        return {
-            zod: zod({
-                package: z,
-                schema: $authorSchema
-            })
-        }
-    }
-
-    setup() {
-        return {
-            fields: [
-                {
-                    name: AuthorFieldNames.name,
-                    label: 'Author name',
-                    placeholder: 'Enter author name',
-                    value: '',
-                    default: ''
-                }, 
-                {
-                    name: AuthorFieldNames.img,
-                    label: 'Photo',
-                    placeholder: 'Add a link to their photo',
-                    value: '',
-                    default: ''
-                }, 
-                {
-                    name: AuthorFieldNames.bio,
-                    label: 'Biography',
-                    placeholder: 'Enter some information about the author',
-                    value: '',
-                    default: ''
-                }, 
-                {
-                    name: AuthorFieldNames.bookIds,
-                    label: 'Books',
-                    value: [] as string[],
-                    default: [] as string[]
-                }
-            ]
-        }
-    }
-
-    hooks() {
-        return {
-            onSuccess(form: AuthorForm) {
-                form.view.submit(form.values());
-            },
-            onError(form: AuthorForm) {
-                console.log('errors', form.errors());
-            }
-        }
-    }
 }
 
-export enum AuthorFieldNames {
+export enum AuthorFormFields {
     name = FirestoreKeys.name,
     img = FirestoreKeys.img,
     bio = "bio",
     bookIds = "bookIds"
 }
 
+const AuthorFieldsConfig : FieldsConfig<AuthorFormFields, Author> = {
+    [AuthorFormFields.name]: {
+        label: 'Author name',
+        placeholder: 'Enter author name',
+        default: '',
+        readValue: (a) => a.name
+    },
+    [AuthorFormFields.img]: {
+        label: 'Photo',
+        placeholder: 'Add a link to their photo',
+        default: '',
+        readValue: (a) => a.img
+    },
+    [AuthorFormFields.bio]: {
+        label: 'Biography',
+        placeholder: 'Enter some information about the author',
+        default: '',
+        readValue: (a) => a.description
+    }, 
+    [AuthorFormFields.bookIds]: {
+        label: 'Books',
+        default: [] as string[],
+        readValue: (a) => a.books.map(b => b.id)
+    }
+}
+
+
 const $authorSchema = z.object({
-    [AuthorFieldNames.name]: z.string().min(3, {
+    [AuthorFormFields.name]: z.string().min(3, {
         message: 'Author name must be at least 3 characters'
     }),
-    [AuthorFieldNames.img]: z.string().optional(),
-    [AuthorFieldNames.bio]: z.string().optional(),
-    [AuthorFieldNames.bookIds]: z.array(z.string())
+    [AuthorFormFields.img]: z.string().optional(),
+    [AuthorFormFields.bio]: z.string().optional(),
+    [AuthorFormFields.bookIds]: z.array(z.string())
 });
 
 export type AuthorFormShape = z.infer<typeof $authorSchema>;

@@ -20,8 +20,7 @@ function DetailsMain<E extends Entity>({ view }: { view: DetailsView<E> }) {
 
                     <LinkButton
                         className={common.linkCen}
-                        to={makeAbsolutePath(view.store.previewsView.pathname)}
-                        relative="path"
+                        to={makeAbsolutePath(view.store.pathname)}
                     >
                         Browse other {view.store.entityName.toLowerCase() + 's'}
                     </LinkButton>

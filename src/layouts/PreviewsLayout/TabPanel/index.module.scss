@@ -2,7 +2,10 @@
 
 .panel {
     display: flex;
-    margin-top: 3rem;
+    background-color: $dark2;
+    padding: var(--main-padding);
+    padding-bottom: 0;
+    border-radius: $border-radius $border-radius 0 0;
 
     a {
         flex-grow: 1;

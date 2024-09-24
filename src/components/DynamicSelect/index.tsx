@@ -1,83 +1,45 @@
-import { ChangeEventHandler, MouseEventHandler, useRef} from 'react';
 import { observer } from 'mobx-react-lite';
-import { getCleanLCValue } from '../../utils/helpers';
+import { InputWithIconButton } from '../Inputs';
 import DynamicSelectSettings from './DynamicSelectSettings';
-import DebouncedInputWithButton from '../Inputs/DebouncedInputWithButton';
 import Dropdown from '../Dropdown';
 
 const DynamicDropdown = observer(Dropdown);
 
-function DynamicSelect<P extends string>({id, label, entityTitleName, settings, icon, className}: {
+function DynamicSelect<P extends string>({id, placeholderWord, className, settings}: {
     id: string,
-    label: string,
-    entityTitleName: string,
-    settings: DynamicSelectSettings<P>,
-    icon?: string,
-    className?: string
+    placeholderWord: string,
+    className?: string,
+    settings: DynamicSelectSettings<P>
 }) {
-    const ddOpenerRef = useRef<HTMLInputElement>(null);
 
     const {
+        filterStr,
         isDropdownVisible, 
-        lastSelectedOptionText,
-        selectNullOptionOnEmptyFilter,
-        clearFilterOnOptionSelect,
-        openDropdown, 
+        selectedOption, 
         toggleDropdown, 
+        closeDropdown,
+        startTimer,
         selectOption, 
-        filterOptions
+        clearSelection,
     } = settings;
 
-    const updateOptions : ChangeEventHandler<HTMLInputElement> = (e) => {
-        filterOptions(getCleanLCValue(e.target));
-    }
-
-    const setSelectedOption : typeof settings.selectOption = (option) => {
-        selectOption(option);
-        
-        if (ddOpenerRef.current) {
-            if (clearFilterOnOptionSelect)
-                ddOpenerRef.current.value = '';
-            else 
-                ddOpenerRef.current.value = option?.text || '';
-        }
-    }
-
-    const clearSelection : MouseEventHandler<HTMLButtonElement> = () => {
-        if (ddOpenerRef.current) 
-            ddOpenerRef.current.value = '';
-        
-        if (selectNullOptionOnEmptyFilter)
-            selectOption(null);
-
-        filterOptions('');
-    }
-
-    return (<div className={className}>
-        <label htmlFor={id}>
-            {icon && <i className={icon} />}
-            <span>{label}</span>
-        </label>
-        
-        <div style={{position: 'relative'}}>
-            <DebouncedInputWithButton 
-                ref={ddOpenerRef}
+    return (<div className={className} style={{position: 'relative'}}>
+            <InputWithIconButton 
                 id={id}
-                defaultValue={lastSelectedOptionText}
-                entityTitleName={entityTitleName}
-                onChange={updateOptions}
-                onBtnClick={clearSelection}
-                onClick={openDropdown}
+                placeholder={`Start typing ${placeholderWord}...`}
+                value={filterStr}
+                readOnly={!!selectedOption}
+                onChange={startTimer}
+                onBtnClick={() => clearSelection()}
+                onClick={toggleDropdown}
             />
 
             {isDropdownVisible && <DynamicDropdown
-                ddOpenerRef={ddOpenerRef}
                 state={settings.state}
                 options={settings.options} 
-                selectOption={setSelectedOption}
-                closeDropdown={() => toggleDropdown(false)}
+                selectOption={selectOption}
+                closeDropdown={closeDropdown}
             />}
-        </div>
     </div>);
 }
 

@@ -6,7 +6,7 @@
     align-items: center;
     color: $dark5;
     font-size: .75rem;
-    padding: (2 * $main-inline-padding) $main-inline-padding;
+    padding: calc(2 * var(--main-padding)) var(--main-padding);
 
     a {
         color: $dark6;

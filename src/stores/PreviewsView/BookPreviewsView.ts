@@ -1,6 +1,5 @@
 import { ChangeEvent } from "react";
-import { action, computed, makeObservable } from "mobx";
-import { Pathnames } from "../../utils/consts";
+import { computed, makeObservable } from "mobx";
 import { DropdownOption } from "../../utils/uiTypes";
 import Book from "../../utils/classes/Book";
 import BookStore, { BookFilterTypes, BookSortTypes } from "../DataStore/BookStore";
@@ -10,7 +9,6 @@ import BookPreview from "../../components/BookPreview";
 
 export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes, BookSortTypes
 > {
-    override pathname = Pathnames.books;
     override entityTitleName = "book title";
     override ItemPreview = BookPreview;
 
@@ -22,14 +20,11 @@ export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes
         this.authorSettings = new DynamicSelectSettings<string>({
             fetchFn: this.fetchAuthorSuggestions.bind(this),
             onSelect: this.setAuthorFilter.bind(this),
-            selectNull: true,
-            clearFilter: false
+            resetOnSelect: false
         });
 
         makeObservable(this, {
-            inStockFilter: computed,
-            setInStockFilter: action.bound,
-            setAuthorFilter: action.bound
+            inStockFilter: computed
         });
     }
 
@@ -41,9 +36,9 @@ export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes
         this.filterSettings.setFilter(BookFilterTypes.title, value);
     }
 
-    override clearFilters() {
-        super.clearFilters();
-        this.authorSettings.clear();
+    override resetSettings() {
+        super.resetSettings();
+        this.authorSettings.reset();
     }
 
     get inStockFilter() {
@@ -58,15 +53,7 @@ export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes
         this.filterSettings.setFilter(BookFilterTypes.author, option?.value || '')
     }
 
-    async fetchAuthorSuggestions(nameStart: string) {
-        return this.store.rootStore.authors.getAuthorsByName(nameStart)
-            .then(({items, fromDataStoreCache}) => ({
-                suggestions: items.map(author => ({
-                    text: author.name,
-                    value: author.id
-                })),
-                fromDataStoreCache
-            }))
-            .catch(() => null)
+    fetchAuthorSuggestions(nameStart: string) {
+        return this.store.rootStore.authors.getAuthorSuggestionsByName(nameStart);
     }
 }

@@ -1,11 +1,9 @@
-import { deleteField, doc, UpdateData, writeBatch } from "firebase/firestore/lite";
-import { FirestoreAuthor, FirestoreKeys as FK } from "../utils/firestoreDbTypes";
+import { doc, Transaction } from "firebase/firestore/lite";
+import { FirestoreKeys as FK } from "../utils/firestoreDbTypes";
 import { AuthorFormShape } from "../stores/FormView/forms/AuthorForm";
-import { compareBookIds } from "../utils/helpers";
 import Author from "../utils/classes/Author";
 import DataService from "./DataService";
 import AuthorStore from "../stores/DataStore/AuthorStore";
-import db from "./Firestore";
 
 export default class AuthorService extends DataService<Author> {
 
@@ -18,109 +16,97 @@ export default class AuthorService extends DataService<Author> {
             this.fetchDescription(id),
             this.store.rootStore.books.getBooksByAuthorId(id)
         ])
-        .then(([description, books]) => ({
-            description, 
-            books
-        }))
+            .then(([description, books]) => ({
+                description,
+                books
+            }))
     }
 
-    async postAuthor(formData: AuthorFormShape) {
-
-        const {previewInfo, description, bookIds} = Author.formDataToFirestore(formData);
-
-        const batch = writeBatch(db);
-        const previewDoc = doc(this.previewsRef)
-
-        batch.set(previewDoc, previewInfo);
-
-        if (description)
-            batch.set(doc(this.descriptionsRef), description);
-
-        const booksRef = this.store.rootStore.books.service.previewsRef;
-
-        bookIds.forEach(bookId => {
-            batch.update(doc(booksRef, bookId), {
-                [FK.authorName]: previewInfo[FK.name],
-                [FK.authorId]: previewDoc.id
-            })
-        })
-
+    override async postItem(formData: AuthorFormShape) {
         try {
-            return batch.commit()
-                .then(() => ({
-                    id: previewDoc.id, 
-                    previewInfo, 
-                    description, 
-                    bookIds
-                }));
+            const { previewInfo, description, bookIds } = Author.formDataToFirestore(formData);
+            const { batch, previewDoc } = this.writePostBatch({ previewInfo, description });
+            const booksRef = this.store.rootStore.books.service.previewsRef;
+
+            bookIds.forEach(bookId => {
+                batch.update(doc(booksRef, bookId), {
+                    [FK.authorName]: previewInfo[FK.name],
+                    [FK.authorId]: previewDoc.id
+                })
+            })
+
+            await batch.commit();
+
+            return {
+                id: previewDoc.id,
+                previewInfo,
+                description,
+                bookIds
+            };
         }
         catch (error) {
             throw error;
         }
     }
 
-    async updateAuthor(initial: Author, formData: AuthorFormShape) {
+    override async updateItem(initial: Author, formData: AuthorFormShape) {
 
-        const batch = writeBatch(db);
-        const {previewInfo, description, bookIds} = Author.formDataToFirestore(formData);
-        const changeLog : AuthorChangeLog = compareBookIds(initial.books.map(b => b.id), bookIds);
+        const { previewInfo, description, bookIds } = Author.formDataToFirestore(formData);
+        const bookChangeLog = this.makeBookChangeLog(initial.books.map(b => b.id), bookIds);
 
-        const previewUpdateData = Object.entries(previewInfo).reduce((acc, [k, newValue]) => {
-            const key = k as keyof FirestoreAuthor;
+        const extraActions = (transaction: Transaction) => {
+            const booksRef = this.store.rootStore.books.service.previewsRef;
 
-            if (newValue !== initial.previewInfo[key]) 
-                acc[key] = newValue === undefined ? deleteField() : newValue as any;
-            return acc;
+            // if author name has changed, we need to update author book previews
+            if (previewInfo[FK.name] !== initial.name) {
+                bookChangeLog.kept.forEach(bookId => transaction
+                    .update(doc(booksRef, bookId), {
+                        [FK.authorName]: previewInfo[FK.name]
+                    })
+                );
+            }
+            bookChangeLog.removed.forEach(bookId => transaction
+                .update(doc(booksRef, bookId), {
+                    [FK.authorId]: null,
+                    [FK.authorName]: null
+                })
+            );
+            bookChangeLog.added.forEach(bookId => transaction
+                .update(doc(booksRef, bookId), {
+                    [FK.authorId]: initial.id,
+                    [FK.authorName]: previewInfo[FK.name]
+                })
+            );
 
-        }, {} as UpdateData<FirestoreAuthor>)
-
-        if (Object.keys(previewUpdateData).length) {
-            changeLog.previewInfo = previewInfo;
-            batch.update(doc(this.previewsRef, initial.id), previewUpdateData)
+            return Promise.resolve();
         }
 
-        const booksRef = this.store.rootStore.books.service.previewsRef;
+        const changeLog = await this.runItemUpdate({
+            initial, previewInfo, description,
+            extraActions
+        })
 
-        previewUpdateData[FK.name] && changeLog.booksKept.forEach(bookId => batch.update(
-            doc(booksRef, bookId), {
-                [FK.authorName]: previewInfo[FK.name]
-            }
-        ));
-
-        changeLog.booksRemoved.forEach(bookId => batch.update(
-            doc(booksRef, bookId), {
-                [FK.authorId]: null,
-                [FK.authorName]: null
-            }
-        ));
-
-        changeLog.booksAdded.forEach(bookId => batch.update(
-            doc(booksRef, bookId), {
-                [FK.authorId]: initial.id,
-                [FK.authorName]: previewInfo[FK.name]
-            }
-        ));
-
-        if (description !== initial.description) {
-            changeLog.description = description;
-            const descRef = doc(this.descriptionsRef, initial.id);
-
-            if (description)
-                batch.set(descRef, description);
-            else 
-                batch.delete(descRef);
-        }
-
-        await batch.commit();
-
-        return changeLog;
+        return {
+            ...changeLog,
+            bookChangeLog
+        };
     }
-}
 
-type AuthorChangeLog = {
-    previewInfo?: Author['previewInfo']
-    description?: string,
-    booksRemoved: string[],
-    booksKept: string[],
-    booksAdded: string[]
+    private makeBookChangeLog(initialIds: string[], newIds: string[]) {
+        const oldIdSet = new Set(initialIds);
+        const newIdSet = new Set(newIds);
+
+        const removed: string[] = [];
+        const kept: string[] = [];
+
+        initialIds.forEach(id => {
+            if (newIdSet.has(id))
+                kept.push(id)
+            else
+                removed.push(id)
+        });
+        const added = newIds.filter(id => !oldIdSet.has(id));
+
+        return { removed, kept, added };
+    }
 }

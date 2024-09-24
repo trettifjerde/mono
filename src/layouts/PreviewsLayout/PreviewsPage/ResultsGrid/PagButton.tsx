@@ -1,14 +1,16 @@
 import { MouseEventHandler } from "react";
-import { IconButton } from "../../../../components/Buttons";
+import { LoadingIconButton } from "../../../../components/Buttons";
 
-export default function PagButton({icon, isVisible, onClick}: {
+export default function PagButton({icon, isLoading=false, isVisible, onClick}: {
     icon: string,
     isVisible: boolean, 
+    isLoading?: boolean,
     onClick: MouseEventHandler
 }) {
     
-    return <IconButton 
-        icon={icon}
+    return <LoadingIconButton 
+        loading={isLoading}
+        icon={icon} color="dark"
         style={isVisible ? {} : {visibility: 'hidden', opacity: 0}}
         onClick={onClick}
     />

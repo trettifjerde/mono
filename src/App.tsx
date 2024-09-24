@@ -9,11 +9,12 @@ import PreviewsLayout from "./layouts/PreviewsLayout";
 
 import BookPreviewsPage from "./pages/BookPreviewsPage";
 import BookDetailsPage from "./pages/BookDetailsPage";
+import BookFormPage from "./pages/BookFormPage";
 
 import AuthorPreviewsPage from "./pages/AuthorPreviewsPage";
 import AuthorDetailsPage from "./pages/AuthorDetailsPage";
-import AuthorNewPage from "./pages/AuthorNewPage";
-import AuthorEditPage from "./pages/AuthorEditPage";
+import AuthorFormPage from "./pages/AuthorFormPage";
+
 
 export default function App() {
 
@@ -50,9 +51,22 @@ const router = createBrowserRouter([
             path: Pathnames.books,
             children: [
               {
-                path: `:${Pathnames.bookId}`,
-                element: <BookDetailsPage />,
-              }
+                path: 'new',
+                element: <BookFormPage />
+              },
+              {
+                path: `:${Pathnames.id}`,
+                children: [
+                  {
+                    index: true,
+                    element: <BookDetailsPage />,
+                  },
+                  {
+                    path: 'edit',
+                    element: <BookFormPage />
+                  }
+                ]
+              },
             ]
           },
           {
@@ -60,10 +74,10 @@ const router = createBrowserRouter([
             children: [
               {
                 path: 'new',
-                element: <AuthorNewPage />
+                element: <AuthorFormPage />
               },
               {
-                path: `:${Pathnames.authorId}`,
+                path: `:${Pathnames.id}`,
                 children: [
                   {
                     index: true,
@@ -71,7 +85,7 @@ const router = createBrowserRouter([
                   },
                   {
                     path: 'edit',
-                    element: <AuthorEditPage />
+                    element: <AuthorFormPage />
                   }
                 ]
               },

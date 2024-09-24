@@ -18,27 +18,29 @@ function PreviewsPage<E extends Entity>({view, children}: {
     view.initialiseView();
 
     return <>
-        <div className={styles.panel}>
-            <SearchBar view={view}/>
+        <div className={styles.cont}>
+            <div className={styles.panel}>
+                <SearchBar view={view}/>
 
-            <SortSelect 
-                sortSettings={view.sortSettings}
-                id="sortSelect"
-                label="Sort by"
-                icon="icon-arrows-v"
-                placeholder="Select type"
-            />
-            
-            {children}
+                <SortSelect 
+                    sortSettings={view.sortSettings}
+                    id="sortSelect"
+                    label="Sort by"
+                    icon="icon-arrows-v"
+                    placeholder="Select type"
+                />
+                
+                {children}
 
-            <div className={styles.addBtn}>
-                <LinkButton 
-                    to={makeAbsolutePath(view.pathname, Pathnames.new)}
-                    relative="path"
-                >
-                    <i className="icon-plus" />
-                    <span>Add new {view.store.entityName.toLowerCase()}</span>
-                </LinkButton>
+                <div className={styles.addBtn}>
+                    <LinkButton 
+                        to={makeAbsolutePath(view.store.pathname, Pathnames.new)}
+                        color="dark"
+                    >
+                        <i className="icon-plus" />
+                        <span>Add new {view.store.entityName.toLowerCase()}</span>
+                    </LinkButton>
+                </div>
             </div>
         </div>
 

@@ -1,13 +1,10 @@
 @use '../../../styles/variables' as *;
 
-$item-grid-dimens: 16rem;
+$item-grid-dimens: 15rem;
 $scrollbar-extra: 1rem;
 
 .cont {
     position: relative;
-    background-color: $dark2;
-    border-radius: $border-radius;
-    padding: $main-inline-padding;
 }
 
 .grid {

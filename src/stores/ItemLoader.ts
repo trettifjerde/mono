@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { makeAbsolutePath } from "../utils/helpers";
 import { LoadingState } from "../utils/consts";
 import DataStore from "./DataStore/DataStore";
 import Entity from "../utils/classes/Entity";
@@ -27,7 +28,7 @@ export default abstract class ItemLoader< E extends Entity> {
             setLoadedItem: action,
             setEmptyItem: action,
             setFailure: action,
-            prepareItem: action.bound
+            setRedirectPath: action
         })
     }
 
@@ -74,11 +75,15 @@ export default abstract class ItemLoader< E extends Entity> {
         this.state = state;
     }
 
+    setRedirectPath(id: string | null) {
+        this.redirectPath = id ? makeAbsolutePath(this.store.pathname, id) : null;
+    }
+
     prepareItem(pageItemId: string | null) {
         if (this.isInitialising)
             return;
         
-        this.redirectPath = null;
+        this.setRedirectPath(null);
 
         if (!pageItemId) 
             this.setEmptyItem();

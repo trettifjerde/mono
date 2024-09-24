@@ -1,19 +1,27 @@
-@use '../../../styles/variables' as *;
+@use '../../styles/variables' as *;
 
 .cont {
     h1 {
         text-align: right;
-        margin-block: $double-gap * 2;
+        margin-bottom: $gap;
+    }
+
+    form {
+        border-radius: $border-radius;
+        display: flex;
+        flex-direction: column;
+        gap: $double-gap;
+        padding: $double-gap;
+        background-color: $dark2;
     }
 }
 
+
 .group {
-    margin-block: $gap;
     padding: $gap;
     border-radius: $border-radius;
     background-color: $dark6;
     display: grid;
-    align-items: center;
     grid-template-columns: auto 1fr;
     gap: .5rem;
 
@@ -29,8 +37,8 @@
     }
 
     p {
-        color: $light4;
-        font-size: 0.875rem;
+        color: $light1;
+        font-size: 0.75rem;
         font-weight: 600;
         text-align: right;
     }
@@ -40,12 +48,15 @@
     }
 }
 
+.span {
+    grid-column: 1/-1;
+}
+
 .btns {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     gap: $double-gap;
-    margin-block: $double-gap;   
 }
 
 .gray {
@@ -59,7 +70,9 @@
 }
 
 .error {
-    line-height: 2;
+    min-height: 1lh;
     text-align: center;
     color: $light1;
+    margin-block: $gap;
+    font-weight: 600;
 }

@@ -10,4 +10,9 @@ export default class RootStore {
         this.books = new BookStore(this);
         this.authors = new AuthorStore(this);
     }
+
+    resetPreviewsViews() {
+        this.books.previewsView.resetSettings();
+        this.authors.previewsView.resetSettings();
+    }
 }

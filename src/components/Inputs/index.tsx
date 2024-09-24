@@ -20,15 +20,10 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
 export const InputWithIconButton = forwardRef<HTMLInputElement, InputWithIconButtonProps>(
     ({ 
         onClick, onBtnClick, className, hiddenWhenBlurred=true, 
-        color='light', icon = 'icon-cross', ...props 
+        color='purple', icon = 'icon-cross', ...props 
     }, ref) => {
 
     let cls = `${styles.btninp} ${className || ''}`;
-
-    const noPropagationOnBtnClick : MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.stopPropagation();
-        onBtnClick(e);
-    }
 
     return <div className={cls}
         onClick={onClick}
@@ -38,7 +33,7 @@ export const InputWithIconButton = forwardRef<HTMLInputElement, InputWithIconBut
             icon={icon}
             color={color}
             className={hiddenWhenBlurred ? styles.hwb : ''}
-            onClick={noPropagationOnBtnClick}
+            onClick={onBtnClick}
         />
     </div>;
 });

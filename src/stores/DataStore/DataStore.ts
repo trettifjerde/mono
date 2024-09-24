@@ -1,25 +1,28 @@
 import { action, makeObservable, observable } from "mobx";
 import { FETCH_BATCH_SIZE } from "../../utils/consts";
 import { FilterConfig, FirestoreQueryParams, SortConfig } from "../../utils/dataTypes";
-import Entity, { EntityConstructor as EC, EntityInitInfo, EntityUpdateInfo } from "../../utils/classes/Entity";
+import Entity, { EntityInitInfo, EntityUpdateInfo } from "../../utils/classes/Entity";
 import RootStore from "../RootStore";
 import DataService from "../../services/DataService";
 import PreviewsView from "../PreviewsView/PreviewsView";
 import DetailsView from "../DetailsView/DetailsView";
+import FormView from "../FormView/FormView";
 
 export default abstract class DataStore<E extends Entity=any> {
 
     batchSize = FETCH_BATCH_SIZE;
 
-    rootStore: RootStore;
-    abstract EntityConstructor : EC<E>;
+    abstract EntityConstructor : new (init: EntityInitInfo<E>) => E;
     abstract entityName: string;
+    abstract pathname: string;
     abstract sortConfig: SortConfig<any, E>;
     abstract filterConfig: FilterConfig<any, E>;
-
+    
+    rootStore: RootStore;
     abstract service : DataService<E>;
     abstract previewsView: PreviewsView<E>;
     abstract detailsView: DetailsView<E>;
+    abstract formView: FormView<E>;
     
     items : Map<string, E> = new Map();
     isCacheFull = false;
@@ -113,7 +116,7 @@ export default abstract class DataStore<E extends Entity=any> {
             if (!existingItem) {
                 const init = await this.service.fetchFullItemInfo(id);
 
-                // request is successful, but item with such id is not found in cache
+                // request is successful, but item with such id is not found in the database
                 if (!init)
                     return null;
 
@@ -121,6 +124,7 @@ export default abstract class DataStore<E extends Entity=any> {
             }
             else {
                 const detailsInfo = await this.service.fetchDetails(id);
+                
                 return this.updateCache({id, detailsInfo})[0];
             }
         }
@@ -128,6 +132,10 @@ export default abstract class DataStore<E extends Entity=any> {
             throw error;
         }
     }
+
+    abstract postItem(formData: any) : Promise<string>;
+    abstract updateItem(initialItem: E, formData: any) : Promise<string>;
+    abstract deleteItem(id: string) : Promise<void>;
 
     getCachedItemsById(ids: string[]) {
         return ids
