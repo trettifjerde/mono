@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom"
-import { Pathnames } from "./utils/consts";
+import { BASE, Pathnames } from "./utils/consts";
 import { RootStoreContext } from "./stores/StoreContext";
 
 import RootLayout from "./layouts/RootLayout";
@@ -52,7 +52,7 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                loader: () => redirect('/')
+                loader: () => redirect("/")
               },
               {
                 path: 'new',
@@ -99,5 +99,5 @@ const router = createBrowserRouter([
       }
     ]
   }
-]
+], {basename: BASE}
 );

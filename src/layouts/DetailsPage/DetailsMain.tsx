@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite"
-import { makeAbsolutePath, splitAndWrapInPs } from "../../utils/helpers"
+import { splitAndWrapInPs } from "../../utils/helpers"
 import { LinkButton } from "../../components/Buttons"
 import DetailsView from "../../stores/DetailsView/DetailsView"
 import DetailsReloader from "./DetailsReloader"
@@ -20,7 +20,7 @@ function DetailsMain({ view }: { view: DetailsView }) {
                     <LinkButton
                         className={common.linkCen}
                         color="blue"
-                        to={makeAbsolutePath(view.store.pathname)}
+                        to={view.store.makePathname()}
                     >
                         Browse other {view.store.entityName.toLowerCase() + 's'}
                     </LinkButton>

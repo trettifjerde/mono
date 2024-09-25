@@ -2,8 +2,8 @@ import { orderBy, where } from "firebase/firestore/lite";
 import { FirestoreKeys as FK } from "./firestoreDbTypes";
 import Entity from "./classes/Entity";
 
-export function makeAbsolutePath(...keys: string[]) {
-    return encodeURI(`/${keys.join('/')}`);
+export function makeAbsolutePath(...keys: Array<string|undefined>) {
+    return encodeURI(`/${keys.filter(k => !!k).join('/')}`);
 }
 
 export function splitAndWrapInPs(str: string) {

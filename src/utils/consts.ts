@@ -15,3 +15,5 @@ export enum LoadingState {
 };
 
 export const FETCH_BATCH_SIZE = 4;
+
+export const BASE = "/mono/";

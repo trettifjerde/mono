@@ -92,7 +92,6 @@ export default abstract class DataService<E extends Entity> {
         extraActions?: (t: Transaction) => Promise<void>
     }) {
 
-        console.log(initial.description, description);
         return runTransaction(db, async(transaction) => {
 
             if (extraActions)

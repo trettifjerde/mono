@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
 import { Pathnames } from "../../../utils/consts";
-import { makeAbsolutePath } from "../../../utils/helpers";
 import { LinkButton } from "../../../components/Buttons";
 import Entity from "../../../utils/classes/Entity";
 import PreviewsView from "../../../stores/PreviewsView/PreviewsView";
@@ -34,7 +33,7 @@ function PreviewsPage<E extends Entity>({view, children}: {
 
                 <div className={styles.addBtn}>
                     <LinkButton 
-                        to={makeAbsolutePath(view.store.pathname, Pathnames.new)}
+                        to={view.store.makePathname(Pathnames.new)}
                         color="dark"
                     >
                         <i className="icon-plus" />

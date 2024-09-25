@@ -1,6 +1,6 @@
 import { documentId, orderBy, where } from "firebase/firestore/lite";
 import { FirestoreKeys as FK } from "../../utils/firestoreDbTypes";
-import { getNameFilterConfig } from "../../utils/helpers";
+import { getNameFilterConfig, makeAbsolutePath } from "../../utils/helpers";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
 import { Pathnames } from "../../utils/consts";
 import Book from "../../utils/classes/Book";
@@ -166,6 +166,10 @@ export default class BookStore extends DataStore<Book> {
         const author = this.rootStore.authors.items.get(authorId);
         if (author) 
             author.removeBook(bookId)
+    }
+
+    override makePathname(arg?: string) {
+        return arg ? makeAbsolutePath(this.pathname, arg) : makeAbsolutePath();
     }
 }
 

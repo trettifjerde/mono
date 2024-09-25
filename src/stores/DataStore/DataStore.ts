@@ -1,5 +1,6 @@
 import { action, makeObservable, observable } from "mobx";
 import { FETCH_BATCH_SIZE } from "../../utils/consts";
+import { makeAbsolutePath } from "../../utils/helpers";
 import { FilterConfig, FirestoreQueryParams, SortConfig } from "../../utils/dataTypes";
 import Entity, { EntityInitInfo, EntityUpdateInfo } from "../../utils/classes/Entity";
 import RootStore from "../RootStore";
@@ -169,5 +170,9 @@ export default abstract class DataStore<E extends Entity=any> {
                 items.push(item)
         }
         return all ? items : items.slice(0, this.batchSize);
+    }
+
+    makePathname(arg?: string) {
+        return makeAbsolutePath(this.pathname, arg);
     }
 }
