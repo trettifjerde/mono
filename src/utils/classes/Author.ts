@@ -40,13 +40,11 @@ export default class Author extends Entity<AuthorPreviewInfo, AuthorDetailsInfo>
 
         const previewInfo : FirestoreAuthor = {
             [FirestoreKeys.name]: name,
+            [FirestoreKeys.img]: img,
             [FirestoreKeys.name_lowercase]: name.toLowerCase(),
             [FirestoreKeys.bookN]: bookIds.length,
         };
-
-        if (img)
-            previewInfo[FirestoreKeys.img] = img;
-
+        
         const description = bio;
 
         return {previewInfo, description, bookIds}

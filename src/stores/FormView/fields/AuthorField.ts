@@ -31,15 +31,9 @@ export default class AuthorField extends Field {
         return (this.state.form as BookForm).view;
     }
 
-    confirmRemoval() {
-        this.removeConfirmVisible = true;
-    }
-
-    setAuthor(option: DropdownOption<string> | null) {
-        this.value = option ? {name: option.text, id: option.value} : {};
-    }
-
-    updateSettings() {
+    override reset() {
+        super.reset();
+        
         const authorInfo : BookAuthorInfo | null = this.default;
         
         if (authorInfo) 
@@ -50,6 +44,14 @@ export default class AuthorField extends Field {
         
         else
             this.authorSettings.forceSelect(null);
+    }
+
+    confirmRemoval() {
+        this.removeConfirmVisible = true;
+    }
+
+    setAuthor(option: DropdownOption<string> | null) {
+        this.set(option ? {name: option.text, id: option.value} : this.initial);
     }
 
     fetchAuthorSuggestions(nameStart: string) {

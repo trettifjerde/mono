@@ -34,11 +34,13 @@ function DetailsPage<E extends Entity>({ view, className, children }: {
             </li>
         </menu>
 
-        <figure className={isFailure ? styles.bleak : ''}>
-            <img
-                src={loadedItem?.img || view.store.fallbackImg}
+        <figure>
+            {isFailure && <img className={styles.bleak} src={view.store.fallbackImg} />}
+            
+            {loadedItem && <img
+                src={loadedItem.img || view.store.fallbackImg}
                 alt="Decorative image"
-            />
+            />}
         </figure>
 
         <DetailsMain view={view} />

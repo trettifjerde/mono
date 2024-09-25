@@ -41,14 +41,12 @@ export default class Book extends Entity<BookPreviewInfo, BookDetailsInfo> {
         const previewInfo : FirestoreBook = {
             [FK.name]: formData[BFF.title],
             [FK.name_lowercase]: formData[BFF.title].toLowerCase(),
+            [FK.img]: formData[BFF.img],
             [FK.authorName]: formData[BFF.author]?.name || null,
             [FK.authorId]: formData[BFF.author]?.id || null,
-            [FK.price]: formData[BFF.price],
+            [FK.price]: parseFloat(formData[BFF.price].toFixed(2)),
             [FK.inStock]: formData[BFF.inStock],
         };
-        
-        if (formData[BFF.img]) 
-            previewInfo[FK.img] = formData[BFF.img];
 
         return {
             previewInfo,

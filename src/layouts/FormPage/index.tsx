@@ -73,7 +73,7 @@ const FormButtons = observer<{view: FormView}>(({view}) => {
 
         <Button
             color="dark" type="button"
-            disabled={!form.isDirty}
+            disabled={form.isDefault}
             onClick={form.onReset}>
             Restore form
         </Button>

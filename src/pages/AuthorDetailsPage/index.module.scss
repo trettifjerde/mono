@@ -1,14 +1,12 @@
 @use '../../styles/variables' as *;
 
-$main-height: 10rem;
-
 .author {
     grid-template-areas:    'head menu'    
                             'img img'
                             'main main'
                             'aside aside';
     grid-auto-columns: 1fr auto;
-    grid-auto-rows: auto auto minmax($main-height, auto) 1fr;
+    grid-auto-rows: auto minmax(100vw, auto) minmax(100vw, auto) 1fr;
     row-gap: var(--main-padding);
 
     @include screen-medium {
@@ -16,7 +14,7 @@ $main-height: 10rem;
                                 'img main main'
                                 'aside aside aside';
         grid-auto-columns: 2fr 3fr auto;
-        grid-auto-rows: auto minmax($main-height, 1fr) auto;
+        grid-auto-rows: auto minmax(40vh, auto) auto;
 
         figure {
             margin-right: 0;

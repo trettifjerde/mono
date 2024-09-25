@@ -10,12 +10,16 @@
         justify-content: center;
         align-items: center;
         z-index: 1;
-        background-color: $light-trans;
+        background-color: $pale-trans;
+        color: $light4;
         cursor: pointer;
         font-size: 2rem;
     }
+}
 
-    @include hover {
+@media (hover: hover) {
+    .preview  {
+
         .dltBtn {
             visibility: hidden;
             opacity: 0;

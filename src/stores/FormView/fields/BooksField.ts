@@ -8,7 +8,7 @@ import DynamicSelectSettings from "../../../components/DynamicSelect/DynamicSele
 
 export default class BooksField extends Field {
 
-    bookIdToDelete : string | null = null;
+    booktoDelete : Book | null = null;
     bookSearchSettings: DynamicSelectSettings<string>;
 
     constructor(props : FieldConstructor) {
@@ -21,7 +21,7 @@ export default class BooksField extends Field {
         });
 
         makeObservable(this, {
-            bookIdToDelete: observable,
+            booktoDelete: observable,
             view: computed,
             bookStore: computed,
             books: computed,
@@ -45,16 +45,16 @@ export default class BooksField extends Field {
 
     addBook(option: DropdownOption<string> | null) {
         if (option) 
-            this.value = [...this.value, option.value];
+            this.set(this.value.concat([option.value]));
     }
 
     removeBook(id: string) {
-        this.value = this.value.filter((bookId : string) => bookId !== id);
-        this.bookIdToDelete = null;
+        this.set(this.value.filter((bookId : string) => bookId !== id));
+        this.booktoDelete = null;
     }
 
     confirmDelete(item: Book | null) {
-        this.bookIdToDelete = item?.id || null;
+        this.booktoDelete = item || null;
     }
 
     async fetchBooksWithoutAuthor(titleStart: string) {

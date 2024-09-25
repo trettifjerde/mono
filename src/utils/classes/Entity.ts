@@ -38,7 +38,7 @@ export default abstract class Entity<P=any, D=any>  {
     }
 
     get img() {
-        return this.previewInfo[FirestoreKeys.img] || '';
+        return this.previewInfo[FirestoreKeys.img];
     }
 
     get description() {

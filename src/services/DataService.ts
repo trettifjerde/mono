@@ -80,7 +80,7 @@ export default abstract class DataService<E extends Entity> {
         batch.set(previewDoc, previewInfo);
 
         if (description)
-            batch.set(doc(this.descriptionsRef), description);
+            batch.set(doc(this.descriptionsRef, previewDoc.id), description);
 
         return {batch, id: previewDoc.id};
     }

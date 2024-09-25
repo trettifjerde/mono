@@ -73,17 +73,31 @@ $manage-btn-dimens: 4rem;
     figure {
         @extend %margined;
 
+        position: relative;
         grid-area: img;
         display: flex;
         justify-content: center;
         align-items: center;
-        
+
         img {
             @extend %border;
+            @extend %fade-in;
             background-color: $dark2;
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: scale-down;
+
+            &.bleak {
+                filter: opacity(0.25);
+            }
+        }
+
+        @include screen-medium {
+            
+            img {
+                position: sticky;
+                top: $gap;
+            }
         }
     }
 
@@ -119,11 +133,5 @@ $manage-btn-dimens: 4rem;
 
     @include screen-large {
         padding: var(--main-padding);
-    }
-}
-
-.bleak {
-    img {
-        filter: opacity(0.25);
     }
 }

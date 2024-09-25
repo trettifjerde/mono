@@ -22,8 +22,9 @@ $light2: #AAC4FF;
 // $light3: #D2DAFF;
 $light3: #9ba4cd;
 $light4: #EEF1FF;
-$light-trans: rgba(177, 178, 255, 0.5);
-$pale-trans: rgba(155, 164, 205, 0.5);
+$light-trans: hsla(239, 100%, 85%, 0.5);
+$pale-trans: rgba(155, 164, 205, 0.70);
+$purple-trans: rgba(177, 178, 255, 0.85);
 $dark-trans: rgba(58, 59, 77, 0.85);
 
 $line-hight: 1.5;
@@ -31,7 +32,7 @@ $input-line-height: 1.25;
 
 $border-width: 2px;
 $outline-width: 2px;
-$border-radius: 4px;
+$border-radius: 6px;
 
 $gap: 1rem;
 $double-gap: 2 * $gap;

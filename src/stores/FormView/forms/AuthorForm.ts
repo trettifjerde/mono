@@ -3,7 +3,7 @@ import { Field } from "mobx-react-form";
 import { FieldConstructor } from "mobx-react-form/lib/models/FieldInterface";
 import { FirestoreKeys } from "../../../utils/firestoreDbTypes";
 import Author from "../../../utils/classes/Author";
-import CustomForm, { FieldsConfig } from "./CustomForm";
+import CustomForm, { FieldsConfig, ImgFieldConfig } from "./CustomForm";
 import FormView from "../FormView";
 import ImageField from "../fields/ImageField";
 import BooksField from "../fields/BooksField";
@@ -40,24 +40,23 @@ const AuthorFieldsConfig : FieldsConfig<AuthorFormFields, Author> = {
     [AuthorFormFields.name]: {
         label: 'Author name',
         placeholder: 'Enter author name',
-        default: '',
+        initial: '',
         readValue: (a) => a.name
     },
     [AuthorFormFields.img]: {
         label: 'Photo',
         placeholder: 'Add a link to their photo',
-        default: '',
-        readValue: (a) => a.img
+        ...ImgFieldConfig
     },
     [AuthorFormFields.bio]: {
         label: 'Biography',
         placeholder: 'Enter some information about the author',
-        default: '',
+        initial: '',
         readValue: (a) => a.description
     }, 
     [AuthorFormFields.bookIds]: {
         label: 'Books',
-        default: [] as string[],
+        initial: [] as string[],
         readValue: (a) => a.books.map(b => b.id)
     }
 }

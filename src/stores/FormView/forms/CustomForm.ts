@@ -21,7 +21,8 @@ export default class CustomForm<E extends Entity> extends Form {
             .map(([name, {readValue, ...info}]) => ({
                 name,
                 ...info,
-                value: info.default
+                value: info.initial,
+                default: info.initial
             }));
 
         const plugins = {
@@ -40,6 +41,11 @@ export default class CustomForm<E extends Entity> extends Form {
         })
     }
 
+    override reset() {
+        super.reset();
+        this.validationError = '';
+    }
+
     updateDefaults(item: E | null) {
         this.setValidationError(null);
         
@@ -47,9 +53,10 @@ export default class CustomForm<E extends Entity> extends Form {
             for (const field in this.config) 
                 this.$(field).set('default', this.config[field].readValue(item));
             
+            
         else 
             for (const field in this.config) 
-                this.$(field).set('default', this.config[field].default);
+                this.$(field).set('default', this.config[field].initial);
 
         this.reset();
     }
@@ -77,5 +84,10 @@ export type FieldsConfig<Keys extends string, E extends Entity> = Record<Keys, {
     input?: (v: any) => any,
     output?: (v: any) => any,
     readValue: (e: E) => any,
-    default: any,
+    initial: any
 }>;
+
+export const ImgFieldConfig = {
+    initial: '',
+    readValue: (b: Entity<any>) => b.img || ''
+};

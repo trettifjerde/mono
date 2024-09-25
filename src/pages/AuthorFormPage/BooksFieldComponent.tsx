@@ -10,9 +10,9 @@ import BookPreview from "../../components/BookPreview";
 import formStyles from '../../layouts/FormPage/form.module.scss';
 import authorStyles from './author.module.scss'
 
-function BooksFieldComponent({ field }: { field: BooksField }) {
+const BooksFieldComponent = observer<{ field: BooksField }>(({field}) => {
 
-    const { bookIdToDelete, bookSearchSettings, books, confirmDelete, removeBook } = field;
+    const { booktoDelete, bookSearchSettings, books, confirmDelete, removeBook } = field;
 
     useEffect(() => {
         return () => bookSearchSettings.resetSettings();
@@ -22,12 +22,15 @@ function BooksFieldComponent({ field }: { field: BooksField }) {
         <div className={formStyles.group}>
 
             <label htmlFor={field.id}>
-                {field.label}
+                <span>
+                    {field.label}
+                </span>
+                <span>(optional)</span>
             </label>
 
             <p>{field.error}</p>
 
-            <div className={formStyles.span}>
+            <div className={formStyles.colspan}>
                 
                 <label htmlFor={field.id}>
                     Search for books with no author to add more books
@@ -48,21 +51,22 @@ function BooksFieldComponent({ field }: { field: BooksField }) {
             itemName='book'
             ItemPreview={AuthorFormBookPreview}
             onItemClick={confirmDelete}
-            className={formStyles.span}
+            className={formStyles.colspan}
         />
 
-        {bookIdToDelete && <ConfirmationModal
+        {booktoDelete && <ConfirmationModal
             isPending={false}
-            confirm={() => removeBook(bookIdToDelete)}
+            confirm={() => removeBook(booktoDelete.id)}
             close={() => confirmDelete(null)}
         >
-            Sure you want to remove the book from author's books?
+            Sure you want to remove <b>{booktoDelete.name}</b> from author's books?
 
         </ConfirmationModal>}
     </>
 
-}
+});
 
+export default BooksFieldComponent;
 
 const AuthorFormBookPreview: EntityPreviewComponent<Book> = (
     { item, onItemClick }) => {
@@ -81,5 +85,3 @@ const AuthorFormBookPreview: EntityPreviewComponent<Book> = (
 
     </BookPreview>
 }
-
-export default observer(BooksFieldComponent);

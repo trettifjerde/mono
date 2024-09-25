@@ -16,7 +16,10 @@ function AuthorComponent({ field }: { field: AuthorField }) {
         <div className={formStyles.group}>
 
             <label htmlFor={field.id}>
-                {field.label}
+                <span>
+                    {field.label}
+                </span>
+                <span>(optional)</span>
             </label>
 
             <p>{field.error}</p>
@@ -25,7 +28,7 @@ function AuthorComponent({ field }: { field: AuthorField }) {
                 id={field.id}
                 placeholderWord="author name"
                 settings={authorSettings}
-                className={formStyles.span}
+                className={formStyles.colspan}
             />
         </div>
     </>
