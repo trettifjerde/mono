@@ -14,7 +14,7 @@
                                 'img main main'
                                 'aside aside aside';
         grid-auto-columns: 2fr 3fr auto;
-        grid-auto-rows: auto minmax(40vh, auto) auto;
+        grid-auto-rows: auto minmax(40vh, 1fr) auto;
 
         figure {
             margin-right: 0;

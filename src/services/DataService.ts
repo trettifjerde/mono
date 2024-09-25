@@ -91,6 +91,8 @@ export default abstract class DataService<E extends Entity> {
         description?: string,
         extraActions?: (t: Transaction) => Promise<void>
     }) {
+
+        console.log(initial.description, description);
         return runTransaction(db, async(transaction) => {
 
             if (extraActions)
@@ -116,6 +118,8 @@ export default abstract class DataService<E extends Entity> {
 
                 changeLog.description = description;
             }
+            else
+                changeLog.description = initial.description;
 
             return changeLog;
         })
