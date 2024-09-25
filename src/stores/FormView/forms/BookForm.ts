@@ -50,6 +50,7 @@ const BookFieldsConfig : FieldsConfig<BookFormFields, Book> = {
         label: 'Author name',
         placeholder: "Enter book's author",
         initial: null,
+        input: (v: any) => v || null,
         readValue: (b) => b.authorInfo || null
     },
 
