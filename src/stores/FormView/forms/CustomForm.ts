@@ -42,6 +42,7 @@ export default class CustomForm<E extends Entity> extends Form {
 
     updateFields(item: E | null) {
         this.setValidationError(null);
+        
         if (item) 
             for (const field in this.config) 
                 this.$(field).set('default', this.config[field].readValue(item));

@@ -15,6 +15,7 @@ export default abstract class DataStore<E extends Entity=any> {
     abstract EntityConstructor : new (init: EntityInitInfo<E>) => E;
     abstract entityName: string;
     abstract pathname: string;
+    abstract fallbackImg: string;
     abstract sortConfig: SortConfig<any, E>;
     abstract filterConfig: FilterConfig<any, E>;
     
@@ -81,7 +82,7 @@ export default abstract class DataStore<E extends Entity=any> {
     }
 
     deleteFromCache(id: string) {
-        this.previewsView.defaultView.clearItemFromCache(id);
+        this.previewsView.defaultView.removeItemFromCache(id);
         return this.items.delete(id);
     }
 
@@ -135,7 +136,16 @@ export default abstract class DataStore<E extends Entity=any> {
 
     abstract postItem(formData: any) : Promise<string>;
     abstract updateItem(initialItem: E, formData: any) : Promise<string>;
-    abstract deleteItem(id: string) : Promise<void>;
+    async deleteItem(item: E) {
+        try {
+            await this.service.deleteItem(item);
+            this.deleteFromCache(item.id);
+            this.rootStore.resetPreviewsViews();
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 
     getCachedItemsById(ids: string[]) {
         return ids

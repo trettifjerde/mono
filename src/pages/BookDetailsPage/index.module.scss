@@ -59,3 +59,21 @@ $main-height: 10rem;
         }
     }
 }
+
+.info {
+    text-align: right;
+    animation: var(--anim-fade-in);
+
+    p {
+        font-size: 6vw;
+        
+        @include screen-medium {
+            font-size: 2.5rem;
+        }
+    }
+
+    span {
+        font-size: 0.75rem;
+        color: $light3;
+    }
+}

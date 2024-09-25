@@ -1,8 +1,8 @@
 
 import { observer } from 'mobx-react-lite';
-import { Button, LinkButton, LoadingButton } from '../../../components/Buttons';
-import FormView from '../../../stores/FormView/FormView';
-import styles from '../form.module.scss';
+import { Button, LinkButton, LoadingButton } from '../../components/Buttons';
+import FormView from '../../stores/FormView/FormView';
+import styles from './form.module.scss';
 
 function FormButtons({view}: {view: FormView}) {
 

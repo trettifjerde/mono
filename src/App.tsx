@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom"
 import { Pathnames } from "./utils/consts";
 import { RootStoreContext } from "./stores/StoreContext";
 
@@ -50,6 +50,10 @@ const router = createBrowserRouter([
           {
             path: Pathnames.books,
             children: [
+              {
+                index: true,
+                loader: () => redirect('/')
+              },
               {
                 path: 'new',
                 element: <BookFormPage />

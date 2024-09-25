@@ -1,7 +1,6 @@
-import { action, flow, makeObservable, reaction } from "mobx";
+import { flow, makeObservable } from "mobx";
 import { LoadingState } from "../../utils/consts";
 import ItemLoader from "../ItemLoader";
-import DefaultBookImgSrc from '../../assets/800x800.webp';
 import Entity from "../../utils/classes/Entity";
 import DataStore from "../DataStore/DataStore";
 import CustomForm from "./forms/CustomForm";
@@ -15,27 +14,24 @@ export default class FormView<
     form: F;
 
     constructor(store: DataStore<E>, ItemForm: new (view: FormView<E, F>) => F) {
-        super(DefaultBookImgSrc);
+        super();
 
         this.store = store;
         this.form = new ItemForm(this);
 
         makeObservable(this, {
-            reset: action,
-            submit: flow.bound,
+            submit: flow.bound
         });
+    }
 
-        reaction(
-            () => ({
-                initing: this.isInitialising, 
-                item: this.loadedItem
-            }),
-            ({initing, item}) => {
-                // if new item has finished loading
-                if (!initing && item)
-                    this.form.updateFields(item);
-            }
-        )
+    override setEmptyItem() {
+        super.setEmptyItem();
+        this.form.updateFields(null);
+    }
+
+    override setLoadedItem(item: E) {
+        super.setLoadedItem(item);
+        this.form.updateFields(item);
     }
 
     *submit(formData: Record<string, any>) {
@@ -48,17 +44,12 @@ export default class FormView<
                 this.store.updateItem(this.loadedItem, formData) :
                 this.store.postItem(formData)
 
-            this.setRedirectPath(authorId);
+            this.redirectToId(authorId);
             this.state = LoadingState.idle;
         }
         catch (error) {
             console.log(error);
             this.state = LoadingState.error;
         }
-    }
-
-    reset() {
-        this.setRedirectPath(null);
-        this.form.updateFields(null);
     }
 }

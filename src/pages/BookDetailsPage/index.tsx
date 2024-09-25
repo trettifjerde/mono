@@ -1,18 +1,36 @@
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../stores/StoreContext";
-import { Pathnames } from "../../utils/consts";
+import ItemLoaderPage from "../../layouts/ItemLoaderPage";
+import BookDetailsView from "../../stores/DetailsView/BookDetailsView";
 import DetailsPage from "../../layouts/DetailsPage";
-import BookDetails from "./BookDetails";
 import styles from './index.module.scss';
 
 export default function BookDetailsPage() {
-    const {[Pathnames.id]: id} = useParams() as {[Pathnames.id]: string};
+
     const {detailsView} = useContext(RootStoreContext).books;
 
-    detailsView.prepareItem(id);
-    
-    return <DetailsPage view={detailsView} className={styles.book}>
-        <BookDetails view={detailsView}/>
-    </DetailsPage>
+    return <ItemLoaderPage view={detailsView}>
+        <BookDetails view={detailsView} />
+    </ItemLoaderPage>
 };
+
+const BookDetails = observer<{view: BookDetailsView}>(({view}) => {
+    
+    return <DetailsPage view={view} className={styles.book}>
+        <BookPrice view={view}/>
+    </DetailsPage>
+})
+
+const BookPrice = observer<{view: BookDetailsView}>(({view}) => {
+    
+    const info = view.loadedItem?.preview;
+
+    if (!info)
+        return <></>
+
+    return <div className={styles.info}>
+        <p>{info.price} €</p>
+        <span>({info.inStock} in stock)</span>
+    </div>
+})

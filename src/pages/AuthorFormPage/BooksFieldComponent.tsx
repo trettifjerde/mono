@@ -15,7 +15,7 @@ function BooksFieldComponent({ field }: { field: BooksField }) {
     const { bookIdToDelete, bookSearchSettings, books, confirmDelete, removeBook } = field;
 
     useEffect(() => {
-        return () => bookSearchSettings.reset();
+        return () => bookSearchSettings.resetSettings();
     }, []);
 
     return <>
@@ -28,9 +28,11 @@ function BooksFieldComponent({ field }: { field: BooksField }) {
             <p>{field.error}</p>
 
             <div className={formStyles.span}>
+                
                 <label htmlFor={field.id}>
                     Search for books with no author to add more books
                 </label>
+
                 <DynamicSelect
                     id={field.id}
                     placeholderWord="book title"

@@ -2,7 +2,7 @@ import {FirestoreKeys } from "../../utils/firestoreDbTypes";
 import { Pathnames } from "../../utils/consts";
 import { getNameFilterConfig } from "../../utils/helpers";
 import { FilterConfig, SortConfig } from "../../utils/dataTypes";
-import Book, { BookAuthorInfo } from "../../utils/classes/Book";
+import { BookAuthorInfo } from "../../utils/classes/Book";
 import Author from "../../utils/classes/Author";
 import RootStore from "../RootStore";
 import DataStore from "./DataStore";
@@ -11,10 +11,12 @@ import AuthorPreviewsView from "../PreviewsView/AuthorPreviewsView";
 import AuthorDetailsView from "../DetailsView/AuthorDetailsView";
 import AuthorForm, { AuthorFormShape } from "../FormView/forms/AuthorForm";
 import FormView from "../FormView/FormView";
+import DefaultAuthorImg from '../../assets/author.webp';
 
 export default class AuthorStore extends DataStore<Author> {
     override entityName = "Author";
     override pathname = Pathnames.authors;
+    override fallbackImg = DefaultAuthorImg;
     override EntityConstructor = Author;
     override sortConfig = AuthorSortConfig;
     override filterConfig = AuthorFilterConfig
@@ -92,11 +94,15 @@ export default class AuthorStore extends DataStore<Author> {
         }
     }
 
-    override deleteItem(id: string): Promise<void> {
-        return new Promise(res => {
-            console.log(id);
-            res()
-        })
+    override async deleteItem(author: Author) {
+
+        return super.deleteItem(author)
+            .then(() => {
+                this.updateCachedAuthorInfo(author.books.map(b => b.id), null);
+            })
+            .catch(error => {
+                throw error
+            })
     }
 
     async getAuthorSuggestionsByName(nameStart: string) {
@@ -145,17 +151,6 @@ export default class AuthorStore extends DataStore<Author> {
             console.log(error);
             return null;
         })
-    }
-
-    addToCachedAuthorBooks(authorId: string, book: Book) {
-        const author = this.items.get(authorId);
-        if (author) 
-            author.addBook(book);
-    }
-    removeFromCachedAuthorBooks(authorId: string, bookId: string) {
-        const author = this.items.get(authorId);
-        if (author) 
-            author.removeBook(bookId)
     }
 
     updateCachedAuthorInfo(bookIds: string[], authorInfo: BookAuthorInfo | null) {

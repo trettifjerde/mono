@@ -11,7 +11,7 @@ export default class DefaultView<E extends Entity> extends GridView<E> {
 
         makeObservable(this, {
             resetPagination: action,
-            clearItemFromCache: action
+            removeItemFromCache: action
         })
     }
 
@@ -26,7 +26,7 @@ export default class DefaultView<E extends Entity> extends GridView<E> {
         this.pageN = 1;
     }
 
-    clearItemFromCache(id: string) {
+    removeItemFromCache(id: string) {
         const index = this.storedItems.findIndex(item => item.id === id);
         if (index >= 0) 
             this.storedItems.splice(index, 1);

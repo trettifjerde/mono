@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import styles from './index.module.scss';
-import { makeAbsolutePath } from "../../../utils/helpers";
-import { Pathnames } from "../../../utils/consts";
+import { Pathnames } from "../../utils/consts";
+import { makeAbsolutePath } from "../../utils/helpers";
+import styles from './root.module.scss';
 
 export default function Navigation() {
     return (<nav className={styles.nav}>

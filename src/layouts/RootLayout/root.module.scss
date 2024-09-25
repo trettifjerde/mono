@@ -1,0 +1,71 @@
+@use '../../styles/variables' as *;
+
+.root {
+    position: relative;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    
+    & > nav,
+    & > footer {
+        background-color: $dark1;
+    }
+}
+
+.nav {    
+    ul {
+        list-style-type: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: $gap;
+        max-width: $max-width * 1.125;
+        margin-inline: auto;
+    }
+
+    i {
+        font-size: 1.5rem;
+    }
+}
+
+.main {
+    padding-inline: $gap;
+    width: 100%;
+    max-width: $max-width;
+    margin-inline: auto;
+    margin-block: 2 * $double-gap;
+}
+
+.footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $dark5;
+    font-size: .75rem;
+    padding: calc(2 * var(--main-padding)) var(--main-padding);
+
+    a {
+        color: $dark6;
+        text-decoration: underline dotted $dark6;
+        text-underline-offset: 3px;
+    }
+}
+
+.error {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+
+    section {
+        padding: 10% 15%;
+        background-color: $dark1;
+        border-radius: $border-radius;
+        text-align: center;
+
+        p {
+            margin-block: $double-gap;
+        }
+    }
+}

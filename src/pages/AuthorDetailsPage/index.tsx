@@ -1,20 +1,36 @@
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
+import { observer } from "mobx-react-lite";
 import { RootStoreContext } from "../../stores/StoreContext";
-import { Pathnames } from "../../utils/consts";
+import ItemLoaderPage from "../../layouts/ItemLoaderPage";
+import AuthorDetailsView from "../../stores/DetailsView/AuthorDetailsView";
 import DetailsPage from "../../layouts/DetailsPage";
-import AuthorBookGrid from "./AuthorBookGrid";
+import PreviewGrid from "../../components/PreviewGrid";
+import BookPreview from "../../components/BookPreview";
 import styles from './index.module.scss';
 
 export default function AuthorDetailsPage() {
-    const {[Pathnames.id]: id} = useParams() as {[Pathnames.id]: string};
     const {detailsView} = useContext(RootStoreContext).authors;
-
-    detailsView.prepareItem(id);
     
-    return <DetailsPage view={detailsView} className={styles.author}>
-
-        <AuthorBookGrid view={detailsView}/>
-        
-    </DetailsPage>
+    return <ItemLoaderPage view={detailsView}>
+        <AuthorDetails view={detailsView} />
+    </ItemLoaderPage>
 }
+
+const AuthorDetails = observer<{view: AuthorDetailsView}>(({view}) => {
+    return <DetailsPage 
+        view={view} 
+        className={styles.author}
+    >
+        <AuthorBookGrid view={view}/>
+    </DetailsPage>
+});
+
+const AuthorBookGrid = observer<{view: AuthorDetailsView}>(({view}) => {
+
+    return <PreviewGrid
+        isLoading={view.isInitialising}
+        items={view.books}
+        itemName={view.store.rootStore.books.entityName}
+        ItemPreview={BookPreview} 
+    />
+});

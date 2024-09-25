@@ -9,7 +9,7 @@ function AuthorComponent({ field }: { field: AuthorField }) {
     const {authorSettings} = field;
     
     useEffect(() => {
-        return () => authorSettings.reset();
+        return () => authorSettings.resetSettings();
     }, []);
 
     return <>

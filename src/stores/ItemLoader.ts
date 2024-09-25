@@ -12,7 +12,7 @@ export default abstract class ItemLoader< E extends Entity> {
     loadedItem: E | null = null;
     redirectPath: string | null = null;
 
-    constructor(public fallbackImg: string) {
+    constructor() {
 
         makeObservable(this, {
             state: observable,
@@ -28,7 +28,9 @@ export default abstract class ItemLoader< E extends Entity> {
             setLoadedItem: action,
             setEmptyItem: action,
             setFailure: action,
-            setRedirectPath: action
+            redirectToRoot: action,
+            redirectToId: action,
+            resetRedirect: action
         })
     }
 
@@ -75,15 +77,21 @@ export default abstract class ItemLoader< E extends Entity> {
         this.state = state;
     }
 
-    setRedirectPath(id: string | null) {
-        this.redirectPath = id ? makeAbsolutePath(this.store.pathname, id) : null;
+    redirectToRoot() {
+        this.redirectPath = makeAbsolutePath(this.store.pathname);
     }
 
-    prepareItem(pageItemId: string | null) {
+    redirectToId(id: string) {
+        this.redirectPath = makeAbsolutePath(this.store.pathname, id);
+    }
+
+    resetRedirect() {
+        this.redirectPath = null;
+    }
+
+    prepareItem(pageItemId: string | null) {       
         if (this.isInitialising)
             return;
-        
-        this.setRedirectPath(null);
 
         if (!pageItemId) 
             this.setEmptyItem();

@@ -50,11 +50,37 @@ export default class BookService extends DataService<Book> {
 
     override async updateItem(initial: Book, formData: BookFormShape) {
 
-        const { previewInfo, description } = Book.formDataToFirestore(formData);
-        const {authorLog, extraActions} = this.makeAuthorUpdateActions(previewInfo, initial);
-        const changeLog = await this.runItemUpdate({ initial, previewInfo, description, extraActions })
+        try {
+            const { previewInfo, description } = Book.formDataToFirestore(formData);
+            const {authorLog, extraActions} = this.makeAuthorUpdateActions(previewInfo, initial);
+            const changeLog = await this.runItemUpdate({ initial, previewInfo, description, extraActions })
 
-        return { ...changeLog, authorLog };
+            return { ...changeLog, authorLog };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
+    override async deleteItem(item: Book) {
+        try {
+            const extraActions = async(t: Transaction) => {
+                if (item.authorInfo) {
+                    const authorDoc = doc(this.store.rootStore.authors.service.previewsRef, item.authorInfo.id);
+                    const author = await t.get(authorDoc);
+                    if (author.exists()) {
+                        t.update(authorDoc, {
+                            [FK.bookN]: author.data()[FK.bookN] - 1
+                        })
+                    }
+                }
+            }
+            await this.runItemDelete({item, extraActions});
+            return;
+        }
+        catch (error) {
+            throw error;
+        }
     }
 
     private makeAuthorUpdateActions(previewInto: Book['previewInfo'], initial: Book) : {
@@ -111,9 +137,7 @@ export default class BookService extends DataService<Book> {
                 return;
             }
         }
-       
     }
-
 }
 
 type AuthorChangeLog = {

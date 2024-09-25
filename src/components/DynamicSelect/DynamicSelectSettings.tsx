@@ -47,7 +47,7 @@ export default class DynamicSelectSettings<Key extends string> {
             closeDropdown: action.bound,
             selectOption: action.bound,
             clearSelection: action.bound,
-            reset: action.bound,
+            resetSettings: action.bound,
             startTimer: action.bound,
             filterOptions: flow
         });
@@ -74,7 +74,7 @@ export default class DynamicSelectSettings<Key extends string> {
 
     selectOption(option: DropdownOption<Key>, forceSelect?: boolean) {
         if (this.resetOnSelect)
-            this.reset();
+            this.resetSettings();
 
         else {
             this.selectedOption = option;
@@ -97,7 +97,7 @@ export default class DynamicSelectSettings<Key extends string> {
             this.onOptionSelect(null);
     }
 
-    reset() {
+    resetSettings() {
         clearTimeout(this.timer);
 
         this.state = LoadingState.idle;

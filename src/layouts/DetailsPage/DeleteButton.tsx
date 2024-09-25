@@ -1,5 +1,5 @@
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { observer } from "mobx-react-lite";
 import { IconButton } from "../../components/Buttons";
 import Entity from "../../utils/classes/Entity";
 import ConfirmationModal from "../../components/ConfirmationModal";
@@ -21,7 +21,7 @@ const DeleteButton = observer(<E extends Entity,>({item, view}: {
         {isModalOpen && <ConfirmationModal 
             close={() => setIsModalOpen(false)}
             isPending={view.isPending}
-            confirm={() => console.log(item.id, 'deleted')}
+            confirm={() => view.deleteItem(item)}
         >
             <p>Sure you want to delete <b>{item.preview.name}</b>?</p>
         </ConfirmationModal>}

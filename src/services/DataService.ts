@@ -63,6 +63,7 @@ export default abstract class DataService<E extends Entity> {
     
     abstract postItem(formData: any) : Promise<any>;
     abstract updateItem(initial: E, formData: any) : Promise<ChangeLog<E> & Record<string, any>>;
+    abstract deleteItem(item: E) : Promise<void>;
     
     protected writePostBatch({previewInfo, description}: {
         previewInfo: E['previewInfo'], 
@@ -115,6 +116,23 @@ export default abstract class DataService<E extends Entity> {
             return changeLog;
         })
     }
+
+    protected runItemDelete({item, extraActions}: {
+        item: E,
+        extraActions?: (t: Transaction) => Promise<void>}
+    ) {
+        return runTransaction(db, async(transaction: Transaction) => {
+            if (extraActions)
+                await extraActions(transaction);
+
+            transaction.delete(doc(this.previewsRef, item.id));
+
+            if (item.description) 
+                transaction.delete(doc(this.descriptionsRef, item.id));
+            
+            return;
+        })
+    } 
 
     protected async fetchDescription(id: string) {
         const snapshot = await getDoc(doc(this.descriptionsRef, id));

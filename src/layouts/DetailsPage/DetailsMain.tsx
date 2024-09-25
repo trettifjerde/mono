@@ -4,9 +4,8 @@ import { LinkButton } from "../../components/Buttons"
 import DetailsView from "../../stores/DetailsView/DetailsView"
 import DetailsReloader from "./DetailsReloader"
 import common from '../../styles/common.module.scss';
-import Entity from "../../utils/classes/Entity"
 
-function DetailsMain<E extends Entity>({ view }: { view: DetailsView<E> }) {
+function DetailsMain({ view }: { view: DetailsView }) {
 
     const renderDescription = () => {
 

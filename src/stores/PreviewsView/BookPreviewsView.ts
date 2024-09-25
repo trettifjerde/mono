@@ -38,7 +38,7 @@ export default class BookPreviewsView extends PreviewsView<Book, BookFilterTypes
 
     override resetSettings() {
         super.resetSettings();
-        this.authorSettings.reset();
+        this.authorSettings.resetSettings();
     }
 
     get inStockFilter() {

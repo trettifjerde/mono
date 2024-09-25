@@ -92,6 +92,27 @@ export default class AuthorService extends DataService<Author> {
         };
     }
 
+    override async deleteItem(item: Author) {
+        try {
+            const extraActions = async(t: Transaction) => {
+
+                const booksRef = this.store.rootStore.books.service.previewsRef;
+
+                for (const book of item.books) {
+                    t.update(doc(booksRef, book.id), {
+                        [FK.authorId]: null,
+                        [FK.authorName]: null
+                    })
+                }
+            }
+            await this.runItemDelete({item, extraActions});
+            return;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+
     private makeBookChangeLog(initialIds: string[], newIds: string[]) {
         const oldIdSet = new Set(initialIds);
         const newIdSet = new Set(newIds);

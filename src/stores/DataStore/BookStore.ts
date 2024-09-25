@@ -11,11 +11,13 @@ import BookPreviewsView from "../PreviewsView/BookPreviewsView";
 import BookDetailsView from "../DetailsView/BookDetailsView";
 import FormView from "../FormView/FormView";
 import BookForm, { BookFormShape } from "../FormView/forms/BookForm";
+import DefaultBookImg from "../../assets/book.webp";
 
 export default class BookStore extends DataStore<Book> {
 
     override entityName = "Book";
     override pathname = Pathnames.books;
+    override fallbackImg = DefaultBookImg;
     override EntityConstructor = Book;
     override sortConfig = BookSortConfig;
     override filterConfig = BookFilterConfig;
@@ -69,10 +71,10 @@ export default class BookStore extends DataStore<Book> {
                 throw 'Book updated in DB, but not found in cache';
 
             if (authorLog.addedId)
-                this.rootStore.authors.addToCachedAuthorBooks(authorLog.addedId, updBook);
+                this.addToCachedAuthorBooks(authorLog.addedId, updBook);
 
             if (authorLog.removedId)
-                this.rootStore.authors.removeFromCachedAuthorBooks(authorLog.removedId, id);
+                this.removeFromCachedAuthorBooks(authorLog.removedId, id);
             
             this.rootStore.resetPreviewsViews();
 
@@ -83,11 +85,15 @@ export default class BookStore extends DataStore<Book> {
         }
     }
 
-    override async deleteItem(id: string) {
-        return new Promise<void>(res => {
-            console.log(id);
-            res()
-        })
+    override async deleteItem(book: Book) {
+        return super.deleteItem(book)
+            .then(() => {
+                if (book.authorInfo) 
+                    this.removeFromCachedAuthorBooks(book.authorInfo.id, book.id);
+            })
+            .catch(error => {
+                throw error
+            })
     }
 
     async getBooksByAuthorId(authorId: string) {
@@ -150,6 +156,17 @@ export default class BookStore extends DataStore<Book> {
         catch (error) {
             throw error;
         }
+    }
+
+    addToCachedAuthorBooks(authorId: string, book: Book) {
+        const author = this.rootStore.authors.items.get(authorId);
+        if (author) 
+            author.addBook(book);
+    }
+    removeFromCachedAuthorBooks(authorId: string, bookId: string) {
+        const author = this.rootStore.authors.items.get(authorId);
+        if (author) 
+            author.removeBook(bookId)
     }
 }
 

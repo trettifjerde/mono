@@ -8,13 +8,11 @@ import DeleteButton from "./DeleteButton";
 import styles from './index.module.scss';
 import common from '../../styles/common.module.scss';
 
-function DetailsPage<E extends Entity>(
-    { view, className, children }:
-        {
-            view: DetailsView<E>,
-            className: string,
-            children?: ReactNode
-        }) {
+function DetailsPage<E extends Entity>({ view, className, children }: {
+    view: DetailsView<E>,
+    className: string,
+    children?: ReactNode
+}) {
 
     const { isInitialising, isFailure, loadedItem, HeaderComponent } = view;
 
@@ -24,21 +22,21 @@ function DetailsPage<E extends Entity>(
             <hgroup>
                 <h1>{view.headerContent}</h1>
                 {HeaderComponent && <HeaderComponent item={view.loadedItem} />}
-            </hgroup>        
+            </hgroup>
         </header>
 
         <menu>
             <li>
-                {loadedItem && <IconLinkButton to="edit" icon="icon-edit" color="blue"/>}
+                {loadedItem && <IconLinkButton to="edit" icon="icon-edit" color="blue" />}
             </li>
             <li>
-                {loadedItem && <DeleteButton item={loadedItem} view={view} /> }
+                {loadedItem && <DeleteButton item={loadedItem} view={view} />}
             </li>
         </menu>
 
         <figure className={isFailure ? styles.bleak : ''}>
-            <img 
-                src={loadedItem?.img || view.fallbackImg} 
+            <img
+                src={loadedItem?.img || view.store.fallbackImg}
                 alt="Decorative image"
             />
         </figure>

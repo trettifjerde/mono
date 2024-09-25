@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { InputWithIconButton } from '../../../../components/Inputs';
-import Entity from '../../../../utils/classes/Entity';
-import SortSettings from '../../../../stores/PreviewsView/settings/SortSettings';
-import Dropdown from '../../../../components/Dropdown';
+import { InputWithIconButton } from '../../../components/Inputs';
+import Entity from '../../../utils/classes/Entity';
+import SortSettings from '../../../stores/PreviewsView/settings/SortSettings';
+import Dropdown from '../../../components/Dropdown';
 import styles from './index.module.scss';
 
 function SortSelect<E extends Entity>({sortSettings, id, label, placeholder, icon}: {
@@ -18,18 +18,17 @@ function SortSelect<E extends Entity>({sortSettings, id, label, placeholder, ico
     const {options, selectOption, selectedOption} = sortSettings;
 
     return (<div>
+
         <label htmlFor={id}>
             {icon && <i className={icon} />}
             <span>{label}</span>
         </label>
-        
-        <div 
-            className={styles.cont} 
-            >
+
+        <div className={styles.sort}>
             <InputWithIconButton
                 id={id}
                 placeholder={placeholder}
-                color='dark'
+                color='purple'
                 icon={selectedOption ? 'icon-cross' : 'icon-chevron-down'}
                 hiddenWhenBlurred={false}
                 readOnly={true}
@@ -54,6 +53,7 @@ function SortSelect<E extends Entity>({sortSettings, id, label, placeholder, ico
                 options={options} 
             />}
         </div>
+
     </div>);
 }
 
