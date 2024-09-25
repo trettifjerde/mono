@@ -25,20 +25,20 @@ export default class AuthorService extends DataService<Author> {
     override async postItem(formData: AuthorFormShape) {
         try {
             const { previewInfo, description, bookIds } = Author.formDataToFirestore(formData);
-            const { batch, previewDoc } = this.writePostBatch({ previewInfo, description });
+            const { batch, id } = this.writePostBatch({ previewInfo, description });
             const booksRef = this.store.rootStore.books.service.previewsRef;
 
             bookIds.forEach(bookId => {
                 batch.update(doc(booksRef, bookId), {
                     [FK.authorName]: previewInfo[FK.name],
-                    [FK.authorId]: previewDoc.id
+                    [FK.authorId]: id
                 })
             })
 
             await batch.commit();
 
             return {
-                id: previewDoc.id,
+                id,
                 previewInfo,
                 description,
                 bookIds

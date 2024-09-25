@@ -15,14 +15,17 @@ export default class DefaultView<E extends Entity> extends GridView<E> {
         })
     }
 
-    override addItems(items: E[], lastSnap: PreviewShapshot<E> | null) {
-        super.addItems(items, lastSnap);
+    override addBatch(batchSize: number, items: E[], lastSnap: PreviewShapshot<E> | null) {
+        super.addBatch(batchSize, items, lastSnap);
 
         if (this.isFull) 
             this.previewsView.store.setCacheFull();
     }
 
     resetPagination() {
+        if (this.isNotInitialised)
+            return;
+        
         this.pageN = 1;
     }
 

@@ -13,10 +13,10 @@ export default class BookForm extends CustomForm<Book> {
     constructor(view: FormView<Book, BookForm>) {
         super({view, config: BookFieldsConfig, schema: $bookSchema});
     }
-
-    override updateFields(item: Book | null) {
-        super.updateFields(item);
-        this.$(BookFormFields.author).updateAuthorSettings(item);
+    
+    override reset(deep?: boolean, execHook?: boolean): void {
+        super.reset(deep, execHook);
+        this.$(BookFormFields.author).updateSettings();
     }
 
     override makeField(data: FieldConstructor) {
@@ -53,8 +53,8 @@ const BookFieldsConfig : FieldsConfig<BookFormFields, Book> = {
     [BookFormFields.author]: {
         label: 'Author name',
         placeholder: "Enter book's author",
-        default: {},
-        readValue: (b) => b.authorInfo || {}
+        default: null,
+        readValue: (b) => b.authorInfo || null
     },
     [BookFormFields.img]: {
         label: 'Cover image',
@@ -102,7 +102,7 @@ const $bookSchema = z.object({
     [BookFormFields.author]: z.object({
         name: z.string(),
         id: z.string()
-    }).optional(),
+    }).or(z.null()),
     [BookFormFields.description]: z.string().optional()
 });
 

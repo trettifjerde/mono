@@ -1,5 +1,4 @@
 import { action, computed, flow, makeObservable, observable, reaction } from "mobx";
-import { FirestoreQueryParams } from "../../utils/dataTypes";
 import { EntityPreviewComponent } from "../../utils/uiTypes";
 import { LoadingState } from "../../utils/consts";
 import Entity from "../../utils/classes/Entity";
@@ -104,10 +103,11 @@ export default abstract class PreviewsView<
         this.loadingState = this.currentView.isNotInitialised ? LoadingState.initialising : LoadingState.pending;
 
         try {
+            const params = this.getQueryParams();
             const { items, lastSnap }: Awaited<ReturnType<typeof this.store.fetchAndCachePreviews>> = (
-                yield this.store.fetchAndCachePreviews(this.getQueryParams())
+                yield this.store.fetchAndCachePreviews(params)
             );
-            this.currentView.addItems(items, lastSnap);
+            this.currentView.addBatch(params.batchSize, items, lastSnap);
             this.loadingState = LoadingState.idle;
         }
         catch (error) {
@@ -124,26 +124,21 @@ export default abstract class PreviewsView<
     resetSettings() {
         this.filterSettings.setToDefault()
         this.sortSettings.selectOption(null);
-    }
-
-    addPostedItem(item: E) {
-        if (this.defaultView.isFull) 
-            this.defaultView.addItems([item], null);
+        this.defaultView.resetPagination();
     }
 
     private getQueryParams() {
-        const params: FirestoreQueryParams<E> = this.filterSettings.castToFirestoreParams();
+        const {filters, sorts} = this.filterSettings.castToFirestoreParams();
 
-        // ordering from sort option must come first in order for Firestore to order results properly
-        params.sorts = [
-            ...this.sortSettings.castToFirestoreParams(),
-            ...params.sorts
-        ];
+        // ordering from sort option must come first for Firestore to order results properly
+        sorts.unshift(...this.sortSettings.castToFirestoreParams());
 
-        if (this.currentView.lastSnap)
-            params.lastSnap = this.currentView.lastSnap;
-
-        return params;
+        return {
+            filters,
+            sorts,
+            batchSize: this.currentView.currentBatchSize,
+            lastSnap: this.currentView.lastSnap || undefined
+        }
     }
 
     private filterItemsLocally() {

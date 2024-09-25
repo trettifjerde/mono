@@ -20,7 +20,7 @@ export default class BookService extends DataService<Book> {
     override async postItem(formData: BookFormShape) {
         try {
             const { previewInfo, description } = Book.formDataToFirestore(formData);
-            const { batch, previewDoc } = this.writePostBatch({ previewInfo, description });
+            const { batch, id } = this.writePostBatch({ previewInfo, description });
 
             let author: Author | null = null;
 
@@ -37,7 +37,7 @@ export default class BookService extends DataService<Book> {
             await batch.commit();
 
             return {
-                id: previewDoc.id,
+                id,
                 previewInfo,
                 description,
                 author

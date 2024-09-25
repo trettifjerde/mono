@@ -90,6 +90,13 @@ export default abstract class DataStore<E extends Entity=any> {
         this.isCacheFull = true;
     }
 
+    updatePreviewsViewWith(item: E) {
+        if (this.isCacheFull)
+            this.previewsView.defaultView.pushItem(item);
+
+        this.rootStore.resetPreviewsViews();
+    }
+
     async fetchAndCachePreviews(params: FirestoreQueryParams<E>) {
         try {
             const {previews, lastSnap} = await this.service.fetchPreviews(params);
@@ -136,6 +143,7 @@ export default abstract class DataStore<E extends Entity=any> {
 
     abstract postItem(formData: any) : Promise<string>;
     abstract updateItem(initialItem: E, formData: any) : Promise<string>;
+    
     async deleteItem(item: E) {
         try {
             await this.service.deleteItem(item);

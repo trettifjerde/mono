@@ -6,8 +6,8 @@ import styles from './index.module.scss';
 function BookFiltering({view}: {view: BookPreviewsView})  {
 
     return (<>
-        <div>
-            <label htmlFor="inStock">
+        <div className={styles.filter}>
+            <label htmlFor="authorName">
                 <i className='icon-author' />
                 <span>Filter by author</span>
             </label>

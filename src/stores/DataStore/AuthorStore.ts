@@ -51,8 +51,7 @@ export default class AuthorStore extends DataStore<Author> {
                 }
             })[0];
 
-            this.previewsView.addPostedItem(author);
-            this.rootStore.resetPreviewsViews();
+            this.updatePreviewsViewWith(author);
 
             return id;
         }

@@ -20,7 +20,6 @@ function FormButtons({view}: {view: FormView}) {
 
         <Button
             color="dark" type="button"
-            disabled={!form.isDirty}
             onClick={form.onReset}>
             Restore form
         </Button>

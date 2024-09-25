@@ -14,4 +14,4 @@ export enum LoadingState {
     notFound
 };
 
-export const FETCH_BATCH_SIZE = 2;
+export const FETCH_BATCH_SIZE = 4;

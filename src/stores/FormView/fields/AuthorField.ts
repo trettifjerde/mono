@@ -2,7 +2,7 @@ import { action, computed, makeObservable } from "mobx";
 import { Field } from "mobx-react-form";
 import { FieldConstructor } from "mobx-react-form/lib/models/FieldInterface";
 import { DropdownOption } from "../../../utils/uiTypes";
-import Book from "../../../utils/classes/Book";
+import { BookAuthorInfo } from "../../../utils/classes/Book";
 import BookForm from "../forms/BookForm";
 import DynamicSelectSettings from "../../../components/DynamicSelect/DynamicSelectSettings";
 
@@ -39,8 +39,8 @@ export default class AuthorField extends Field {
         this.value = option ? {name: option.text, id: option.value} : {};
     }
 
-    updateAuthorSettings(book: Book | null) {
-        const authorInfo = book && book.authorInfo;
+    updateSettings() {
+        const authorInfo : BookAuthorInfo | null = this.default;
         
         if (authorInfo) 
             this.authorSettings.forceSelect({

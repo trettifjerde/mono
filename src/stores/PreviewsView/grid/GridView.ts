@@ -24,10 +24,12 @@ export default abstract class GridView<E extends Entity> {
             isLastPage: computed,
             isPrevBtnVisible: computed,
             isNextBtnVisible: computed,
+            currentBatchSize: computed,
             pageItems: computed,
             showPrev: action.bound,
             showNext: action.bound,
-            addItems: action
+            addBatch: action,
+            pushItem: action
         })
     }
 
@@ -45,6 +47,10 @@ export default abstract class GridView<E extends Entity> {
 
     get isNextBtnVisible() {
         return !this.isLastPage || !this.isFull;
+    }
+
+    get currentBatchSize() {
+        return this.previewsView.store.batchSize - (this.storedItems.length % this.previewsView.store.batchSize);
     }
 
     get pageItems() {
@@ -67,14 +73,20 @@ export default abstract class GridView<E extends Entity> {
             this.previewsView.loadPreviews();
     }
 
-    addItems(items: E[], lastSnap: PreviewShapshot<E> | null) {
+    addBatch(requestedBatchSize: number, items: E[], lastSnap: PreviewShapshot<E> | null) {
+        const itemsOnPageBeforeFetch = this.pageItems.length;
+
         this.storedItems.push(...items);
         this.lastSnap = lastSnap;
 
-        if (items.length || !this.pageN) 
+        if (!this.pageN || itemsOnPageBeforeFetch + items.length > this.previewsView.store.batchSize) 
             this.pageN++;
 
-        if (items.length < this.previewsView.store.batchSize)
+        if (items.length < requestedBatchSize)
             this.isFull = true;         
     };
+
+    pushItem(item: E) {
+        this.storedItems.push(item);
+    }
 }

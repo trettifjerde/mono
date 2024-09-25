@@ -26,12 +26,12 @@ export default class FormView<
 
     override setEmptyItem() {
         super.setEmptyItem();
-        this.form.updateFields(null);
+        this.form.updateDefaults(null);
     }
 
     override setLoadedItem(item: E) {
         super.setLoadedItem(item);
-        this.form.updateFields(item);
+        this.form.updateDefaults(item);
     }
 
     *submit(formData: Record<string, any>) {

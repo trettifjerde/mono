@@ -45,8 +45,7 @@ export default class BookStore extends DataStore<Book> {
             if (author)
                 author.addBook(book);
 
-            this.previewsView.addPostedItem(book);
-            this.rootStore.resetPreviewsViews();
+            this.updatePreviewsViewWith(book);
 
             return id;
         }
@@ -108,7 +107,7 @@ export default class BookStore extends DataStore<Book> {
         return this.fetchAndCachePreviews({
                 filters,
                 sorts: [sort],
-                unlimited: true
+                batchSize: 'all'
             })
             .then(({items}) => items)
     }

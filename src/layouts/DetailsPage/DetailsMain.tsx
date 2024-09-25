@@ -19,6 +19,7 @@ function DetailsMain({ view }: { view: DetailsView }) {
 
                     <LinkButton
                         className={common.linkCen}
+                        color="blue"
                         to={makeAbsolutePath(view.store.pathname)}
                     >
                         Browse other {view.store.entityName.toLowerCase() + 's'}

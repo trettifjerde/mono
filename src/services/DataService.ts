@@ -1,14 +1,11 @@
 import { collection, CollectionReference, deleteField, doc, FirestoreDataConverter, getDoc, getDocs, limit, query, QueryConstraint, runTransaction, startAfter, Transaction, UpdateData, writeBatch } from "firebase/firestore/lite";
 import { FirestoreKeys } from "../utils/firestoreDbTypes";
 import { FirestoreQueryParams } from "../utils/dataTypes";
-import { FETCH_BATCH_SIZE } from "../utils/consts";
+import Entity from "../utils/classes/Entity";
 import DataStore from "../stores/DataStore/DataStore";
 import db from "./Firestore";
-import Entity from "../utils/classes/Entity";
 
 export default abstract class DataService<E extends Entity> {
-
-    batchSize = FETCH_BATCH_SIZE;
 
     store: DataStore<E>;
     previewsRef: CollectionReference<E['previewInfo']>;
@@ -22,15 +19,24 @@ export default abstract class DataService<E extends Entity> {
     }
 
     async fetchPreviews(params: FirestoreQueryParams<E>) {
-        const {filters, sorts, lastSnap, unlimited} = params;
+        const {filters, sorts, lastSnap, batchSize} = params;
 
         const constraints : QueryConstraint[] = [...filters, ...sorts];
 
+        switch (batchSize) {
+            case 'all':
+                break;
+
+            case undefined:
+                constraints.push(limit(this.store.batchSize));
+                break;
+
+            default:
+                constraints.push(limit(batchSize));
+        }
+
         if (lastSnap) 
             constraints.push(startAfter(lastSnap));
-
-        if (!unlimited)
-            constraints.push(limit(this.batchSize));
 
         const {docs} = await getDocs(query(this.previewsRef, ...constraints));
 
@@ -60,7 +66,6 @@ export default abstract class DataService<E extends Entity> {
     }
 
     abstract fetchDetails(id: string) : Promise<E['detailsInfo']>;
-    
     abstract postItem(formData: any) : Promise<any>;
     abstract updateItem(initial: E, formData: any) : Promise<ChangeLog<E> & Record<string, any>>;
     abstract deleteItem(item: E) : Promise<void>;
@@ -71,13 +76,13 @@ export default abstract class DataService<E extends Entity> {
     }) {
 
         const batch = writeBatch(db);
-        const previewDoc = doc(this.previewsRef)
+        const previewDoc = doc(this.previewsRef, new Date().getTime().toString())
         batch.set(previewDoc, previewInfo);
 
         if (description)
             batch.set(doc(this.descriptionsRef), description);
 
-        return {batch, previewDoc};
+        return {batch, id: previewDoc.id};
     }
 
     protected async runItemUpdate({initial, previewInfo, description, extraActions}: {
@@ -93,12 +98,11 @@ export default abstract class DataService<E extends Entity> {
 
             const changeLog : ChangeLog<E> = {};
 
-            const previewUpdate = this.makePreviewUpdateData(initial, previewInfo);
+            const previewUpdateNeeded = this.makePreviewUpdateData(initial, previewInfo);
 
-            if (previewUpdate) {
+            if (previewUpdateNeeded) {
                 const previewDoc = doc(this.previewsRef, initial.id);
-
-                transaction.update(previewDoc, previewUpdate);
+                transaction.update(previewDoc, previewUpdateNeeded);
                 changeLog.previewInfo = previewInfo;
             }
     
@@ -140,7 +144,7 @@ export default abstract class DataService<E extends Entity> {
     }
 
     private async fetchPreview(id: string) {
-        const snapshot = await getDoc(doc(this.previewsRef, id))
+        const snapshot = await getDoc(doc(this.previewsRef, id));
         return snapshot.data();
     }
 

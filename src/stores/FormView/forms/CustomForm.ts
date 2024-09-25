@@ -35,12 +35,12 @@ export default class CustomForm<E extends Entity> extends Form {
 
         makeObservable(this, {
             validationError: observable,
-            updateFields: action,
+            updateDefaults: action,
             setValidationError: action.bound
         })
     }
 
-    updateFields(item: E | null) {
+    updateDefaults(item: E | null) {
         this.setValidationError(null);
         
         if (item) 
@@ -61,13 +61,10 @@ export default class CustomForm<E extends Entity> extends Form {
     hooks() {
         return {
             onSuccess(form: CustomForm<E>) {
-                console.log(form.error);
                 form.view.submit(form.values());
             },
             onError(form: CustomForm<E>) {
                 form.setValidationError('Form contains errors');
-                console.log('values', form.values());
-                console.log('errors', form.errors());
             }
         }
     }

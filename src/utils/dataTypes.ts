@@ -6,7 +6,7 @@ export type PreviewShapshot<E extends Entity> = QueryDocumentSnapshot<E['preview
 export type FirestoreQueryParams<E extends Entity> = {
     filters: QueryFieldFilterConstraint[],
     sorts: QueryOrderByConstraint[],
-    unlimited?: boolean,
+    batchSize?: number | 'all',
     lastSnap?: PreviewShapshot<E>,
 };
 
