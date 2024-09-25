@@ -6,6 +6,6 @@
     gap: $gap;
 
     & > * { 
-        flex: 1 0 20rem;
+        flex-grow: 1;
     }
 }

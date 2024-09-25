@@ -13,7 +13,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        aspect-ratio: 1/1;
+        min-width: $btn-std;
+        min-height: $btn-std;
     }
 
     &.trans {
